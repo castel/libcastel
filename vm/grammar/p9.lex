@@ -67,7 +67,9 @@ function                                                return T_FUNCTION;
 Mixed                                                   return T_MIXED;
 
 [a-zA-Z]([a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z0-9]*)         return T_IDENTIFIER;
-[0-9]+(\.[0-9]*)?|[0-9]*\.[0-9]+|0x[0-9A-Fa-f]+|0[0-8]+ return T_NUMBER;
+[0-9]+(\.[0-9]*)?|[0-9]*\.[0-9]+                        return T_NUMBER;
+0[0-7]+                                                 return T_NUMBER;
+0x[0-9a-fA-F]+                                          return T_NUMBER;
 \"\"                                                    return T_STRING;
 
 [ \t]+                                                  /* ignored */;
