@@ -1,0 +1,11 @@
+export class {
+    
+    public function Number get42( void ) {
+        return 42;
+    };
+    
+    public function Number getNumber( x : Number ) {
+        return x;
+    };
+    
+};

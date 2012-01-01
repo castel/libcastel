@@ -1,0 +1,9 @@
+from Std.Streams import err;
+from Std.Streams import out;
+from Std import endl;
+
+from Tests import Get42;
+
+Mixed x = new Get42( );
+err << x.get42( ) << endl;
+out << x.get( 69 ) << endl;
