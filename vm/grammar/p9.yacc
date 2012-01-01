@@ -27,6 +27,8 @@
 
 %token T_UNEXPECTED
 
+%expect 1
+
 %{
 #include <stdio.h>
 void yyerror( char const * err ) { printf( "Error : %s\n", err ); }
@@ -204,7 +206,7 @@ StringLiteral            : T_STRING
                          ;
 
 ArrayLiteral             : T_LBRACKET T_RBRACKET
-                         | T_LBRACKET ValueList T_RBRACKET
+                         | T_LBRACKET ExpressionList T_RBRACKET
                          ;
 
 ObjectLiteral            : T_LBRACE T_RBRACE
@@ -212,15 +214,18 @@ ObjectLiteral            : T_LBRACE T_RBRACE
                          ;
 
 CallArguments            : T_LPARENTHESIS T_RPARENTHESIS
-                         | T_LPARENTHESIS ValueList T_RPARENTHESIS
+                         | T_LPARENTHESIS ExpressionList T_RPARENTHESIS
                          ;
 
-ValueList                : Expression
-                         | ValueList T_COMMA Expression
+ExpressionList           : Expression
+                         | ExpressionList T_COMMA Expression
                          ;
 
-PairList                 : T_IDENTIFIER T_COLON Expression
-                         | PairList T_COMMA T_IDENTIFIER T_COLON Expression
+PairList                 : Pair
+                         | PairList T_COMMA Pair
+                         ;
+
+Pair                     : T_IDENTIFIER T_COLON Expression
                          ;
 
 Type                     : T_MIXED

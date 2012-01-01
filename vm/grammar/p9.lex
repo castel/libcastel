@@ -46,8 +46,8 @@
 \<=                                                     return T_RELATIONAL_LESSER_OR_EQUAL;
 >=                                                      return T_RELATIONAL_GREATER_OR_EQUAL;
 
-{                                                       return T_LBRACE;
-}                                                       return T_RBRACE;
+\{                                                      return T_LBRACE;
+\}                                                      return T_RBRACE;
 
 \(                                                      return T_LPARENTHESIS;
 \)                                                      return T_RPARENTHESIS;
