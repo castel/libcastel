@@ -48,13 +48,15 @@ StatementList            : Statement StatementList
 Statement                : Block
                          | ImportStatement
                          | VariableStatement
+                         | ReturnStatement
                          | ExpressionStatement
                          | EmptyStatement
                          ;
 
-Block                    : T_LBRACE StatementList T_RBRACE;
+Block                    : T_LBRACE StatementList T_RBRACE
+                         ;
 
-ImportStatement          : ImportFrom T_IMPORT T_IDENTIFIER ImportAs T_SEMICOLON;
+ImportStatement          : ImportFrom T_IMPORT T_IDENTIFIER ImportAs T_SEMICOLON
                          ;
 
 ImportFrom               : T_FROM ImportPath
@@ -74,6 +76,10 @@ ImportPathNext           : T_DOT ImportPath
 
 VariableStatement        : Type T_IDENTIFIER T_SEMICOLON
                          | Type T_IDENTIFIER T_ASSIGN Expression T_SEMICOLON
+                         ;
+
+ReturnStatement          : T_RETURN T_SEMICOLON
+                         | T_RETURN Expression T_SEMICOLON
                          ;
 
 ExpressionStatement      : Expression T_SEMICOLON
