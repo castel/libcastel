@@ -11,15 +11,14 @@
 %token T_LPARENTHESIS T_RPARENTHESIS
 %token T_LBRACKET T_RBRACKET
 
-%token T_DOT
-%token T_COMMA
-%token T_SEMICOLON
-%token T_COLON
+%token T_DOT T_COMMA T_SEMICOLON T_COLON
 
 %token T_THIS
 %token T_NEW
-%token T_FUNCTION
-%token T_CLASS
+%token T_FUNCTION T_CLASS
+%token T_PUBLIC T_PRIVATE
+%token T_IMPORT T_FROM T_AS
+%token T_RETURN
 %token T_MIXED
 
 %token T_IDENTIFIER
@@ -47,12 +46,31 @@ StatementList            : Statement StatementList
                          ;
 
 Statement                : Block
+                         | ImportStatement
                          | VariableStatement
                          | ExpressionStatement
                          | EmptyStatement
                          ;
 
 Block                    : T_LBRACE StatementList T_RBRACE;
+
+ImportStatement          : ImportFrom T_IMPORT T_IDENTIFIER ImportAs T_SEMICOLON;
+                         ;
+
+ImportFrom               : T_FROM ImportPath
+                         | /* no from clause */
+                         ;
+
+ImportAs                 : T_AS T_IDENTIFIER
+                         | /* no as clause */
+                         ;
+
+ImportPath               : T_IDENTIFIER ImportPathNext
+                         ;
+
+ImportPathNext           : T_DOT ImportPath
+                         | /* end of path */
+                         ;
 
 VariableStatement        : Type T_IDENTIFIER T_SEMICOLON
                          | Type T_IDENTIFIER T_ASSIGN Expression T_SEMICOLON

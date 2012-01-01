@@ -62,8 +62,14 @@
 
 this                                                    return T_THIS;
 new                                                     return T_NEW;
-class                                                   return T_CLASS;
 function                                                return T_FUNCTION;
+class                                                   return T_CLASS;
+public                                                  return T_PUBLIC;
+private                                                 return T_PRIVATE;
+import                                                  return T_IMPORT;
+from                                                    return T_FROM;
+as                                                      return T_AS;
+return                                                  return T_RETURN;
 Mixed                                                   return T_MIXED;
 
 [a-zA-Z]([a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z0-9]*)         return T_IDENTIFIER;
