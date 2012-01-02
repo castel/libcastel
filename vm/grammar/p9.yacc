@@ -41,207 +41,238 @@ int yydebug = 0;
 
 %%
 
-Program                  : StatementList ;
+Program                   : StatementList ;
 
-StatementList            : Statement StatementList
-                         | /* no more statement */
-                         ;
+StatementList             : Statement StatementList
+                          | /* no more statement */
+                          ;
 
-Statement                : Block
-                         | ImportStatement
-                         | VariableStatement
-                         | ReturnStatement
-                         | ExpressionStatement
-                         | EmptyStatement
-                         ;
+Statement                 : Block
+                          | VariableDeclaration
+                          | FunctionDeclaration
+                          | ClassDeclaration
+                          | ImportStatement
+                          | ReturnStatement
+                          | ExpressionStatement
+                          | EmptyStatement
+                          ;
 
-Block                    : T_LBRACE StatementList T_RBRACE
-                         ;
+Block                     : T_LBRACE StatementList T_RBRACE
+                          ;
 
-ImportStatement          : ImportFrom T_IMPORT T_IDENTIFIER ImportAs T_SEMICOLON
-                         ;
+VariableDeclaration       : Type T_IDENTIFIER T_SEMICOLON
+                          | Type T_IDENTIFIER T_ASSIGN Expression T_SEMICOLON
+                          ;
 
-ImportFrom               : T_FROM ImportPath
-                         | /* no from clause */
-                         ;
+FunctionDeclaration       : T_FUNCTION T_IDENTIFIER FunctionArguments Block
+                          | T_FUNCTION T_IDENTIFIER FunctionArguments T_COLON Type Block
+                          ;
 
-ImportAs                 : T_AS T_IDENTIFIER
-                         | /* no as clause */
-                         ;
+ClassDeclaration          : T_CLASS T_IDENTIFIER ClassBlock
+                          ;
 
-ImportPath               : T_IDENTIFIER ImportPathNext
-                         ;
+ImportStatement           : ImportFrom T_IMPORT T_IDENTIFIER ImportAs T_SEMICOLON
+                          ;
 
-ImportPathNext           : T_DOT ImportPath
-                         | /* end of path */
-                         ;
+ImportFrom                : T_FROM ImportPath
+                          | /* no from clause */
+                          ;
 
-VariableStatement        : Type T_IDENTIFIER T_SEMICOLON
-                         | Type T_IDENTIFIER T_ASSIGN Expression T_SEMICOLON
-                         ;
+ImportAs                  : T_AS T_IDENTIFIER
+                          | /* no as clause */
+                          ;
 
-ReturnStatement          : T_RETURN T_SEMICOLON
-                         | T_RETURN Expression T_SEMICOLON
-                         ;
+ImportPath                : T_IDENTIFIER ImportPathNext
+                          ;
 
-ExpressionStatement      : Expression T_SEMICOLON
-                         ;
+ImportPathNext            : T_DOT ImportPath
+                          | /* end of path */
+                          ;
 
-EmptyStatement           : T_SEMICOLON
-                         ;
+ReturnStatement           : T_RETURN T_SEMICOLON
+                          | T_RETURN Expression T_SEMICOLON
+                          ;
 
-Expression               : ExpressionLevel13
-                         ;
+ExpressionStatement       : Expression T_SEMICOLON
+                          ;
 
-ExpressionLevel13        : ExpressionLevel12
-                         | ExpressionLevel12 T_ASSIGN ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_NUMERIC_ADD ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_NUMERIC_SUB ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_NUMERIC_MUL ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_NUMERIC_DIV ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_NUMERIC_MOD ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_BINARY_AND ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_BINARY_OR ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_BINARY_XOR ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_BINARY_LSHIFT ExpressionLevel13
-                         | ExpressionLevel12 T_ASSIGN_BINARY_RSHIFT ExpressionLevel13
-                         ;
+EmptyStatement            : T_SEMICOLON
+                          ;
 
-ExpressionLevel12        : ExpressionLevel11
-                         | ExpressionLevel11 T_LOGICAL_OR ExpressionLevel12
-                         ;
+Expression                : ExpressionLevel13
+                          ;
 
-ExpressionLevel11        : ExpressionLevel10
-                         | ExpressionLevel10 T_LOGICAL_AND ExpressionLevel11
-                         ;
+ExpressionLevel13         : ExpressionLevel12
+                          | ExpressionLevel12 T_ASSIGN ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_NUMERIC_ADD ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_NUMERIC_SUB ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_NUMERIC_MUL ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_NUMERIC_DIV ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_NUMERIC_MOD ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_BINARY_AND ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_BINARY_OR ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_BINARY_XOR ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_BINARY_LSHIFT ExpressionLevel13
+                          | ExpressionLevel12 T_ASSIGN_BINARY_RSHIFT ExpressionLevel13
+                          ;
 
-ExpressionLevel10        : ExpressionLevel09
-                         | ExpressionLevel09 T_BINARY_OR ExpressionLevel10
-                         ;
+ExpressionLevel12         : ExpressionLevel11
+                          | ExpressionLevel11 T_LOGICAL_OR ExpressionLevel12
+                          ;
 
-ExpressionLevel09        : ExpressionLevel08
-                         | ExpressionLevel08 T_BINARY_XOR ExpressionLevel09
-                         ;
+ExpressionLevel11         : ExpressionLevel10
+                          | ExpressionLevel10 T_LOGICAL_AND ExpressionLevel11
+                          ;
 
-ExpressionLevel08        : ExpressionLevel07
-                         | ExpressionLevel07 T_BINARY_AND ExpressionLevel08
-                         ;
+ExpressionLevel10         : ExpressionLevel09
+                          | ExpressionLevel09 T_BINARY_OR ExpressionLevel10
+                          ;
 
-ExpressionLevel07        : ExpressionLevel06
-                         | ExpressionLevel06 T_RELATIONAL_EQUAL ExpressionLevel07
-                         | ExpressionLevel06 T_RELATIONAL_DIFFERENT ExpressionLevel07
-                         ;
+ExpressionLevel09         : ExpressionLevel08
+                          | ExpressionLevel08 T_BINARY_XOR ExpressionLevel09
+                          ;
 
-ExpressionLevel06        : ExpressionLevel05
-                         | ExpressionLevel05 T_RELATIONAL_LESSER ExpressionLevel06
-                         | ExpressionLevel05 T_RELATIONAL_GREATER ExpressionLevel06
-                         | ExpressionLevel05 T_RELATIONAL_LESSER_OR_EQUAL ExpressionLevel06
-                         | ExpressionLevel05 T_RELATIONAL_GREATER_OR_EQUAL ExpressionLevel06
-                         ;
+ExpressionLevel08         : ExpressionLevel07
+                          | ExpressionLevel07 T_BINARY_AND ExpressionLevel08
+                          ;
 
-ExpressionLevel05        : ExpressionLevel04
-                         | ExpressionLevel04 T_BINARY_LSHIFT ExpressionLevel05
-                         | ExpressionLevel04 T_BINARY_RSHIFT ExpressionLevel05
-                         ;
+ExpressionLevel07         : ExpressionLevel06
+                          | ExpressionLevel06 T_RELATIONAL_EQUAL ExpressionLevel07
+                          | ExpressionLevel06 T_RELATIONAL_DIFFERENT ExpressionLevel07
+                          ;
 
-ExpressionLevel04        : ExpressionLevel03
-                         | ExpressionLevel03 T_NUMERIC_ADD ExpressionLevel04
-                         | ExpressionLevel03 T_NUMERIC_SUB ExpressionLevel04
-                         ;
+ExpressionLevel06         : ExpressionLevel05
+                          | ExpressionLevel05 T_RELATIONAL_LESSER ExpressionLevel06
+                          | ExpressionLevel05 T_RELATIONAL_GREATER ExpressionLevel06
+                          | ExpressionLevel05 T_RELATIONAL_LESSER_OR_EQUAL ExpressionLevel06
+                          | ExpressionLevel05 T_RELATIONAL_GREATER_OR_EQUAL ExpressionLevel06
+                          ;
 
-ExpressionLevel03        : ExpressionLevel02
-                         | ExpressionLevel02 T_NUMERIC_MUL ExpressionLevel03
-                         | ExpressionLevel02 T_NUMERIC_DIV ExpressionLevel03
-                         | ExpressionLevel02 T_NUMERIC_MOD ExpressionLevel03
-                         ;
+ExpressionLevel05         : ExpressionLevel04
+                          | ExpressionLevel04 T_BINARY_LSHIFT ExpressionLevel05
+                          | ExpressionLevel04 T_BINARY_RSHIFT ExpressionLevel05
+                          ;
 
-ExpressionLevel02        : ExpressionLevel01
-                         | T_INCREMENT ExpressionLevel01
-                         | T_DECREMENT ExpressionLevel01
-                         | T_NUMERIC_ADD ExpressionLevel01
-                         | T_NUMERIC_SUB ExpressionLevel01
-                         | T_BINARY_NOT ExpressionLevel01
-                         | T_LOGICAL_NOT ExpressionLevel01
-                         ;
+ExpressionLevel04         : ExpressionLevel03
+                          | ExpressionLevel03 T_NUMERIC_ADD ExpressionLevel04
+                          | ExpressionLevel03 T_NUMERIC_SUB ExpressionLevel04
+                          ;
 
-ExpressionLevel01        : ExpressionLevel00
-                         | ExpressionLevel00 T_INCREMENT
-                         | ExpressionLevel00 T_DECREMENT
-                         ;
+ExpressionLevel03         : ExpressionLevel02
+                          | ExpressionLevel02 T_NUMERIC_MUL ExpressionLevel03
+                          | ExpressionLevel02 T_NUMERIC_DIV ExpressionLevel03
+                          | ExpressionLevel02 T_NUMERIC_MOD ExpressionLevel03
+                          ;
 
-ExpressionLevel00        : MemberExpression
-                         | CallExpression
-                         | NewExpression
-                         ;
+ExpressionLevel02         : ExpressionLevel01
+                          | T_INCREMENT ExpressionLevel01
+                          | T_DECREMENT ExpressionLevel01
+                          | T_NUMERIC_ADD ExpressionLevel01
+                          | T_NUMERIC_SUB ExpressionLevel01
+                          | T_BINARY_NOT ExpressionLevel01
+                          | T_LOGICAL_NOT ExpressionLevel01
+                          ;
 
-CallExpression           : MemberExpression CallArguments
-                         ;
+ExpressionLevel01         : ExpressionLevel00
+                          | ExpressionLevel00 T_INCREMENT
+                          | ExpressionLevel00 T_DECREMENT
+                          ;
 
-NewExpression            : T_NEW MemberExpression CallArguments
-                         ;
+ExpressionLevel00         : SelectorExpression
+                          | CallExpression
+                          | NewExpression
+                          ;
 
-MemberExpression         : PrimaryExpression
-                         | MemberExpression T_DOT T_IDENTIFIER
-                         | MemberExpression T_LBRACKET Expression T_RBRACKET
-                         ;
+SelectorExpression        : PrimaryExpression
+                          | SelectorExpression T_DOT T_IDENTIFIER
+                          | SelectorExpression T_LBRACKET Expression T_RBRACKET
+                          ;
 
-PrimaryExpression        : T_THIS
-                         | T_IDENTIFIER
-                         | Literal
-                         | T_LPARENTHESIS Expression T_RPARENTHESIS
-                         ;
+CallExpression            : SelectorExpression CallArguments
+                          ;
 
-Literal                  : NumberLiteral
-                         | StringLiteral
-                         | ArrayLiteral
-                         | ObjectLiteral
-                         | FunctionLiteral
-//                       | ClassLiteral
-                         ;
+NewExpression             : T_NEW SelectorExpression CallArguments
+                          ;
 
-NumberLiteral            : T_NUMBER
-                         ;
+PrimaryExpression         : Literal
+                          | T_THIS
+                          | T_IDENTIFIER
+                          | T_LPARENTHESIS Expression T_RPARENTHESIS
+                          ;
 
-StringLiteral            : T_STRING
-                         ;
+Literal                   : NumberLiteral
+                          | StringLiteral
+                          | ArrayLiteral
+                          | ObjectLiteral
+                          | FunctionLiteral
+                          | ClassLiteral
+                          ;
 
-ArrayLiteral             : T_LBRACKET T_RBRACKET
-                         | T_LBRACKET ExpressionList T_RBRACKET
-                         ;
+NumberLiteral             : T_NUMBER
+                          ;
 
-ObjectLiteral            : T_LBRACE T_RBRACE
-                         | T_LBRACE PairList T_RBRACE
-                         ;
+StringLiteral             : T_STRING
+                          ;
 
-FunctionLiteral          : T_FUNCTION DeclarationArguments Block
-                         ;
+ArrayLiteral              : T_LBRACKET T_RBRACKET
+                          | T_LBRACKET ExpressionList T_RBRACKET
+                          ;
 
-CallArguments            : T_LPARENTHESIS T_RPARENTHESIS
-                         | T_LPARENTHESIS ExpressionList T_RPARENTHESIS
-                         ;
+ObjectLiteral             : T_LBRACE T_RBRACE
+                          | T_LBRACE PairList T_RBRACE
+                          ;
 
-DeclarationArguments     : T_LPARENTHESIS T_RPARENTHESIS
-                         | T_LPARENTHESIS T_VOID T_RPARENTHESIS
-                         | T_LPARENTHESIS ArgumentList T_RPARENTHESIS
+FunctionLiteral           : T_FUNCTION FunctionArguments Block
+                          | T_FUNCTION FunctionArguments T_COLON Type Block
+                          ;
 
-ExpressionList           : Expression
-                         | ExpressionList T_COMMA Expression
-                         ;
+ClassLiteral              : T_CLASS ClassBlock
+                          ;
 
-ArgumentList             : Argument
-                         | ArgumentList T_COMMA Argument
-                         ;
+ClassBlock                : T_LBRACE ClassMemberDeclaration T_RBRACE
+                          ;
 
-PairList                 : Pair
-                         | PairList T_COMMA Pair
-                         ;
+ClassMemberDeclaration    : MemberVariableDeclaration ClassMemberDeclaration
+                          | MemberFunctionDeclaration ClassMemberDeclaration
+                          | /* no more member declaration */
+                          ;
 
-Pair                     : T_IDENTIFIER T_COLON Expression
-                         ;
+MemberVariableDeclaration : Visibility VariableDeclaration
+                          ;
 
-Argument                 : T_IDENTIFIER T_COLON Type
-                         ;
+MemberFunctionDeclaration : Visibility FunctionDeclaration
+                          ;
 
-Type                     : T_MIXED
-                         | T_IDENTIFIER
-                         ;
+CallArguments             : T_LPARENTHESIS T_RPARENTHESIS
+                          | T_LPARENTHESIS ExpressionList T_RPARENTHESIS
+                          ;
+
+FunctionArguments         : T_LPARENTHESIS T_RPARENTHESIS
+                          | T_LPARENTHESIS T_VOID T_RPARENTHESIS
+                          | T_LPARENTHESIS ArgumentList T_RPARENTHESIS
+
+ExpressionList            : Expression
+                          | ExpressionList T_COMMA Expression
+                          ;
+
+ArgumentList              : Argument
+                          | ArgumentList T_COMMA Argument
+                          ;
+
+PairList                  : Pair
+                          | PairList T_COMMA Pair
+                          ;
+
+Pair                      : T_IDENTIFIER T_COLON Expression
+                          ;
+
+Argument                  : T_IDENTIFIER T_COLON Type
+                          ;
+
+Type                      : T_MIXED
+                          | T_IDENTIFIER
+                          ;
+
+Visibility                : T_PUBLIC
+                          | T_PRIVATE
+                          ;
