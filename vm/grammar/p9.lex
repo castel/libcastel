@@ -60,6 +60,8 @@
 ;                                                       return T_SEMICOLON;
 :                                                       return T_COLON;
 
+mixed                                                   return T_MIXED;
+void                                                    return T_VOID;
 this                                                    return T_THIS;
 new                                                     return T_NEW;
 function                                                return T_FUNCTION;
@@ -70,7 +72,6 @@ import                                                  return T_IMPORT;
 from                                                    return T_FROM;
 as                                                      return T_AS;
 return                                                  return T_RETURN;
-Mixed                                                   return T_MIXED;
 
 [a-zA-Z]([a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z0-9]*)         return T_IDENTIFIER;
 [0-9]+(\.[0-9]*)?|[0-9]*\.[0-9]+                        return T_NUMBER;

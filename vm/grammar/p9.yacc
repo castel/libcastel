@@ -13,13 +13,13 @@
 
 %token T_DOT T_COMMA T_SEMICOLON T_COLON
 
+%token T_VOID T_MIXED
 %token T_THIS
 %token T_NEW
 %token T_FUNCTION T_CLASS
 %token T_PUBLIC T_PRIVATE
 %token T_IMPORT T_FROM T_AS
 %token T_RETURN
-%token T_MIXED
 
 %token T_IDENTIFIER
 %token T_NUMBER
@@ -195,7 +195,7 @@ Literal                  : NumberLiteral
                          | StringLiteral
                          | ArrayLiteral
                          | ObjectLiteral
-//                       | FunctionLiteral
+                         | FunctionLiteral
 //                       | ClassLiteral
                          ;
 
@@ -213,12 +213,23 @@ ObjectLiteral            : T_LBRACE T_RBRACE
                          | T_LBRACE PairList T_RBRACE
                          ;
 
+FunctionLiteral          : T_FUNCTION DeclarationArguments Block
+                         ;
+
 CallArguments            : T_LPARENTHESIS T_RPARENTHESIS
                          | T_LPARENTHESIS ExpressionList T_RPARENTHESIS
                          ;
 
+DeclarationArguments     : T_LPARENTHESIS T_RPARENTHESIS
+                         | T_LPARENTHESIS T_VOID T_RPARENTHESIS
+                         | T_LPARENTHESIS ArgumentList T_RPARENTHESIS
+
 ExpressionList           : Expression
                          | ExpressionList T_COMMA Expression
+                         ;
+
+ArgumentList             : Argument
+                         | ArgumentList T_COMMA Argument
                          ;
 
 PairList                 : Pair
@@ -226,6 +237,9 @@ PairList                 : Pair
                          ;
 
 Pair                     : T_IDENTIFIER T_COLON Expression
+                         ;
+
+Argument                 : T_IDENTIFIER T_COLON Type
                          ;
 
 Type                     : T_MIXED
