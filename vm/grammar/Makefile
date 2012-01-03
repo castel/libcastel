@@ -22,7 +22,7 @@ p9.lex.c: p9.lex
 	${LEX} p9.lex
 	${MV} lex.yy.c p9.lex.c
 
-p9.yacc.cc p9.tab.h: p9.yacc
+p9.yacc.cc p9.yacc.hh: p9.yacc
 	${YACC} -d -o p9.yacc.cc p9.yacc
 
 clean:
