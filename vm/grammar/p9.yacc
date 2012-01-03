@@ -31,17 +31,37 @@
 
 %{
 #include <stdio.h>
-void yyerror( char const * err ) { printf( "Error : %s\n", err ); }
-int yywrap( void ) { return 1; }
-int main( void ) { yyparse( ); return 0; }
-int yydebug = 0;
+
+int yylex( void );
+
+extern "C" {
+    
+    int yyparse( void );
+    
+    void yyerror( char const * err ) {
+        printf( "Error : %s\n", err );
+    }
+    
+    int yywrap( void ) {
+        return 1;
+    }
+    
+    int main( void ) {
+        yyparse( );
+        return 0;
+    }
+    
+    int yydebug = 0;
+    
+}
 %}
 
 %start Program
 
 %%
 
-Program                   : StatementList ;
+Program                   : StatementList
+                          ;
 
 StatementList             : Statement StatementList
                           | /* no more statement */
