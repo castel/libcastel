@@ -35,9 +35,9 @@ Notez que lemon est distribué et compilée directement avec la libp9, vous n'av
 
 **Nombre de pizzas / bières reçues :** 0
 
-La libp9 est développée par [Maël Nison](mailto:nison.mael@gmail.com), et est distribuée sous la licence BIERE/PIZZA-Restrict. Tant que vous conservez cette mention, vous pouvez librement partager cette bibliothèque. En cas de modification, la bibliothèque doit être renommée pour refléter les changements.
+La libp9 est développée par [Maël Nison](mailto:nison.mael@gmail.com), et est distribuée sous la licence BEER/PIZZA-Restrict. Tant que vous conservez cette mention, vous pouvez librement partager cette bibliothèque. En cas de modification, la bibliothèque également doit être renommée pour refléter les changements.
 
-Si nous nous rencontrons un jour, ou si vous aimez faire des surprises*, vous pouvez toujours m'apporter une bière ou une pizza en récompense.
+Si nous nous rencontrons un jour, ou si vous aimez faire des surprises[1], vous pouvez toujours m'apporter une bière ou une pizza en récompense.
 Quoi qu'il en soit, merci d'avoir lu !
 
-*Envoyez tout de même un mail pour prévenir de la surprise, que je ne dise pas non au livreur ! ;)*
+[1]: *Envoyez tout de même un mail pour prévenir de la surprise, que je ne dise pas non au livreur ! ;)*
