@@ -40,4 +40,4 @@ La libp9 est développée par [Maël Nison](mailto:nison.mael@gmail.com), et est
 Si nous nous rencontrons un jour, ou si vous aimez faire des surprises*, vous pouvez toujours m'apporter une bière ou une pizza en récompense.
 Quoi qu'il en soit, merci d'avoir lu !
 
-* Envoyez tout de même un mail pour prévenir de la surprise, que je ne dise pas non au livreur ! ;)
+*Envoyez tout de même un mail pour prévenir de la surprise, que je ne dise pas non au livreur ! ;)*
