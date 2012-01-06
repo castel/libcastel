@@ -1,6 +1,0 @@
-grammar
-p9.lex.c
-p9.lex.o
-p9.yacc.cc
-p9.yacc.hh
-p9.yacc.o
