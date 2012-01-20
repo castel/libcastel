@@ -51,10 +51,15 @@ $(OBJS): ./build/o/%.o: %.cc ./build/d/%.d
 clean:
 	@printf "%s- Removing object files.%s\n" "${brown}" "${end}"
 	@${RM} -rf ./build/o/
-	@${RM} -rf ./build/d/
 
 fclean: clean
 	@printf "%s- Removing binary files.%s\n" "${brown}" "${end}"
-	@${RM} -rf ./build/*
+	@${RM} -rf ./build/libmy.a
 
-.PHONY: all clean fclean
+re: fclean all
+
+clean-depends:
+	@printf "%s- Removing dependency files.%s\n" "${brown}" "${end}"
+	@${RM} -rf ./build/d/
+
+.PHONY: all clean fclean re clean-depends
