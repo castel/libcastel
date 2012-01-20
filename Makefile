@@ -1,54 +1,60 @@
-RAGEL = ragel
-CXX   = g++
-MKDIR = mkdir
-AR    = ar
-MV    = mv
+RAGEL  := ragel
+LEMON  := lemon
+CXX    := g++
+MKDIR  := mkdir
+AR     := ar
+MV     := mv
 
-purple = $(shell printf "\033[35m")
-cyan   = $(shell printf "\033[36m")
-green  = $(shell printf "\033[32m")
-brown  = $(shell printf "\033[33m")
-end    = $(shell printf "\033[00m")
+SRCS   := $(shell find ./sources/ -name '*.cc') ./sources/lexer/Lexer.cc
+OBJS   := $(addprefix ./build/o/,$(SRCS:.cc=.o))
+DEPS   := $(addprefix ./build/d/,$(SRCS:.cc=.d))
 
-all: ./binaries/libp9.a
+purple := $(shell printf "\033[35m")
+cyan   := $(shell printf "\033[36m")
+green  := $(shell printf "\033[32m")
+brown  := $(shell printf "\033[33m")
+end    := $(shell printf "\033[00m")
 
-./binaries/libp9.a: ./binaries/o/lexer/Lexer.o ./binaries/o/parser/Parser.o
+SRCS   := $(sort $(SRCS))
+OBJS   := $(sort $(OBJS))
+DEPS   := $(sort $(DEPS))
+
+all: ./build/libp9.a
+
+-include $(DEPS)
+
+./build/libp9.a: ${OBJS}
 	@printf "%s# Merging object files.%s\n" "${purple}" "${end}"
-	@${AR} rcs binaries/libp9.a ${^}
+	@${AR} rcs ./build/libp9.a ${OBJS}
 
-./binaries/o/lexer/Lexer.cc: ./sources/lexer/Lexer.rl
+./sources/lexer/Lexer.cc: ./sources/lexer/Lexer.rl
 	@printf "%s@ Generating ragel p9 lexer.%s\n" "${cyan}" "${end}"
-	@${MKDIR} -p ./binaries/o/lexer/
-	@${RAGEL} -C -o ./binaries/o/lexer/Lexer.cc ./sources/lexer/Lexer.rl
+	@${RAGEL} -C -o ./sources/lexer/Lexer.cc ./sources/lexer/Lexer.rl
 
-./binaries/o/lexer/Lexer.o: ./binaries/o/lexer/Lexer.cc ./includes/p9/lexer/TokenDefinitions.hh
-	@printf "%s+ Compiling p9 lexer.%s\n" "${green}" "${end}"
-	@${MKDIR} -p ./binaries/o/lexer/
-	@${CXX} ${CXXFLAGS} -I./includes/ -c -o ./binaries/o/lexer/Lexer.o ./binaries/o/lexer/Lexer.cc
-
-./includes/p9/lexer/TokenDefinitions.hh ./binaries/o/parser/parse.c: ./binaries/lemon ./sources/parser/parse.lm
+./includes/p9/lexer/TokenDefinitions.hh ./sources/parser/parse.cc: ./sources/parser/parse.lm
 	@printf "%s@ Generation lemon p9 parser.%s\n" "${cyan}" "${end}"
-	@./binaries/lemon -T./tools/lempar.c ./sources/parser/parse.lm
-	@${MKDIR} -p ./binaries/o/parser/
+	@${LEMON} ./sources/parser/parse.lm
 	@${RM} ./sources/parser/parse.out
-	@${MV} ./sources/parser/parse.c ./binaries/o/parser/parse.c
+	@${MV} ./sources/parser/parse.c ./sources/parser/parse.cc
 	@${MV} ./sources/parser/parse.h ./includes/p9/lexer/TokenDefinitions.hh
 
-./binaries/o/parser/Parser.o: ./sources/parser/Parser.cc ./binaries/o/parser/parse.c
-	@printf "%s+ Compiling p9 parser.%s\n" "${green}" "${end}"
-	@${MKDIR} -p ./binaries/o/parser/
-	@${CXX} ${CXXFLAGS} -I./includes/ -include ./binaries/o/parser/parse.c -c -o ./binaries/o/parser/Parser.o ./sources/parser/Parser.cc
+$(DEPS): ./build/d/%.d: %.cc
+	@printf "%s+ Generating dependency file for %s.%s\n" "${green}" "${<}" "${end}"
+	@${MKDIR} -p "$(dir ${@})"
+	@${CXX} -I. -Iincludes/ -MM -MG -MT "$(patsubst build/d/%,build/o/%,$(@:.d=.o))" "${<}" > $(@)
 
-./binaries/lemon: ./tools/lemon.c
-	@printf "%s# Compiling lemon.%s\n" "${purple}" "${end}"
-	@${CC} -o ./binaries/lemon ./tools/lemon.c
+$(OBJS): ./build/o/%.o: %.cc ./build/d/%.d
+	@printf "%s+ Compiling %s.%s\n" "${green}" "${<}" "${end}"
+	@${MKDIR} -p "$(dir ${@})"
+	@${CXX} ${CXXFLAGS} -I. -I./includes/ -c -o "${@}" "${<}"
 
 clean:
 	@printf "%s- Removing object files.%s\n" "${brown}" "${end}"
-	@${RM} -rf ./binaries/o/
+	@${RM} -rf ./build/o/
+	@${RM} -rf ./build/d/
 
 fclean: clean
 	@printf "%s- Removing binary files.%s\n" "${brown}" "${end}"
-	@${RM} -rf ./binaries/*
+	@${RM} -rf ./build/*
 
-re: fclean all
+.PHONY: all clean fclean

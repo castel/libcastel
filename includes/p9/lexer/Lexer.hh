@@ -1,8 +1,8 @@
 #pragma once
 
-#include <iosfwd>
+#include <cstddef>
 
-#include <p9/lexer/Token.hh>
+#include "p9/lexer/Token.hh"
 
 namespace p9
 {

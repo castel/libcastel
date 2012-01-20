@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include <p9/ast/Token.hh>
+#include "p9/ast/Token.hh"
 
 namespace p9
 {

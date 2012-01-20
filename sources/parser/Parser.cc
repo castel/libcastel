@@ -10,6 +10,8 @@ using namespace p9::parser;
 using p9::lexer::Token;
 using p9::lexer::Lexer;
 
+#include "./sources/parser/parse.cc"
+
 Parser::Parser( Lexer & lexer )
 : _lparse( ParseAlloc( malloc ) )
 , _lexer( lexer )

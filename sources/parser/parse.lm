@@ -1,23 +1,36 @@
+%token_type {ast::Token *}
+
 %include {
+	
   #include <iostream>
+  
+  #include <p9/ast/Token.hh>
+  #include <p9/ast/StatementList.hh>
+  #include <p9/ast/Statement.hh>
+  
   static bool p9parserIsValid;
+  
+  using namespace p9;
+  
 }
 
 %syntax_error {
+	
   std::cout << "Syntax error." << std::endl;
   p9parserIsValid = false;
+  
 }
 
 program ::= statementlist Eof.
 
-statementlist ::= statement statementlist.
-statementlist ::= .
+statementlist(A) ::= statement(B) statementlist(C). { A = new ast::StatementList( ); static_cast< ast::StatementList & >(*A).merge( static_cast< ast::Statement * >( B ) ).merge( static_cast< ast::StatementList * >( C ) ); }
+statementlist(A) ::= .                              { A = new ast::StatementList( ); }
 
-statement ::= declarationstatement.
-statement ::= importstatement.
-statement ::= returnstatement.
-statement ::= expressionstatement.
-statement ::= emptystatement.
+statement(A) ::= declarationstatement. { A = new ast::Statement( ); }
+statement(A) ::= importstatement.      { A = new ast::Statement( ); }
+statement(A) ::= returnstatement.      { A = new ast::Statement( ); }
+statement(A) ::= expressionstatement.  { A = new ast::Statement( ); }
+statement(A) ::= emptystatement.       { A = new ast::Statement( ); }
 
 block ::= LBrace statementlist RBrace.
 
@@ -148,7 +161,7 @@ expressionlvl00 ::= newexpression.
 
 selectorexpression ::= primaryexpression.
 selectorexpression ::= selectorexpression Dot Identifier.
-selectorexpression ::= selectorexpression LBracket Identifier RBracket.
+selectorexpression ::= selectorexpression LBracket expression RBracket.
 
 callexpression ::= selectorexpression callarguments.
 
@@ -162,6 +175,7 @@ expressionlist ::= expressionlist Comma expression.
 
 primaryexpression ::= literal.
 primaryexpression ::= This.
+primaryexpression ::= Super.
 primaryexpression ::= Identifier.
 primaryexpression ::= LParenthesis expression RParenthesis.
 

@@ -1,11 +1,15 @@
+from Std.Random import Generator as StdGenerator;
+
 return class {
+	
+	public function constructor( ) {
+		mConstruct = new StdGenerator( );
+	}
     
-    public function get42( void ) : Number {
-        return 42;
+    public function generate( void ) : Number {
+        return mConstruct.generate( );
     }
     
-    public function getNumber( x : Number ) : Number {
-        return x;
-    }
+    private StdGenerator mConstruct;
     
 };

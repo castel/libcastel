@@ -55,5 +55,6 @@
 #define RBracket                       55
 #define New                            56
 #define This                           57
-#define Number                         58
-#define String                         59
+#define Super                          58
+#define Number                         59
+#define String                         60

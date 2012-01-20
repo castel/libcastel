@@ -80,17 +80,24 @@ Token Lexer::consume( void )
 		
 		Mixed = "mixed";
 		Void = "void";
+		
 		This = "this";
+		Super = "super";
+
 		New = "new";
+
 		Function = "function";
 		Class = "class";
+
 		Public = "public";
 		Private = "private";
+
 		Import = "import";
 		From = "from";
 		As = "as";
+
 		Return = "return";
-		
+
 		Identifier = [a-zA-Z]([a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z0-9]*);
 		Number = "0x"[0-9a-fA-F]|'0'[0-7]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+;
 		String = "\"\"";
@@ -155,15 +162,22 @@ Token Lexer::consume( void )
 			
 			Mixed => { tok = Mixed; fbreak; };
 			Void => { tok = Void; fbreak; };
+
 			This => { tok = This; fbreak; };
+			Super => { tok = Super; fbreak; };
+
 			New => { tok = New; fbreak; };
+
 			Function => { tok = Function; fbreak; };
 			Class => { tok = Class; fbreak; };
+
 			Public => { tok = Public; fbreak; };
 			Private => { tok = Private; fbreak; };
+
 			Import => { tok = Import; fbreak; };
 			From => { tok = From; fbreak; };
 			As => { tok = As; fbreak; };
+			
 			Return => { tok = Return; fbreak; };
 			
 			Identifier => { tok = Identifier; fbreak; };
