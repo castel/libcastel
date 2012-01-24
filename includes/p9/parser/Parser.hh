@@ -26,8 +26,6 @@ namespace p9
 			
 			Parser( lexer::Lexer & lexer );
 			
-			~Parser( void );
-			
 		public:
 			
 			ast::Token * exec( void );

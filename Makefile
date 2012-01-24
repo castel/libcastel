@@ -1,23 +1,25 @@
-RAGEL  := ragel
-LEMON  := lemon
-CXX    := g++
-MKDIR  := mkdir
-AR     := ar
-MV     := mv
+RAGEL    := ragel
+LEMON    := lemon
+CXX      := g++
+MKDIR    := mkdir
+AR       := ar
+MV       := mv
 
-SRCS   := $(shell find ./sources/ -name '*.cc') ./sources/lexer/Lexer.cc
-OBJS   := $(addprefix ./build/o/,$(SRCS:.cc=.o))
-DEPS   := $(addprefix ./build/d/,$(SRCS:.cc=.d))
+CXXFLAGS := -g
 
-purple := $(shell printf "\033[35m")
-cyan   := $(shell printf "\033[36m")
-green  := $(shell printf "\033[32m")
-brown  := $(shell printf "\033[33m")
-end    := $(shell printf "\033[00m")
+SRCS     := $(shell find ./sources/ -name '*.cc') ./sources/lexer/Lexer.cc
+OBJS     := $(addprefix ./build/o/,$(SRCS:.cc=.o))
+DEPS     := $(addprefix ./build/d/,$(SRCS:.cc=.d))
 
-SRCS   := $(sort $(SRCS))
-OBJS   := $(sort $(OBJS))
-DEPS   := $(sort $(DEPS))
+purple   := $(shell printf "\033[35m")
+cyan     := $(shell printf "\033[36m")
+green    := $(shell printf "\033[32m")
+brown    := $(shell printf "\033[33m")
+end      := $(shell printf "\033[00m")
+
+SRCS     := $(sort $(SRCS))
+OBJS     := $(sort $(OBJS))
+DEPS     := $(sort $(DEPS))
 
 all: ./build/libp9.a
 

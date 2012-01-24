@@ -27,31 +27,26 @@ namespace p9
 		public:
 			
 			~StatementList( void )
-			{
-				clear( );
-			}
+			{ clear( ); }
 			
 		public:
 			
 			const_iterator begin( void ) const
-			{
-				return mInternalList.begin( );
-			}
+			{ return mInternalList.begin( ); }
 			
 			iterator begin( void )
-			{
-				return mInternalList.begin( );
-			}
+			{ return mInternalList.begin( ); }
 			
 			const_iterator end( void ) const
-			{
-				return mInternalList.end( );
-			}
+			{ return mInternalList.end( ); }
 			
 			iterator end( void )
-			{
-				return mInternalList.end( );
-			}
+			{ return mInternalList.end( ); }
+			
+		public:
+			
+			unsigned int size( void ) const
+			{ return mInternalList.size( ); }
 			
 		public:
 			
