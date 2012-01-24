@@ -1,7 +1,6 @@
 #include <cstdlib>
 
 #include <p9/parser/Parser.hh>
-#include <p9/lexer/TokenDefinitions.hh>
 #include <p9/lexer/Lexer.hh>
 #include <p9/lexer/Lexeme.hh>
 
