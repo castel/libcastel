@@ -1,9 +1,11 @@
 #include <iostream>
 #include <iterator>
 
-#include <p9/lexer/Lexer.hh>
-#include <p9/lexer/TokenDefinitions.hh>
+#include "includes/p9/lexer/LexemeTypes.hh"
 
+#include "p9/lexer/Lexer.hh"
+
+using namespace p9;
 using namespace p9::lexer;
 
 %% machine p9lexer;
@@ -20,7 +22,7 @@ Lexer::Lexer( char const * p, std::size_t n )
 {
 }
 
-Token Lexer::consume( void )
+Lexeme Lexer::consume( void )
 {
 	%%{
 		Increment = "++" ;
@@ -106,83 +108,83 @@ Token Lexer::consume( void )
 		
 		main := |*
 			
-			Increment => { tok = Increment; fbreak; };
-			Decrement => { tok = Decrement; fbreak; };
-			Assign => { tok = Assign; fbreak; };
+			Increment => { type = T_Increment; fbreak; };
+			Decrement => { type = T_Decrement; fbreak; };
+			Assign => { type = T_Assign; fbreak; };
 			
-			AssignNumericAddition => { tok = AssignNumericAddition; fbreak; };
-			AssignNumericSubstraction => { tok = AssignNumericSubstraction; fbreak; };
-			AssignNumericMultiplication => { tok = AssignNumericMultiplication; fbreak; };
-			AssignNumericDivision => { tok = AssignNumericDivision; fbreak; };
-			AssignNumericModulo => { tok = AssignNumericModulo; fbreak; };
+			AssignNumericAddition => { type = T_AssignNumericAddition; fbreak; };
+			AssignNumericSubstraction => { type = T_AssignNumericSubstraction; fbreak; };
+			AssignNumericMultiplication => { type = T_AssignNumericMultiplication; fbreak; };
+			AssignNumericDivision => { type = T_AssignNumericDivision; fbreak; };
+			AssignNumericModulo => { type = T_AssignNumericModulo; fbreak; };
 			
-			AssignBinaryAnd => { tok = AssignBinaryAnd; fbreak; };
-			AssignBinaryOr => { tok = AssignBinaryOr; fbreak; };
-			AssignBinaryXor => { tok = AssignBinaryXor; fbreak; };
-			AssignBinaryLShift => { tok = AssignBinaryLShift; fbreak; };
-			AssignBinaryRShift => { tok = AssignBinaryRShift; fbreak; };
+			AssignBinaryAnd => { type = T_AssignBinaryAnd; fbreak; };
+			AssignBinaryOr => { type = T_AssignBinaryOr; fbreak; };
+			AssignBinaryXor => { type = T_AssignBinaryXor; fbreak; };
+			AssignBinaryLShift => { type = T_AssignBinaryLShift; fbreak; };
+			AssignBinaryRShift => { type = T_AssignBinaryRShift; fbreak; };
 			
-			NumericAddition => { tok = NumericAddition; fbreak; };
-			NumericSubstraction => { tok = NumericSubstraction; fbreak; };
-			NumericMultiplication => { tok = NumericMultiplication; fbreak; };
-			NumericDivision => { tok = NumericDivision; fbreak; };
-			NumericModulo => { tok = NumericModulo; fbreak; };
+			NumericAddition => { type = T_NumericAddition; fbreak; };
+			NumericSubstraction => { type = T_NumericSubstraction; fbreak; };
+			NumericMultiplication => { type = T_NumericMultiplication; fbreak; };
+			NumericDivision => { type = T_NumericDivision; fbreak; };
+			NumericModulo => { type = T_NumericModulo; fbreak; };
 			
-			BinaryNot => { tok = BinaryNot; fbreak; };
-			BinaryAnd => { tok = BinaryAnd; fbreak; };
-			BinaryOr => { tok = BinaryOr; fbreak; };
-			BinaryXor => { tok = BinaryXor; fbreak; };
-			BinaryLShift => { tok = BinaryLShift; fbreak; };
-			BinaryRShift => { tok = BinaryRShift; fbreak; };
+			BinaryNot => { type = T_BinaryNot; fbreak; };
+			BinaryAnd => { type = T_BinaryAnd; fbreak; };
+			BinaryOr => { type = T_BinaryOr; fbreak; };
+			BinaryXor => { type = T_BinaryXor; fbreak; };
+			BinaryLShift => { type = T_BinaryLShift; fbreak; };
+			BinaryRShift => { type = T_BinaryRShift; fbreak; };
 			
-			LogicalNot => { tok = LogicalNot; fbreak; };
-			LogicalAnd => { tok = LogicalAnd; fbreak; };
-			LogicalOr => { tok = LogicalOr; fbreak; };
+			LogicalNot => { type = T_LogicalNot; fbreak; };
+			LogicalAnd => { type = T_LogicalAnd; fbreak; };
+			LogicalOr => { type = T_LogicalOr; fbreak; };
 			
-			RelationalEqual => { tok = RelationalEqual; fbreak; };
-			RelationalDifferent => { tok = RelationalDifferent; fbreak; };
-			RelationalLesser => { tok = RelationalLesser; fbreak; };
-			RelationalGreater => { tok = RelationalGreater; fbreak; };
-			RelationalLesserOrEqual => { tok = RelationalLesserOrEqual; fbreak; };
-			RelationalGreaterOrEqual => { tok = RelationalGreaterOrEqual; fbreak; };
+			RelationalEqual => { type = T_RelationalEqual; fbreak; };
+			RelationalDifferent => { type = T_RelationalDifferent; fbreak; };
+			RelationalLesser => { type = T_RelationalLesser; fbreak; };
+			RelationalGreater => { type = T_RelationalGreater; fbreak; };
+			RelationalLesserOrEqual => { type = T_RelationalLesserOrEqual; fbreak; };
+			RelationalGreaterOrEqual => { type = T_RelationalGreaterOrEqual; fbreak; };
 			
-			LBrace => { tok = LBrace; fbreak; };
-			RBrace => { tok = RBrace; fbreak; };
+			LBrace => { type = T_LBrace; fbreak; };
+			RBrace => { type = T_RBrace; fbreak; };
 			
-			LParenthesis => { tok = LParenthesis; fbreak; };
-			RParenthesis => { tok = RParenthesis; fbreak; };
+			LParenthesis => { type = T_LParenthesis; fbreak; };
+			RParenthesis => { type = T_RParenthesis; fbreak; };
 			
-			LBracket => { tok = LBracket; fbreak; };
-			RBracket => { tok = RBracket; fbreak; };
+			LBracket => { type = T_LBracket; fbreak; };
+			RBracket => { type = T_RBracket; fbreak; };
 			
-			Dot => { tok = Dot; fbreak; };
-			Comma => { tok = Comma; fbreak; };
-			Semicolon => { tok = Semicolon; fbreak; };
-			Colon => { tok = Colon; fbreak; };
+			Dot => { type = T_Dot; fbreak; };
+			Comma => { type = T_Comma; fbreak; };
+			Semicolon => { type = T_Semicolon; fbreak; };
+			Colon => { type = T_Colon; fbreak; };
 			
-			Mixed => { tok = Mixed; fbreak; };
-			Void => { tok = Void; fbreak; };
+			Mixed => { type = T_Mixed; fbreak; };
+			Void => { type = T_Void; fbreak; };
 
-			This => { tok = This; fbreak; };
-			Super => { tok = Super; fbreak; };
+			This => { type = T_This; fbreak; };
+			Super => { type = T_Super; fbreak; };
 
-			New => { tok = New; fbreak; };
+			New => { type = T_New; fbreak; };
 
-			Function => { tok = Function; fbreak; };
-			Class => { tok = Class; fbreak; };
+			Function => { type = T_Function; fbreak; };
+			Class => { type = T_Class; fbreak; };
 
-			Public => { tok = Public; fbreak; };
-			Private => { tok = Private; fbreak; };
+			Public => { type = T_Public; fbreak; };
+			Private => { type = T_Private; fbreak; };
 
-			Import => { tok = Import; fbreak; };
-			From => { tok = From; fbreak; };
-			As => { tok = As; fbreak; };
+			Import => { type = T_Import; fbreak; };
+			From => { type = T_From; fbreak; };
+			As => { type = T_As; fbreak; };
 			
-			Return => { tok = Return; fbreak; };
+			Return => { type = T_Return; fbreak; };
 			
-			Identifier => { tok = Identifier; fbreak; };
-			Number => { tok = Number; fbreak; };
-			String => { tok = String; fbreak; };
+			Identifier => { type = T_Identifier; fbreak; };
+			Number => { type = T_Number; fbreak; };
+			String => { type = T_String; fbreak; };
 			
 			Spaces => { next = true; fbreak; };
 			
@@ -192,7 +194,7 @@ Token Lexer::consume( void )
 	}%%;
 	
 	bool next = false;
-	int tok = 0;
+	int type = 0;
 	
 	%% variable p _p;
 	%% variable pe _pe;
@@ -213,7 +215,11 @@ Token Lexer::consume( void )
 	
 	if ( _p == _pe )
 		
-		return Token( Eof );
+		return Lexeme::endOfFile;
 	
-	return tok ? Token( tok, _ts, _te - _ts ) : Token( );
+	if ( ! type )
+		
+		return Lexeme::invalid;
+	
+	return Lexeme( type, _ts, _te - _ts );
 }

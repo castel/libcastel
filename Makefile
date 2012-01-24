@@ -31,12 +31,12 @@ all: ./build/libp9.a
 	@printf "%s@ Generating ragel p9 lexer.%s\n" "${cyan}" "${end}"
 	@${RAGEL} -C -o ./sources/lexer/Lexer.cc ./sources/lexer/Lexer.rl
 
-./includes/p9/lexer/TokenDefinitions.hh ./sources/parser/parse.cc: ./sources/parser/parse.lm
+./includes/p9/lexer/LexemeTypes.hh ./sources/parser/parse.cc: ./sources/parser/parse.lm
 	@printf "%s@ Generation lemon p9 parser.%s\n" "${cyan}" "${end}"
 	@${LEMON} ./sources/parser/parse.lm
 	@${RM} ./sources/parser/parse.out
 	@${MV} ./sources/parser/parse.c ./sources/parser/parse.cc
-	@${MV} ./sources/parser/parse.h ./includes/p9/lexer/TokenDefinitions.hh
+	@${MV} ./sources/parser/parse.h ./includes/p9/lexer/LexemeTypes.hh
 
 $(DEPS): ./build/d/%.d: %.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "${green}" "${<}" "${end}"

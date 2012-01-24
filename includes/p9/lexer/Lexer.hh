@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-#include "p9/lexer/Token.hh"
+#include "p9/lexer/Lexeme.hh"
 
 namespace p9
 {
@@ -18,7 +18,7 @@ namespace p9
 			
 		public:
 			
-			Token consume( void );
+			Lexeme consume( void );
 			
 		private:
 			

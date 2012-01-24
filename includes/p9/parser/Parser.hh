@@ -10,6 +10,13 @@ namespace p9
 		
 	}
 	
+	namespace ast
+	{
+		
+		class Token;
+		
+	}
+	
 	namespace parser
 	{
 		
@@ -23,7 +30,7 @@ namespace p9
 			
 		public:
 			
-			bool exec( void ) const;
+			ast::Token * exec( void );
 			
 		private:
 			

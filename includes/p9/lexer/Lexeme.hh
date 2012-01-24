@@ -8,21 +8,27 @@ namespace p9
 	namespace lexer
 	{
 		
-		class Token {
+		class Lexeme {
 			
 		public:
 			
-			Token( void )
+			static Lexeme const endOfFile;
+			
+			static Lexeme const invalid;
+			
+		public:
+			
+			Lexeme( void )
 			: _type( 0 )
 			{
 			}
 			
-			Token( int type )
+			Lexeme( int type )
 			: _type( type )
 			{
 			}
 			
-			Token( int type, char const * s, std::size_t n )
+			Lexeme( int type, char const * s, std::size_t n )
 			: _type( type )
 			, _value( s, n )
 			{
@@ -40,6 +46,18 @@ namespace p9
 			operator int( void ) const
 			{
 				return _type;
+			}
+			
+		public:
+			
+			bool operator==( Lexeme const & other ) const
+			{
+				return _type == other._type;
+			}
+			
+			bool operator!=( Lexeme const & other ) const
+			{
+				return _type != other._type;
 			}
 			
 		public:

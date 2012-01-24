@@ -10,10 +10,6 @@ namespace p9
 		
 		class Statement : public Token {
 			
-		public:
-			
-			Statement( void );
-			
 		};
 		
 	}

@@ -14,19 +14,62 @@ namespace p9
 		
 		class StatementList : public Token {
 			
+		private:
+			
+			typedef std::list< Statement * > InternalList;
+			
 		public:
 			
-			StatementList( void );
+			typedef InternalList::iterator iterator;
+			
+			typedef InternalList::const_iterator const_iterator;
 			
 		public:
 			
-			StatementList & merge( Statement * );
+			~StatementList( void )
+			{
+				clear( );
+			}
 			
-			StatementList & merge( StatementList * );
+		public:
+			
+			const_iterator begin( void ) const
+			{
+				return mInternalList.begin( );
+			}
+			
+			iterator begin( void )
+			{
+				return mInternalList.begin( );
+			}
+			
+			const_iterator end( void ) const
+			{
+				return mInternalList.end( );
+			}
+			
+			iterator end( void )
+			{
+				return mInternalList.end( );
+			}
+			
+		public:
+			
+			StatementList & clear( void );
+			
+		public:
+			
+			StatementList & merge( Statement * statement );
+			
+			StatementList & merge( StatementList * other );
+			
+		public:
+			
+			std::string toString( void ) const;
 			
 		private:
 			
-			std::list< Statement * > mStlList;
+			InternalList mInternalList;
 			
 		};
 		
