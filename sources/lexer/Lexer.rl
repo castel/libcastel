@@ -104,7 +104,8 @@ Lexeme Lexer::consume( void )
 		Number = "0x"[0-9a-fA-F]|'0'[0-7]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+;
 		String = "\"\"";
 		
-		Spaces = [ \r\n\t]+;
+		Spaces = [ \t]+;
+        Newline = '\r''\n'|'\r'|'\n';
 		
 		main := |*
 			
@@ -186,14 +187,14 @@ Lexeme Lexer::consume( void )
 			Number => { type = T_Number; fbreak; };
 			String => { type = T_String; fbreak; };
 			
-			Spaces => { next = true; fbreak; };
+			Spaces => { type = T_Spaces; fbreak; };
+			Newline => { type = T_Newline; fbreak; };
 			
-			any => { std::cout << "unexpected" << std::endl; };
+			any => { fbreak; };
 			
 		*|;
 	}%%;
 	
-	bool next = false;
 	int type = 0;
 	
 	%% variable p _p;
@@ -208,10 +209,6 @@ Lexeme Lexer::consume( void )
 	
 	%% write init;
 	%% write exec;
-	
-	if ( next )
-		
-		return consume( );
 	
 	if ( _p == _pe )
 		

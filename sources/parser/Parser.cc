@@ -1,8 +1,11 @@
 #include <cstdlib>
+#include <sstream>
+#include <string>
 
 #include <p9/parser/Parser.hh>
 #include <p9/lexer/Lexer.hh>
 #include <p9/lexer/Lexeme.hh>
+#include <p9/lexer/LexemeTypes.hh>
 
 using namespace p9;
 using namespace p9::parser;
@@ -10,7 +13,8 @@ using namespace p9::parser;
 #include "./sources/parser/parse.cc"
 
 Parser::Parser( lexer::Lexer & lexer )
-: _lexer( lexer )
+: mLexer( lexer )
+, mLineNo( 0 )
 {
 }
 
@@ -22,7 +26,13 @@ ast::Token * Parser::exec( void )
 	void * lparse = ParseAlloc( malloc );
 	
  loop:
-	lexeme = _lexer.consume( );
+	lexeme = mLexer.consume( );
+	
+	if ( lexeme == T_Spaces )
+		goto loop;
+	
+	if ( lexeme == T_Newline )
+		goto newline;
 	
 	if ( lexeme == lexer::Lexeme::invalid )
 		goto invalidLexeme;
@@ -38,6 +48,10 @@ ast::Token * Parser::exec( void )
 	
 	goto loop;
 	
+ newline:
+	++ mLineNo;
+	goto loop;
+	
  invalidLexeme:
 	goto end;
 	
@@ -51,4 +65,11 @@ ast::Token * Parser::exec( void )
  end:
 	ParseFree( lparse, free );
 	return token;
+}
+
+void Parser::triggerError( std::string const & message )
+{
+	std::stringstream sstream;
+	sstream << ( mLineNo + 1 ) << ": " << message;
+	mErrorString = sstream.str( );
 }

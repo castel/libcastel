@@ -50,18 +50,6 @@ namespace p9
 			
 		public:
 			
-			bool operator==( Lexeme const & other ) const
-			{
-				return _type == other._type;
-			}
-			
-			bool operator!=( Lexeme const & other ) const
-			{
-				return _type != other._type;
-			}
-			
-		public:
-			
 			std::string const & value( void ) const
 			{
 				return _value;

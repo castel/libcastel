@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace p9
 {
 	
@@ -28,13 +30,24 @@ namespace p9
 			
 		public:
 			
+			std::string const & errorString( void ) const
+			{ return mErrorString; }
+			
+		public:
+			
 			ast::Token * exec( void );
+			
+		protected:
+			
+			void triggerError( std::string const & message );
 			
 		private:
 			
-			void * _lparse;
+			lexer::Lexer & mLexer;
 			
-			lexer::Lexer & _lexer;
+			std::string mErrorString;
+			
+			unsigned int mLineNo;
 			
 		};
 		

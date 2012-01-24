@@ -1,6 +1,8 @@
 %token_type {ast::Token *}
 %token_prefix T_
 
+%nonassoc Spaces Newline.
+
 %include {
 	
   #include <iostream>
