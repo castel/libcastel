@@ -29,8 +29,6 @@ La libp9 est conçue avec les outils suivants :
 - [ragel](http://www.complang.org/ragel/) (lexer)
 - [lemon](http://www.hwaci.com/sw/lemon/) (parser)
 
-Notez que lemon est distribué et compilée directement avec la libp9, vous n'avez pas à la récupérer.
-
 ## Licence
 
 **Nombre de pizzas / bières reçues :** 0
