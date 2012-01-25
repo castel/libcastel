@@ -14,8 +14,6 @@ namespace p9
 			
 			static Lexeme const endOfFile;
 			
-			static Lexeme const invalid;
-			
 		public:
 			
 			Lexeme( void )

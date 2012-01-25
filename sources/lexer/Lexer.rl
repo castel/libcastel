@@ -3,6 +3,7 @@
 
 #include "includes/p9/lexer/LexemeTypes.hh"
 
+#include "p9/lexer/Exception.hh"
 #include "p9/lexer/Lexer.hh"
 
 using namespace p9;
@@ -12,13 +13,14 @@ using namespace p9::lexer;
 %% write data;
 
 Lexer::Lexer( char const * p, std::size_t n )
-: _p( p )
-, _pe( _p + n )
-, _eof( _pe )
-, _ts( 0 )
-, _te( 0 )
-, _cs( 0 )
-, _act( _cs )
+: mP( p )
+, mPe( mP + n )
+, mEof( mPe )
+, mTs( 0 )
+, mTe( 0 )
+, mCs( 0 )
+, mAct( mCs )
+, mPosition( 1, 1 )
 {
 }
 
@@ -195,28 +197,33 @@ Lexeme Lexer::consume( void )
 		*|;
 	}%%;
 	
+	%% variable p mP;
+	%% variable pe mPe;
+	%% variable eof mEof;
+	
+	%% variable ts mTs;
+	%% variable te mTe;
+	
+	%% variable cs mCs;
+	%% variable act mAct;
+	
+	if ( mP == mPe )
+		return Lexeme::endOfFile;
+	
 	int type = 0;
-	
-	%% variable p _p;
-	%% variable pe _pe;
-	%% variable eof _eof;
-	
-	%% variable ts _ts;
-	%% variable te _te;
-	
-	%% variable cs _cs;
-	%% variable act _act;
 	
 	%% write init;
 	%% write exec;
 	
-	if ( _p == _pe )
-		
-		return Lexeme::endOfFile;
-	
 	if ( ! type )
-		
-		return Lexeme::invalid;
+		throw Exception( position( ), "Invalid symbol" );
 	
-	return Lexeme( type, _ts, _te - _ts );
+	unsigned int size = mTe - mTs;
+	
+	if ( type == T_Newline )
+		mPosition.first = 1, ++ mPosition.second;
+	else
+		mPosition.first += size;
+	
+	return Lexeme( type, mTs, size );
 }

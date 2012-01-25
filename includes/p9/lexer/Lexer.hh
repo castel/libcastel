@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <utility>
 
 #include "p9/lexer/Lexeme.hh"
 
@@ -14,7 +15,16 @@ namespace p9
 			
 		public:
 			
+			typedef std::pair< unsigned int, unsigned int > Position;
+			
+		public:
+			
 			Lexer( char const * p, std::size_t n );
+			
+		public:
+			
+			Position const & position( void ) const
+			{ return mPosition; }
 			
 		public:
 			
@@ -22,15 +32,17 @@ namespace p9
 			
 		private:
 			
-			char const * _p;
-			char const * _pe;
-			char const * _eof;
+			char const * mP;
+			char const * mPe;
+			char const * mEof;
 			
-			char const * _ts;
-			char const * _te;
+			char const * mTs;
+			char const * mTe;
 			
-			int _cs;
-			int _act;
+			int mCs;
+			int mAct;
+			
+			Position mPosition;
 			
 		};
 		

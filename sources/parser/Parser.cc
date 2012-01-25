@@ -2,10 +2,11 @@
 #include <sstream>
 #include <string>
 
-#include <p9/parser/Parser.hh>
-#include <p9/lexer/Lexer.hh>
-#include <p9/lexer/Lexeme.hh>
-#include <p9/lexer/LexemeTypes.hh>
+#include "p9/lexer/Lexeme.hh"
+#include "p9/lexer/LexemeTypes.hh"
+#include "p9/lexer/Lexer.hh"
+#include "p9/parser/Exception.hh"
+#include "p9/parser/Parser.hh"
 
 using namespace p9;
 using namespace p9::parser;
@@ -34,9 +35,6 @@ ast::Token * Parser::exec( void )
 	if ( lexeme == T_Newline )
 		goto newline;
 	
-	if ( lexeme == lexer::Lexeme::invalid )
-		goto invalidLexeme;
-	
 	p9parserIsValid = true;
 	Parse( lparse, lexeme, 0 );
 	
@@ -52,10 +50,8 @@ ast::Token * Parser::exec( void )
 	++ mLineNo;
 	goto loop;
 	
- invalidLexeme:
-	goto end;
-	
  syntaxError:
+	throw Exception( position( ), "Unexpected token" );
 	goto end;
 	
  endOfFile:
