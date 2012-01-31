@@ -28,6 +28,7 @@ La libp9 est conçue avec les outils suivants :
 
 - [ragel](http://www.complang.org/ragel/) (lexer)
 - [lemon](http://www.hwaci.com/sw/lemon/) (parser)
+- [CPPUnit](http://sourceforge.net/apps/mediawiki/cppunit/index.php?title=Main_Page) (tests unitaires)
 
 ## Licence
 
