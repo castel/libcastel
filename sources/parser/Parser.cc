@@ -50,13 +50,13 @@ ast::Token * Parser::exec( void )
 	++ mLineNo;
 	goto loop;
 	
- syntaxError:
-	throw Exception( position( ), "Unexpected token" );
-	goto end;
-	
  endOfFile:
 	token = p9parserRootToken;
 	goto end;
+	
+ syntaxError:
+	ParseFree( lparse, free );
+	throw Exception( position( ), "Unexpected token" );
 	
  end:
 	ParseFree( lparse, free );

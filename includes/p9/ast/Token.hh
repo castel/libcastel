@@ -17,7 +17,7 @@ namespace p9
 			
 		public:
 			
-			~Token( void ) { }
+			virtual ~Token( void ) { }
 			
 		public:
 			

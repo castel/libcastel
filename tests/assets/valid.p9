@@ -1,2 +1,1 @@
-mixed tamer;
-tamer = 42;
+import foo;

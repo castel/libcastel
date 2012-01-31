@@ -26,7 +26,7 @@ namespace p9
 			
 		public:
 			
-			~StatementList( void )
+			virtual ~StatementList( void )
 			{ clear( ); }
 			
 		public:

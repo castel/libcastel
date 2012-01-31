@@ -31,7 +31,7 @@
 
 program ::= statementlist(A). { p9parserRootToken = A; }
 
-statementlist(A) ::= statement(B) statementlist(C). { A = new ast::StatementList( ); static_cast< ast::StatementList & >(*A).merge( static_cast< ast::Statement * >( B ) ).merge( static_cast< ast::StatementList * >( C ) ); }
+statementlist(A) ::= statement(B) statementlist(C). { A = new ast::StatementList( ); static_cast< ast::StatementList & >( *A ).merge( static_cast< ast::Statement * >( B ) ).merge( static_cast< ast::StatementList * >( C ) ); }
 statementlist(A) ::= .                              { A = new ast::StatementList( ); }
 
 statement(A) ::= declarationstatement. { A = 0; }

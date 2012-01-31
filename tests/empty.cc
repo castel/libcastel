@@ -14,17 +14,13 @@ using namespace p9;
 
 void libp9tests::empty( void )
 {
-	std::ifstream ifstream( "./assets/empty.p9" );
+	initParser( &fromString, "" );
 	
-	std::stringstream stringstream;
-	stringstream<< ifstream.rdbuf( );
-	std::string buffer = stringstream.str( );
-	
-	lexer::Lexer lexer( buffer.c_str( ), buffer.length( ) );
-	parser::Parser parser( lexer );
-	
-	std::auto_ptr< ast::Token > root( parser.exec( ) );
+	std::auto_ptr< ast::Token > root( parser->exec( ) );
 	
 	CPPUNIT_ASSERT( root.get( ) );
-	CPPUNIT_ASSERT_EQUAL( static_cast< ast::StatementList * >( root.get( ) )->size( ), static_cast< unsigned int >( 0 ) );
+	
+	int statementCount = static_cast< ast::StatementList * >( root.get( ) )->size( );
+	
+	CPPUNIT_ASSERT_EQUAL( 0, statementCount );
 }

@@ -32,7 +32,7 @@ std::string StatementList::toString( void ) const
 	
 	const_iterator cit;
 	for ( cit = begin( ); cit != end( ); ++ cit )
-		result += (*cit)->toString( );
+		result += ( *cit )->toString( );
 	
 	return result;
 }

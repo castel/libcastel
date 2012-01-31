@@ -1,3 +1,0 @@
-mixed foo;
-
-from foo import from bar;
