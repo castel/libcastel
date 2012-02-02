@@ -1,8 +1,5 @@
 #include <string>
 
-#include "p9/ast/AsClause.hh"
-#include "p9/ast/FromClause.hh"
-#include "p9/ast/Identifier.hh"
 #include "p9/ast/ImportStatement.hh"
 
 using namespace p9;
@@ -13,12 +10,27 @@ std::string ImportStatement::toString( void ) const
 	std::string result;
 	
 	if ( mFromClause )
-		result += mFromClause->toString( ) + " ";
+	{
+		std::list< std::string >::const_iterator it;
+		for ( it = mFromClause->begin( ); it != mFromClause->end( ); ++ it )
+		{
+			if ( it != mFromClause->begin( ) ) {
+				result += "." + *it;
+			} else {
+				result += *it;
+			}
+		}
+	}
 	
-	result += "import " + mLabel->toString( );
+	if ( mImportClause )
+	{
+		result += "import " + *mImportClause;
+	}
 	
 	if ( mAsClause )
-		result += " " + mAsClause->toString( );
+	{
+		result += " as " + *mAsClause;
+	}
 	
 	result += ";";
 	

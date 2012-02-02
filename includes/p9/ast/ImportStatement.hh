@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <string>
 
 #include "p9/ast/Statement.hh"
@@ -10,35 +11,29 @@ namespace p9
 	namespace ast
 	{
 		
-		class FromClause;
-		
-		class AsClause;
-		
-		class Identifier;
-		
 		class ImportStatement : public Statement {
 			
 		public:
 			
-			ImportStatement & setFromClause( FromClause * fromClause )
+			ImportStatement & setFromClause( std::list< std::string > * fromClause )
 			{ mFromClause = fromClause; return * this; }
 			
-			ImportStatement & setAsClause( AsClause * asClause )
-			{ mAsClause = asClause; return * this; }
+			ImportStatement & setImportClause( std::string * importClause )
+			{ mImportClause = importClause; return * this; }
 			
-			ImportStatement & setLabel( Identifier * label )
-			{ mLabel = label; return * this; }
+			ImportStatement & setAsClause( std::string * asClause )
+			{ mAsClause = asClause; return * this; }
 			
 		public:
 			
-			FromClause * fromClause( void ) const
+			std::list< std::string > * fromClause( void ) const
 			{ return mFromClause; }
 			
-			AsClause * asClause( void ) const
-			{ return mAsClause; }
+			std::string * importClause( void ) const
+			{ return mImportClause; }
 			
-			Identifier * label( void ) const
-			{ return mLabel; }
+			std::string * asClause( void ) const
+			{ return mAsClause; }
 			
 		public:
 			
@@ -46,11 +41,11 @@ namespace p9
 			
 		private:
 			
-			FromClause * mFromClause;
+			std::list< std::string > * mFromClause;
 			
-			AsClause * mAsClause;
+			std::string * mImportClause;
 			
-			Identifier * mLabel;
+			std::string * mAsClause;
 			
 		};
 		

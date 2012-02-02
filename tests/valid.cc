@@ -11,7 +11,7 @@ using namespace p9;
 
 void libp9tests::valid( void )
 {
-	initParser( &fromFile, "./assets/valid.p9" );
+	initParser( &fromFile, "./assets/full.p9" );
 	
 	std::auto_ptr< ast::Token > root( parser->exec( ) );
 	
@@ -19,5 +19,5 @@ void libp9tests::valid( void )
 	
 	int statementCount = static_cast< ast::StatementList * >( root.get( ) )->size( );
 	
-	CPPUNIT_ASSERT_EQUAL( 1, statementCount );
+	CPPUNIT_ASSERT_EQUAL( 5, statementCount );
 }

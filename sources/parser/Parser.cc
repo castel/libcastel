@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -21,7 +22,8 @@ Parser::Parser( lexer::Lexer & lexer )
 
 ast::Token * Parser::exec( void )
 {
-	lexer::Lexeme lexeme;
+	lexer::Lexeme * lexeme;
+	
 	ast::Token * token = 0;
 	
 	void * lparse = ParseAlloc( malloc );
@@ -29,19 +31,19 @@ ast::Token * Parser::exec( void )
  loop:
 	lexeme = mLexer.consume( );
 	
-	if ( lexeme == T_Spaces )
+	if ( lexeme->type( ) == T_Spaces )
 		goto loop;
 	
-	if ( lexeme == T_Newline )
+	if ( lexeme->type( ) == T_Newline )
 		goto newline;
 	
 	p9parserIsValid = true;
-	Parse( lparse, lexeme, 0 );
+	Parse( lparse, lexeme->type( ), lexeme );
 	
 	if ( ! p9parserIsValid )
 		goto syntaxError;
 	
-	if ( lexeme == lexer::Lexeme::endOfFile )
+	if ( lexeme->eof( ) )
 		goto endOfFile;
 	
 	goto loop;

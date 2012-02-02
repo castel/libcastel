@@ -28,7 +28,7 @@ namespace p9
 			
 		public:
 			
-			Lexeme consume( void );
+			Lexeme * consume( void );
 			
 		private:
 			

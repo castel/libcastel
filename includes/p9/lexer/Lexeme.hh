@@ -12,52 +12,41 @@ namespace p9
 			
 		public:
 			
-			static Lexeme const endOfFile;
-			
-		public:
-			
 			Lexeme( void )
 			: _type( 0 )
 			{
 			}
 			
-			Lexeme( int type )
-			: _type( type )
-			{
-			}
-			
 			Lexeme( int type, char const * s, std::size_t n )
 			: _type( type )
-			, _value( s, n )
+			, _text( s, n )
 			{
 			}
 			
 		public:
 			
-			bool valid( void ) const
+			bool eof( void ) const
 			{
-				return _type != 0;
+				return _type == 0;
 			}
 			
 		public:
 			
-			operator int( void ) const
+			int type( void ) const
 			{
 				return _type;
 			}
 			
-		public:
-			
-			std::string const & value( void ) const
+			std::string const & text( void ) const
 			{
-				return _value;
+				return _text;
 			}
 			
 		private:
 			
 			int _type;
 			
-			std::string _value;
+			std::string _text;
 			
 		};
 		

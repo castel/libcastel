@@ -1,20 +1,20 @@
-%token_type {ast::Token *}
+%token_destructor { delete $$; }
+%token_type {lexer::Lexeme*}
 %token_prefix T_
 
 %nonassoc Spaces Newline.
 
 %include {
-	
+  
   #include <iostream>
   #include <cassert>
+  
+  #include "p9/lexer/Lexeme.hh"
   
   #include "p9/ast/Token.hh"
   #include "p9/ast/StatementList.hh"
   #include "p9/ast/Statement.hh"
   #include "p9/ast/ImportStatement.hh"
-  #include "p9/ast/FromClause.hh"
-  #include "p9/ast/AsClause.hh"
-  #include "p9/ast/Identifier.hh"
   
   using namespace p9;
   
@@ -29,11 +29,14 @@
   
 }
 
+%type program {ast::StatementList*}
 program ::= statementlist(A). { p9parserRootToken = A; }
 
-statementlist(A) ::= statement(B) statementlist(C). { A = new ast::StatementList( ); static_cast< ast::StatementList & >( *A ).merge( static_cast< ast::Statement * >( B ) ).merge( static_cast< ast::StatementList * >( C ) ); }
-statementlist(A) ::= .                              { A = new ast::StatementList( ); }
+%type statementlist {ast::StatementList*}
+statementlist(A) ::= statement(B) statementlist(C). { ( *( A = new ast::StatementList( ) ) ).merge( B ).merge( C ); }
+statementlist(A) ::= .                              { ( *( A = new ast::StatementList( ) ) ); }
 
+%type statement {ast::Statement*}
 statement(A) ::= declarationstatement. { A = 0; }
 statement(A) ::= importstatement(B).   { A = B; }
 statement(A) ::= returnstatement.      { A = 0; }
@@ -46,19 +49,27 @@ declarationstatement ::= variabledeclaration.
 declarationstatement ::= functiondeclaration.
 declarationstatement ::= classdeclaration.
 
-importstatement(A) ::= fromclause(B) Import Identifier(C) asclause(D) Semicolon. { static_cast< ast::ImportStatement & >( *( A = new ast::ImportStatement( ) ) ).setFromClause( static_cast< ast::FromClause * >( B ) ).setLabel( static_cast< ast::Identifier * >( C ) ).setAsClause( static_cast< ast::AsClause * >( D ) ); }
-importstatement(A) ::= fromclause(B) Import Identifier(C) Semicolon.             { static_cast< ast::ImportStatement & >( *( A = new ast::ImportStatement( ) ) ).setFromClause( static_cast< ast::FromClause * >( B ) ).setLabel( static_cast< ast::Identifier * >( C ) ); }
-importstatement(A) ::= Import Identifier(B) asclause(C) Semicolon.               { static_cast< ast::ImportStatement & >( *( A = new ast::ImportStatement( ) ) ).setLabel( static_cast< ast::Identifier * >( B ) ).setAsClause( static_cast< ast::AsClause * >( C ) ); }
-importstatement(A) ::= Import Identifier(B) Semicolon.                           { static_cast< ast::ImportStatement & >( *( A = new ast::ImportStatement( ) ) ).setLabel( static_cast< ast::Identifier * >( B ) ); }
+%type importstatement {ast::ImportStatement*}
+importstatement(A) ::= fromclause(B) importclause(C) asclause(D) Semicolon. { ( *( A = new ast::ImportStatement( ) ) ).setFromClause( B ).setImportClause( C ).setAsClause( D ); }
+importstatement(A) ::= fromclause(B) importclause(C) Semicolon.             { ( *( A = new ast::ImportStatement( ) ) ).setFromClause( B ).setImportClause( C ); }
+importstatement(A) ::= importclause(B) asclause(C) Semicolon.               { ( *( A = new ast::ImportStatement( ) ) ).setImportClause( B ).setAsClause( C ); }
+importstatement(A) ::= importclause(B) Semicolon.                           { ( *( A = new ast::ImportStatement( ) ) ).setImportClause( B ); }
 
+%type fromclause {std::list<std::string>*}
 fromclause ::= From importpath.
 
+%type importpath {std::list<std::string>*}
 importpath ::= Identifier importpathnext.
 
+%type importpathnext { std::list< std::string > * }
 importpathnext ::= Dot importpath.
 importpathnext ::= .
 
-asclause ::= As Identifier.
+%type importclause { std::string * }
+importclause(A) ::= Import Identifier(B). { A = new std::string( B->text( ) ); }
+
+%type asclause { std::string * }
+asclause(A) ::= As Identifier(B). { A = new std::string( B->text( ) ); }
 
 returnstatement ::= Return Semicolon.
 returnstatement ::= Return expression Semicolon.

@@ -1,10 +1,7 @@
-#include <fstream>
-#include <memory>
-
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "p9/parser/Exception.hh"
 #include "p9/ast/Token.hh"
+#include "p9/parser/Exception.hh"
 
 #include "libp9tests.hh"
 

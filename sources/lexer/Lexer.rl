@@ -24,7 +24,7 @@ Lexer::Lexer( char const * p, std::size_t n )
 {
 }
 
-Lexeme Lexer::consume( void )
+Lexeme * Lexer::consume( void )
 {
 	%%{
 		Increment = "++" ;
@@ -208,7 +208,7 @@ Lexeme Lexer::consume( void )
 	%% variable act mAct;
 	
 	if ( mP == mPe )
-		return Lexeme::endOfFile;
+		return new Lexeme( );
 	
 	int type = 0;
 	
@@ -225,5 +225,5 @@ Lexeme Lexer::consume( void )
 	else
 		mPosition.first += size;
 	
-	return Lexeme( type, mTs, size );
+	return new Lexeme( type, mTs, size );
 }
