@@ -6,7 +6,7 @@ La libp9 est une bibliothèque permettant de lexer, parser et interpréter le la
 
 Ce langage est en cours de conception par moi-même ([arcanis](http://www.arcastel.com)) à partir d'une grammaire globalement inspirée de celle de l'ecmascript.
 
-Un aperçu non exaustif des fonctionnalités souhaitées à terme sur le langage peut être vu dans les diverses pages du [wiki](https://github.com/arcanin/libp9/wiki/_pages) de ce repository : n'hésitez pas à poster des issues pour les commenter, critiquer, et en proposer de nouvelles.
+Un aperçu non exhaustif des fonctionnalités souhaitées à terme sur le langage peut être vu dans les diverses pages du [wiki](https://github.com/arcanin/libp9/wiki/_pages) de ce repository : n'hésitez pas à poster des issues pour les commenter, critiquer, et en proposer de nouvelles.
 
 ## A noter
 
