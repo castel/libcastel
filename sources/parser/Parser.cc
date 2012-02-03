@@ -22,23 +22,18 @@ Parser::Parser( lexer::Lexer & lexer )
 
 ast::Token * Parser::exec( void )
 {
-	lexer::Lexeme * lexeme;
+	std::auto_ptr< lexer::Lexeme > lexeme;
 	
-	ast::Token * token = 0;
-	
-	void * lparse = ParseAlloc( malloc );
+	void * lemonParser = ParseAlloc( malloc );
 	
  loop:
-	lexeme = mLexer.consume( );
+	lexeme.reset( mLexer.consume( ) );
 	
-	if ( lexeme->type( ) == T_Spaces )
+	if ( lexeme->type( ) == T_Spaces || lexeme->type( ) == T_Newline )
 		goto loop;
 	
-	if ( lexeme->type( ) == T_Newline )
-		goto newline;
-	
 	p9parserIsValid = true;
-	Parse( lparse, lexeme->type( ), lexeme );
+	Parse( lemonParser, lexeme->type( ), lexeme.get( ) );
 	
 	if ( ! p9parserIsValid )
 		goto syntaxError;
@@ -46,28 +41,17 @@ ast::Token * Parser::exec( void )
 	if ( lexeme->eof( ) )
 		goto endOfFile;
 	
-	goto loop;
+	lexeme.release( );
 	
- newline:
-	++ mLineNo;
 	goto loop;
-	
- endOfFile:
-	token = p9parserRootToken;
-	goto end;
 	
  syntaxError:
-	ParseFree( lparse, free );
-	throw Exception( position( ), "Unexpected token" );
+	ParseFree( lemonParser, free );
 	
- end:
-	ParseFree( lparse, free );
-	return token;
-}
-
-void Parser::triggerError( std::string const & message )
-{
-	std::stringstream sstream;
-	sstream << ( mLineNo + 1 ) << ": " << message;
-	mErrorString = sstream.str( );
+	throw Exception( position( ), "Unexpected token", lexeme.get( ) );
+	
+ endOfFile:
+	ParseFree( lemonParser, free );
+	
+	return p9parserRootToken;
 }

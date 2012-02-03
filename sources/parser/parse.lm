@@ -66,10 +66,10 @@ importpathnext ::= Dot importpath.
 importpathnext ::= .
 
 %type importclause { std::string * }
-importclause(A) ::= Import Identifier(B). { A = new std::string( B->text( ) ); }
+importclause(A) ::= Import Identifier(B). { ( *( A = new std::string( B->text( ) ) ) ); delete B; }
 
 %type asclause { std::string * }
-asclause(A) ::= As Identifier(B). { A = new std::string( B->text( ) ); }
+asclause(A) ::= As Identifier(B). { ( *( A = new std::string( B->text( ) ) ) ); delete B; }
 
 returnstatement ::= Return Semicolon.
 returnstatement ::= Return expression Semicolon.

@@ -9,7 +9,7 @@ std::string ImportStatement::toString( void ) const
 {
 	std::string result;
 	
-	if ( mFromClause )
+	if ( mFromClause.get( ) )
 	{
 		std::list< std::string >::const_iterator it;
 		for ( it = mFromClause->begin( ); it != mFromClause->end( ); ++ it )
@@ -22,12 +22,12 @@ std::string ImportStatement::toString( void ) const
 		}
 	}
 	
-	if ( mImportClause )
+	if ( mImportClause.get( ) )
 	{
 		result += "import " + *mImportClause;
 	}
 	
-	if ( mAsClause )
+	if ( mAsClause.get( ) )
 	{
 		result += " as " + *mAsClause;
 	}

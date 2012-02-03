@@ -1,5 +1,6 @@
 #pragma once
 
+#include "p9/lexer/Lexeme.hh"
 #include "p9/parser/Parser.hh"
 
 namespace p9
@@ -12,7 +13,7 @@ namespace p9
 			
 		public:
 			
-			Exception( Parser::Position const & position, std::string const & message );
+			Exception( Parser::Position const & position, std::string const & message, lexer::Lexeme * lexeme );
 			
 		public:
 			
@@ -22,11 +23,16 @@ namespace p9
 			std::string const & message( void ) const
 			{ return mMessage; }
 			
+			lexer::Lexeme * lexeme( void ) const
+			{ return mLexeme; }
+			
 		private:
 			
 			Parser::Position mPosition;
 			
 			std::string mMessage;
+			
+			lexer::Lexeme * mLexeme;
 			
 		};
 		

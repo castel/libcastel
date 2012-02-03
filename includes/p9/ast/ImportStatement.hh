@@ -2,6 +2,7 @@
 
 #include <list>
 #include <string>
+#include <memory>
 
 #include "p9/ast/Statement.hh"
 
@@ -16,24 +17,24 @@ namespace p9
 		public:
 			
 			ImportStatement & setFromClause( std::list< std::string > * fromClause )
-			{ mFromClause = fromClause; return * this; }
+			{ mFromClause.reset( fromClause ); return * this; }
 			
 			ImportStatement & setImportClause( std::string * importClause )
-			{ mImportClause = importClause; return * this; }
+			{ mImportClause.reset( importClause ); return * this; }
 			
 			ImportStatement & setAsClause( std::string * asClause )
-			{ mAsClause = asClause; return * this; }
+			{ mAsClause.reset( asClause ); return * this; }
 			
 		public:
 			
 			std::list< std::string > * fromClause( void ) const
-			{ return mFromClause; }
+			{ return mFromClause.get( ); }
 			
 			std::string * importClause( void ) const
-			{ return mImportClause; }
+			{ return mImportClause.get( ); }
 			
 			std::string * asClause( void ) const
-			{ return mAsClause; }
+			{ return mAsClause.get( ); }
 			
 		public:
 			
@@ -41,11 +42,11 @@ namespace p9
 			
 		private:
 			
-			std::list< std::string > * mFromClause;
+			std::auto_ptr< std::list< std::string > > mFromClause;
 			
-			std::string * mImportClause;
+			std::auto_ptr< std::string > mImportClause;
 			
-			std::string * mAsClause;
+			std::auto_ptr< std::string > mAsClause;
 			
 		};
 		

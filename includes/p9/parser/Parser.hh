@@ -34,16 +34,7 @@ namespace p9
 			
 		public:
 			
-			std::string const & errorString( void ) const
-			{ return mErrorString; }
-			
-		public:
-			
 			ast::Token * exec( void );
-			
-		protected:
-			
-			void triggerError( std::string const & message );
 			
 		private:
 			
