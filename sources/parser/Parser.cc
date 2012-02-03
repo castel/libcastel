@@ -48,7 +48,7 @@ ast::Token * Parser::exec( void )
  syntaxError:
 	ParseFree( lemonParser, free );
 	
-	throw Exception( position( ), "Unexpected token", lexeme.get( ) );
+	throw Exception( position( ), "Unexpected token", lexeme.release( ) );
 	
  endOfFile:
 	ParseFree( lemonParser, free );
