@@ -31,11 +31,11 @@ function Class( parent, parameter ) {
 	
 	this.fd = FileSystem.openSync( this.infos[ 0 ] + '.hh', 'w', 0644 );
 	
-	this.headers.list = [ ];
+	this.headerList = [ ];
 	
-	this.definitions.list = [ ];
+	this.definitionList = [ ];
 	
-	this.enumerations = Object.create( null );
+	this.enumerationMap = Object.create( null );
 	
 }
 
@@ -43,7 +43,7 @@ Class.prototype.headers = function ( ) {
 	
 	var buffer = '';
 	
-	this.headers.list.forEach( function ( header, index ) {
+	this.headerList.forEach( function ( header, index ) {
 		
 		if ( index ) buffer += '\n';
 		
@@ -59,13 +59,41 @@ Class.prototype.definitions = function ( ) {
 	
 	var buffer = '';
 	
-	this.definitions.list.forEach( function ( definition, index ) {
+	this.definitionList.forEach( function ( definition, index ) {
 		
 		if ( index ) buffer += '\n\n';
 		
 		buffer += definition[ 0 ] + ' ' + definition[ 1 ] + ';';
 		
 	} );
+	
+	return buffer;
+	
+};
+
+Class.prototype.enumerations = function ( ) {
+	
+	var buffer = '';
+	
+	var enumerationMap = this.enumerationMap;
+	
+	Object.keys( enumerationMap ).forEach( function ( name, index  ) {
+		
+		if ( index ) buffer += '\n';
+		
+		buffer += 'enum ' + name + ' {';
+		
+		enumerationMap[ name ].forEach( function ( element, index ) {
+			
+			if ( index ) buffer += ',';
+			
+			buffer += '\n\t' + element + '';
+			
+		}, this );
+		
+		buffer += '\n};';
+		
+	}, this );
 	
 	return buffer;
 	
@@ -119,28 +147,18 @@ Class.prototype.close = function ( ) {
 	
 	this.write( declaration + ' {' );
 	
-	Object.keys( this.enumerations ).forEach( function ( name ) {
-		
-		this.write( 'enum ' + name + ' {' );
-		
-		this.indentation += '\t';
-		
-		var elements = this.enumerations[ name ];
-		
-		elements.forEach( function ( element, index ) {
-			
-			this.write( element + ( index + 1 === elements.length ? '' : ',' ) );
-			
-		}, this );
-		
-		this.indentation = this.indentation.substr( 1 );
-		
-		this.write( '};' );
-		
-	}, this );
-	
 	this.indentation += '\t';
 	this.write( '' );
+	
+	var enumerations = this.enumerations( );
+	
+	if ( enumerations ) {
+		
+		this.write( enumerations );
+		this.write( '' );
+		
+	}
+	
 	this.write( 'virtual ~' + this.infos[ 0 ] + '( void ) { }' );
 	this.write( '' );
 	this.write( this.definitions( ) );
@@ -167,7 +185,7 @@ Class.prototype.close = function ( ) {
 
 function Header( parent, parameter ) {
 	
-	parent.headers.list.push( parameter );
+	parent.headerList.push( parameter );
 	
 }
 
@@ -181,7 +199,7 @@ function Property( parent, parameter ) {
 	
 	var infos = parameter.split( / +: +/ );
 	
-	parent.definitions.list.push( [ infos[ 1 ], infos[ 0 ] ] );
+	parent.definitionList.push( [ infos[ 1 ], infos[ 0 ] ] );
 	
 }
 
@@ -193,7 +211,7 @@ Property.prototype.close = function ( ) {
 
 function Enumeration( parent, parameter ) {
 	
-	this.elements = parent.enumerations[ parameter ] = [ ];
+	this.elements = parent.enumerationMap[ parameter ] = [ ];
 	
 }
 
