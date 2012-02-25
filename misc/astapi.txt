@@ -1,0 +1,271 @@
+= p9
+  = ast
+    @ Literal
+    @ Expression
+    @ Statement
+    @ Declaration : Statement
+      # <p9/ast/Statement.hh>
+    @ Type
+    = type
+      @ Dynamic : p9::ast::Type
+        # <p9/ast/Type.hh>
+      @ Static : p9::ast::Type
+        # <p9/ast/Type.hh>
+        # <memory>
+        # <string>
+        + source : std::auto_ptr< std::string >
+    = string
+      @ Literal : p9::ast::Literal
+        # <p9/ast/Literal.hh>
+        # <memory>
+        # <string>
+        + text : std::auto_ptr< std::string >
+    = number
+      @ Literal : p9::ast::Literal
+        # <p9/ast/Literal.hh>
+        # <memory>
+        + value : std::auto_ptr< float >
+    = array
+      @ Literal : p9::ast::Literal
+        # <p9/ast/Expression.hh>
+        # <p9/ast/Literal.hh>
+        # <boost/ptr_container/ptr_list.hpp>
+        + elements : boost::ptr_list< Expression >
+    = variable
+      @ Declaration : p9::ast::Declaration
+        # <p9/ast/Declaration.hh>
+        # <p9/ast/Expression.hh>
+        # <memory>
+        # <string>
+        + label : std::auto_ptr< std::string >
+        + initialisation : std::auto_ptr< p9::ast::Expression >
+    = klass
+      @ Declaration : p9::ast::Declaration
+        # <p9/ast/klass/Literal.hh>
+        # <p9/ast/Declaration.hh>
+        # <memory>
+        # <string>
+        + label : std::auto_ptr< std::string >
+        + literal : std::auto_ptr< p9::ast::klass::Literal >
+      @ Literal : p9::ast::Literal
+        # <p9/ast/Expression.hh>
+        # <p9/ast/Literal.hh>
+        # <boost/ptr_container/ptr_list.hpp>
+        # <memory>
+        # <string>
+        + inheritance : std::auto_ptr< std::string >
+        + members : boost::ptr_list< p9::ast::Expression >
+      @ Member
+        # <p9/ast/Declaration.hh>
+        # <memory>
+        + visibility : p9::ast::klass::Member::Visibility
+        + declaration : std::auto_ptr< p9::ast::Declaration >
+        ~ Visibility
+          - Public
+          - Private
+    = funktion
+      @ Declaration : p9::ast::Declaration
+        # <p9/ast/funktion/Literal.hh>
+        # <p9/ast/Declaration.hh>
+        # <boost/ptr_container/ptr_list.hpp>
+        # <memory>
+        # <string>
+        + label : std::auto_ptr< std::string >
+        + literal : boost::ptr_list< p9::ast::funktion::Literal >
+      @ Literal : p9::ast::Literal
+        # <p9/ast/funktion/Parameter.hh>
+        # <p9/ast/Literal.hh>
+        # <p9/ast/Statement.hh>
+        # <boost/ptr_container/ptr_list.hpp>
+        + parameters : boost::ptr_list< p9::ast::funktion::Parameter >
+        + body : boost::ptr_list< p9::ast::Statement >
+      @ Parameter
+        # <p9/ast/Type.hh>
+        # <memory>
+        # <string>
+        + label : std::auto_ptr< std::string >
+        + type : std::auto_ptr< p9::ast::Type >
+    = expression
+      = assignment
+        @ General : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + assignee : std::auto_ptr< p9::ast::Expression >
+          + expression : std::auto_ptr< p9::ast::Expression >
+        = compound
+          = numeric
+            @ Addition : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+            @ Substraction : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+            @ Multiplication : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+            @ Division : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+            @ Modulo : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+          = binary
+            @ LeftShift : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+            @ RightShift : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+            @ And : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+            @ Or : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+            @ Exclusive : p9::ast::Expression
+              # <p9/ast/Expression.hh>
+              # <memory>
+              + assignee : std::auto_ptr< p9::ast::Expression >
+              + expression : std::auto_ptr< p9::ast::Expression >
+      = numeric
+        @ Positive : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Negative : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Addition : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Substraction : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Multiplication : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Division : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Modulo : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+      = binary
+        @ LeftShift : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ RightShifr : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ And : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Or : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Exclusive : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Not : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + expression : std::auto_ptr< p9::ast::Expression >
+      = comparison
+        @ Greater : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Lesser : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ GreaterOrEqual : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ LesserOrEqual : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Equal : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Different : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+      = logical
+        @ And : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Or : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + left : std::auto_ptr< p9::ast::Expression >
+          + right : std::auto_ptr< p9::ast::Expression >
+        @ Not : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + expression : std::auto_ptr< p9::ast::Expression >
+      = selector
+        @ Static : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          # <string>
+          + expression : std::auto_ptr< p9::ast::Expression >
+          + selector : std::string *
+        @ Dynamic : p9::ast::Expression
+          # <p9/ast/Expression.hh>
+          # <memory>
+          + expression : std::auto_ptr< p9::ast::Expression >
+          + selector : std::auto_ptr< p9::ast::Expression >
