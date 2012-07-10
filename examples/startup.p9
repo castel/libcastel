@@ -1,8 +1,0 @@
-from Std.Streams import out;
-from Std import endl;
-
-from Tests import NumberGenerator;
-
-NumberGenerator x = new NumberGenerator( );
-out << x.generate( ) << endl;
-out << x.generate( ) << endl;
