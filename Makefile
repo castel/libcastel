@@ -1,67 +1,75 @@
-RAGEL    := ragel
-LEMON    := lemon
-CXX      := g++
-MKDIR    := mkdir
-AR       := ar
-MV       := mv
+LIBRARY  = libp9.a
 
-CXXFLAGS := -g
+CXX      = g++
+AR       = ar
+RAGEL    = ragel
+LEMON    = lemon
+MKDIR    = mkdir
+MV       = mv
+RM       = rm
 
-SRCS     := $(shell find ./sources/ -name '*.cc') ./sources/lexer/Lexer.cc
-OBJS     := $(addprefix ./build/o/,$(SRCS:.cc=.o))
-DEPS     := $(addprefix ./build/d/,$(SRCS:.cc=.d))
+CXXFLAGS = -g
 
-purple   := $(shell printf "\033[35m")
-cyan     := $(shell printf "\033[36m")
-green    := $(shell printf "\033[32m")
-brown    := $(shell printf "\033[33m")
-end      := $(shell printf "\033[00m")
+SRCS     = $(shell find sources -name '*.cc')
+OBJS     = $(addprefix build/objects/,$(SRCS:.cc=.o))
+DEPS     = $(addprefix build/dependencies/,$(SRCS:.cc=.d))
 
-SRCS     := $(sort $(SRCS))
-OBJS     := $(sort $(OBJS))
-DEPS     := $(sort $(DEPS))
+PURPLE   = $(shell printf "\033[35m")
+CYAN     = $(shell printf "\033[36m")
+GREEN    = $(shell printf "\033[32m")
+BROWN    = $(shell printf "\033[33m")
+EOS      = $(shell printf "\033[00m")
 
-all: ./build/libp9.a
+CXXFLAGS += -I./includes -I.
+
+all: $(LIBRARY)
+	@printf "Compilation done, output is build/${LIBRARY}\n"
+
+$(LIBRARY): build/$(LIBRARY)
 
 -include $(DEPS)
 
-./build/libp9.a: ${OBJS}
-	@printf "%s# Merging object files.%s\n" "${purple}" "${end}"
-	@${AR} rcs ./build/libp9.a ${OBJS}
+build/$(LIBRARY): $(OBJS)
+	@printf "%s# Merging object files.%s\n" "${PURPLE}" "${EOS}"
+	@${AR} rcs build/$(LIBRARY) ${OBJS}
 
-./sources/lexer/Lexer.cc: ./sources/lexer/Lexer.rl
-	@printf "%s@ Generating ragel p9 lexer.%s\n" "${cyan}" "${end}"
-	@${RAGEL} -C -o ./sources/lexer/Lexer.cc ./sources/lexer/Lexer.rl
-
-./includes/p9/lexer/LexemeTypes.hh ./sources/parser/parse.cc: ./sources/parser/parse.lm
-	@printf "%s@ Generation lemon p9 parser.%s\n" "${cyan}" "${end}"
-	@${LEMON} ./sources/parser/parse.lm
-	@${RM} ./sources/parser/parse.out
-	@${MV} ./sources/parser/parse.c ./sources/parser/parse.cc
-	@${MV} ./sources/parser/parse.h ./includes/p9/lexer/LexemeTypes.hh
-
-$(DEPS): ./build/d/%.d: %.cc
-	@printf "%s+ Generating dependency file for %s.%s\n" "${green}" "${<}" "${end}"
+build/generated/lexer: sources/lexer/Lexer.rl
+	@printf "%s+ Generating ragel p9 lexer.%s\n" "${CYAN}" "${EOS}"
 	@${MKDIR} -p "$(dir ${@})"
-	@${CXX} -I. -Iincludes/ -MM -MG -MT "$(patsubst build/d/%,build/o/%,$(@:.d=.o))" "${<}" > $(@)
+	@${RAGEL} -C -o build/generated/lexer sources/lexer/Lexer.rl
 
-$(OBJS): ./build/o/%.o: %.cc ./build/d/%.d
-	@printf "%s+ Compiling %s.%s\n" "${green}" "${<}" "${end}"
+build/generated/lexemes build/generated/parser: sources/parser/parse.lm
+	@printf "%s@ Generating lemon p9 parser.%s\n" "${CYAN}" "${EOS}"
 	@${MKDIR} -p "$(dir ${@})"
-	@${CXX} ${CXXFLAGS} -I. -I./includes/ -c -o "${@}" "${<}"
+	@${LEMON} sources/parser/parse.lm
+	@${RM} sources/parser/parse.out
+	@${MV} sources/parser/parse.c build/generated/parser
+	@${MV} sources/parser/parse.h build/generated/lexemes
+
+$(DEPS): build/dependencies/%.d: %.cc
+	@printf "%s+ Generating dependency file for %s.%s\n" "${GREEN}" "${<}" "${EOS}"
+	@${MKDIR} -p "$(dir ${@})"
+	@${CXX} ${CXXFLAGS} -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "${<}" > $(@)
+
+$(OBJS): build/objects/%.o: %.cc
+	@printf "%s+ Compiling %s.%s\n" "${GREEN}" "${<}" "${EOS}"
+	@${MKDIR} -p "$(dir ${@})"
+	@${CXX} ${CXXFLAGS} -c -o "${@}" "${<}"
 
 clean:
-	@printf "%s- Removing object files.%s\n" "${brown}" "${end}"
-	@${RM} -rf ./build/o/
+	@printf "%s- Removing temporary files.%s\n" "${BROWN}" "${EOS}"
+	@${RM} -rf build/generated
+	@${RM} -rf build/objects
+
+clean-dependencies:
+	@printf "%s- Removing dependencies listing.%s\n" "${BROWN}" "${EOS}"
+	@${RM} -rf build/dependencies
 
 fclean: clean
-	@printf "%s- Removing binary files.%s\n" "${brown}" "${end}"
-	@${RM} -rf ./build/libmy.a
+	@printf "%s- Removing binary files.%s\n" "${BROWN}" "${EOS}"
+	@${RM} -rf build/${LIBRARY}
 
-re: fclean all
+re: clean-dependencies fclean
+	@$(MAKE) --no-print-directory all
 
-clean-depends:
-	@printf "%s- Removing dependency files.%s\n" "${brown}" "${end}"
-	@${RM} -rf ./build/d/
-
-.PHONY: all clean fclean re clean-depends
+.PHONY: $(LIBRARY) all clean fclean re clean-depends libp9

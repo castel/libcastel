@@ -1,227 +1,51 @@
-%token_destructor { delete $$; }
-%token_type {lexer::Lexeme*}
-%token_prefix T_
+%token_type       { lexer::Lexeme * }
+%token_destructor { delete $$;      }
+%token_prefix     T_
+
+%left Add Substract.
+%left Multiply Divide Modulo.
 
 %nonassoc Spaces Newline.
+%nonassoc Indent Dedent.
+%nonassoc EOF.
 
 %include {
-  
-  #include <iostream>
-  #include <cassert>
-  
-  #include "p9/lexer/Lexeme.hh"
-  
-  #include "p9/ast/Token.hh"
-  #include "p9/ast/StatementList.hh"
-  #include "p9/ast/Statement.hh"
-  #include "p9/ast/ImportStatement.hh"
-  
-  using namespace p9;
-  
-  static bool p9parserIsValid;
-  static ast::Token * p9parserRootToken;
-  
+
+    #include <iostream>
+    #include <cassert>
+
+    #include "p9/lexer/Lexeme.hh"
+
+    #include "p9/ast/BinaryOperator.hh"
+    #include "p9/ast/Number.hh"
+    #include "p9/ast/Token.hh"
+
+    using namespace p9;
+
+    static bool p9parserIsValid;
+    static ast::Token * p9parserRootToken;
+
 }
 
 %syntax_error {
-	
-  p9parserIsValid = false;
-  
+
+    p9parserIsValid = false;
+
 }
 
-%type program {ast::StatementList*}
-program ::= statementlist(A). { p9parserRootToken = A; }
+%type program { ast::Token * }
+program ::= expression(U). { p9parserRootToken = U; }
 
-%type statementlist {ast::StatementList*}
-statementlist(A) ::= statement(B) statementlist(C). { ( *( A = new ast::StatementList( ) ) ).merge( B ).merge( C ); }
-statementlist(A) ::= .                              { ( *( A = new ast::StatementList( ) ) ); }
+%type expression { ast::Expression * }
+expression(A) ::= binaryoperator(U). { A = U; }
+expression(A) ::= numberliteral(U).  { A = U; }
 
-%type statement {ast::Statement*}
-statement(A) ::= declarationstatement. { A = 0; }
-statement(A) ::= importstatement(B).   { A = B; }
-statement(A) ::= returnstatement.      { A = 0; }
-statement(A) ::= expressionstatement.  { A = 0; }
-statement(A) ::= emptystatement.       { A = 0; }
+%type binaryoperator { ast::BinaryOperator * }
+binaryoperator(A) ::= expression(U) Add       expression(V). { A = new ast::BinaryOperator( T_Add,       U, V ); }
+binaryoperator(A) ::= expression(U) Substract expression(V). { A = new ast::BinaryOperator( T_Substract, U, V ); }
+binaryoperator(A) ::= expression(U) Multiply  expression(V). { A = new ast::BinaryOperator( T_Multiply,  U, V ); }
+binaryoperator(A) ::= expression(U) Divide    expression(V). { A = new ast::BinaryOperator( T_Divide,    U, V ); }
+binaryoperator(A) ::= expression(U) Modulo    expression(V). { A = new ast::BinaryOperator( T_Modulo,    U, V ); }
 
-block ::= LBrace statementlist RBrace.
-
-declarationstatement ::= variabledeclaration.
-declarationstatement ::= functiondeclaration.
-declarationstatement ::= classdeclaration.
-
-%type importstatement {ast::ImportStatement*}
-importstatement(A) ::= fromclause(B) importclause(C) asclause(D) Semicolon. { ( *( A = new ast::ImportStatement( ) ) ).setFromClause( B ).setImportClause( C ).setAsClause( D ); }
-importstatement(A) ::= fromclause(B) importclause(C) Semicolon.             { ( *( A = new ast::ImportStatement( ) ) ).setFromClause( B ).setImportClause( C ); }
-importstatement(A) ::= importclause(B) asclause(C) Semicolon.               { ( *( A = new ast::ImportStatement( ) ) ).setImportClause( B ).setAsClause( C ); }
-importstatement(A) ::= importclause(B) Semicolon.                           { ( *( A = new ast::ImportStatement( ) ) ).setImportClause( B ); }
-
-%type fromclause {std::list<std::string>*}
-fromclause ::= From importpath.
-
-%type importpath {std::list<std::string>*}
-importpath ::= Identifier importpathnext.
-
-%type importpathnext { std::list< std::string > * }
-importpathnext ::= Dot importpath.
-importpathnext ::= .
-
-%type importclause { std::string * }
-importclause(A) ::= Import Identifier(B). { ( *( A = new std::string( B->text( ) ) ) ); delete B; }
-
-%type asclause { std::string * }
-asclause(A) ::= As Identifier(B). { ( *( A = new std::string( B->text( ) ) ) ); delete B; }
-
-returnstatement ::= Return Semicolon.
-returnstatement ::= Return expression Semicolon.
-
-expressionstatement ::= expression Semicolon.
-
-emptystatement ::= Semicolon.
-
-variabledeclaration ::= type Identifier Semicolon.
-variabledeclaration ::= type Identifier Assign expression Semicolon.
-
-type ::= Mixed.
-type ::= Identifier.
-
-functiondeclaration ::= Function Identifier declarationarguments block.
-functiondeclaration ::= Function Identifier declarationarguments Colon type block.
-
-declarationarguments ::= LParenthesis RParenthesis.
-declarationarguments ::= LParenthesis Void RParenthesis.
-declarationarguments ::= LParenthesis argumentlist RParenthesis.
-
-argumentlist ::= argument.
-argumentlist ::= argumentlist Comma argument.
-
-argument ::= Identifier Colon type.
-
-classdeclaration ::= Class Identifier classblock.
-
-classblock ::= LBrace memberdeclaration RBrace.
-
-memberdeclaration ::= membervariabledeclaration memberdeclaration.
-memberdeclaration ::= memberfunctiondeclaration memberdeclaration.
-memberdeclaration ::= .
-
-membervariabledeclaration ::= visibility variabledeclaration.
-memberfunctiondeclaration ::= visibility functiondeclaration.
-
-visibility ::= Public.
-visibility ::= Private.
-
-expression ::= expressionlvl13.
-
-expressionlvl13 ::= expressionlvl12.
-expressionlvl13 ::= expressionlvl12 Assign expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignNumericAddition expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignNumericSubstraction expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignNumericMultiplication expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignNumericDivision expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignNumericModulo expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignBinaryAnd expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignBinaryOr expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignBinaryXor expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignBinaryLShift expressionlvl13.
-expressionlvl13 ::= expressionlvl12 AssignBinaryRShift expressionlvl13.
-
-expressionlvl12 ::= expressionlvl11.
-expressionlvl12 ::= expressionlvl11 LogicalOr expressionlvl12.
-
-expressionlvl11 ::= expressionlvl10.
-expressionlvl11 ::= expressionlvl10 LogicalAnd expressionlvl11.
-
-expressionlvl10 ::= expressionlvl09.
-expressionlvl10 ::= expressionlvl09 BinaryOr expressionlvl10.
-
-expressionlvl09 ::= expressionlvl08.
-expressionlvl09 ::= expressionlvl08 BinaryXor expressionlvl09.
-
-expressionlvl08 ::= expressionlvl07.
-expressionlvl08 ::= expressionlvl07 BinaryAnd expressionlvl08.
-
-expressionlvl07 ::= expressionlvl06.
-expressionlvl07 ::= expressionlvl06 RelationalEqual expressionlvl07.
-expressionlvl07 ::= expressionlvl06 RelationalDifferent expressionlvl07.
-
-expressionlvl06 ::= expressionlvl05.
-expressionlvl06 ::= expressionlvl05 RelationalLesser expressionlvl06.
-expressionlvl06 ::= expressionlvl05 RelationalGreater expressionlvl06.
-expressionlvl06 ::= expressionlvl05 RelationalLesserOrEqual expressionlvl06.
-expressionlvl06 ::= expressionlvl05 RelationalGreaterOrEqual expressionlvl06.
-
-expressionlvl05 ::= expressionlvl04.
-expressionlvl05 ::= expressionlvl04 BinaryLShift expressionlvl05.
-expressionlvl05 ::= expressionlvl04 BinaryRShift expressionlvl05.
-
-expressionlvl04 ::= expressionlvl03.
-expressionlvl04 ::= expressionlvl03 NumericAddition expressionlvl04.
-expressionlvl04 ::= expressionlvl03 NumericSubstraction expressionlvl04.
-
-expressionlvl03 ::= expressionlvl02.
-expressionlvl03 ::= expressionlvl02 NumericMultiplication expressionlvl03.
-expressionlvl03 ::= expressionlvl02 NumericDivision expressionlvl03.
-expressionlvl03 ::= expressionlvl02 NumericModulo expressionlvl03.
-
-expressionlvl02 ::= expressionlvl01.
-expressionlvl02 ::= Increment expressionlvl01.
-expressionlvl02 ::= Decrement expressionlvl01.
-expressionlvl02 ::= NumericAddition expressionlvl01.
-expressionlvl02 ::= NumericSubstraction expressionlvl01.
-expressionlvl02 ::= BinaryNot expressionlvl01.
-expressionlvl02 ::= LogicalNot expressionlvl01.
-
-expressionlvl01 ::= expressionlvl00.
-expressionlvl01 ::= expressionlvl00 Increment.
-expressionlvl01 ::= expressionlvl00 Decrement.
-
-expressionlvl00 ::= selectorexpression.
-expressionlvl00 ::= callexpression.
-expressionlvl00 ::= newexpression.
-
-selectorexpression ::= primaryexpression.
-selectorexpression ::= selectorexpression Dot Identifier.
-selectorexpression ::= selectorexpression LBracket expression RBracket.
-
-callexpression ::= selectorexpression callarguments.
-
-newexpression ::= New selectorexpression callarguments.
-
-callarguments ::= LParenthesis RParenthesis.
-callarguments ::= LParenthesis expressionlist RParenthesis.
-
-expressionlist ::= expression.
-expressionlist ::= expressionlist Comma expression.
-
-primaryexpression ::= literal.
-primaryexpression ::= This.
-primaryexpression ::= Super.
-primaryexpression ::= Identifier.
-primaryexpression ::= LParenthesis expression RParenthesis.
-
-literal ::= numberliteral.
-literal ::= stringliteral.
-literal ::= arrayliteral.
-literal ::= objectliteral.
-literal ::= functionliteral.
-literal ::= classliteral.
-
-numberliteral ::= Number.
-
-stringliteral ::= String.
-
-arrayliteral ::= LBracket RBracket.
-arrayliteral ::= LBracket expressionlist RBracket.
-
-objectliteral ::= LBrace RBrace.
-objectliteral ::= LBrace pairlist RBrace.
-
-pairlist ::= pair.
-pairlist ::= pairlist Comma pair.
-
-pair ::= Identifier Colon expression.
-
-functionliteral ::= Function declarationarguments block.
-functionliteral ::= Function declarationarguments Colon type block.
-
-classliteral ::= Class classblock.
+%type numberliteral { ast::Number * }
+numberliteral(A) ::= Number(U). { A = new ast::Number(*U); }

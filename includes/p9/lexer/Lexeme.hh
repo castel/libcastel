@@ -1,55 +1,73 @@
 #pragma once
 
 #include <string>
+#include <sstream>
+
+#include "p9/lexer/Position.hh"
 
 namespace p9
 {
-	
-	namespace lexer
-	{
-		
-		class Lexeme {
-			
-		public:
-			
-			Lexeme( void )
-			: _type( 0 )
-			{
-			}
-			
-			Lexeme( int type, char const * s, std::size_t n )
-			: _type( type )
-			, _text( s, n )
-			{
-			}
-			
-		public:
-			
-			bool eof( void ) const
-			{
-				return _type == 0;
-			}
-			
-		public:
-			
-			int type( void ) const
-			{
-				return _type;
-			}
-			
-			std::string const & text( void ) const
-			{
-				return _text;
-			}
-			
-		private:
-			
-			int _type;
-			
-			std::string _text;
-			
-		};
-		
-	}
-	
+
+    namespace lexer
+    {
+
+        class Lexeme {
+
+        public:
+
+            Lexeme      ( int type, lexer::Position position = lexer::Position( ) )
+            : mType     ( type     )
+            , mText     (          )
+            , mPosition ( position )
+            {
+            }
+
+            Lexeme      ( int type, std::string const & text, lexer::Position position )
+            : mType     ( type     )
+            , mText     ( text     )
+            , mPosition ( position )
+            {
+            }
+
+        public:
+
+            int type( void ) const
+            {
+                return mType;
+            }
+
+            lexer::Position const & position( void ) const
+            {
+                return mPosition;
+            }
+
+        public:
+
+            template < typename T >
+            T as( void ) const
+            {
+                T output;
+                std::istringstream sstream( mText );
+                sstream >> output;
+                return output;
+            }
+
+        private:
+
+            int mType;
+
+            std::string mText;
+
+            lexer::Position mPosition;
+
+        };
+
+        template < >
+        inline std::string Lexeme::as< std::string >( void ) const
+        {
+            return mText;
+        }
+
+    }
+
 }

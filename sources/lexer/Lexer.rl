@@ -1,9 +1,10 @@
 #include <iostream>
 #include <iterator>
 
-#include "includes/p9/lexer/LexemeTypes.hh"
+#include "build/generated/lexemes"
 
 #include "p9/lexer/Exception.hh"
+#include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Lexer.hh"
 
 using namespace p9;
@@ -13,217 +14,182 @@ using namespace p9::lexer;
 %% write data;
 
 Lexer::Lexer( char const * p, std::size_t n )
-: mP( p )
-, mPe( mP + n )
-, mEof( mPe )
-, mTs( 0 )
-, mTe( 0 )
-, mCs( 0 )
-, mAct( mCs )
-, mPosition( 1, 1 )
+    : mP              ( p      )
+    , mPe             ( mP + n )
+    , mEof            ( mPe    )
+    , mTs             ( 0      )
+    , mTe             ( 0      )
+    , mCs             ( 0      )
+    , mAct            ( mCs    )
+    , mPendingLexemes (        )
+    , mLastNewline    (        )
+    , mCurrentLevel   ( 0      )
+    , mPosition       ( 1, 1   )
 {
 }
 
 Lexeme * Lexer::consume( void )
 {
-	%%{
-		Increment = "++" ;
-		Decrement = "--" ;
-		
-		Assign = "=";
-		
-		AssignNumericAddition = "+=";
-		AssignNumericSubstraction = "-=";
-		AssignNumericMultiplication = "*=";
-		AssignNumericDivision = "/=";
-		AssignNumericModulo = "%=";
-		
-		AssignBinaryAnd = "&=";
-		AssignBinaryOr = "|=";
-		AssignBinaryXor = "^=";
-		AssignBinaryLShift = "<<=";
-		AssignBinaryRShift = ">>=";
-		
-		NumericAddition = "+";
-		NumericSubstraction = "-";
-		NumericMultiplication = "*";
-		NumericDivision = "/";
-		NumericModulo = "%";
-		
-		BinaryNot = "~";
-		BinaryAnd = "&";
-		BinaryOr = "|";
-		BinaryXor = "^";
-		BinaryLShift = "<<";
-		BinaryRShift = ">>";
-		
-		LogicalNot = "!";
-		LogicalAnd = "&&";
-		LogicalOr = "||";
-		
-		RelationalEqual = "==";
-		RelationalDifferent = "!=";
-		RelationalLesser = "<";
-		RelationalGreater = ">";
-		RelationalLesserOrEqual = "<=";
-		RelationalGreaterOrEqual = ">=";
-		
-		LBrace = "{";
-		RBrace = "}";
-		
-		LParenthesis = "(";
-		RParenthesis = ")";
-		
-		LBracket = "[";
-		RBracket = "]";
-		
-		Dot = ".";
-		Comma = ",";
-		Semicolon = ";";
-		Colon = ":";
-		
-		Mixed = "mixed";
-		Void = "void";
-		
-		This = "this";
-		Super = "super";
+    %%{
 
-		New = "new";
+        Add       = '+';
+        Substract = '-';
+        Multiply  = '*';
+        Divide    = '/';
+        Modulo    = '%';
 
-		Function = "function";
-		Class = "class";
+        Number = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+);
 
-		Public = "public";
-		Private = "private";
+        Spaces = [ ]+;
+        Newline = ('\r''\n'|'\r'|'\n')('\t'*);
 
-		Import = "import";
-		From = "from";
-		As = "as";
+        main := |*
 
-		Return = "return";
+            Add       => { type = T_Add;       fbreak; };
+            Substract => { type = T_Substract; fbreak; };
+            Multiply  => { type = T_Multiply;  fbreak; };
+            Divide    => { type = T_Divide;    fbreak; };
+            Modulo    => { type = T_Modulo;    fbreak; };
 
-		Identifier = [a-zA-Z]([a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z0-9]*);
-		Number = "0x"[0-9a-fA-F]|'0'[0-7]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+;
-		String = "\"\"";
-		
-		Spaces = [ \t]+;
-        Newline = '\r''\n'|'\r'|'\n';
-		
-		main := |*
-			
-			Increment => { type = T_Increment; fbreak; };
-			Decrement => { type = T_Decrement; fbreak; };
-			Assign => { type = T_Assign; fbreak; };
-			
-			AssignNumericAddition => { type = T_AssignNumericAddition; fbreak; };
-			AssignNumericSubstraction => { type = T_AssignNumericSubstraction; fbreak; };
-			AssignNumericMultiplication => { type = T_AssignNumericMultiplication; fbreak; };
-			AssignNumericDivision => { type = T_AssignNumericDivision; fbreak; };
-			AssignNumericModulo => { type = T_AssignNumericModulo; fbreak; };
-			
-			AssignBinaryAnd => { type = T_AssignBinaryAnd; fbreak; };
-			AssignBinaryOr => { type = T_AssignBinaryOr; fbreak; };
-			AssignBinaryXor => { type = T_AssignBinaryXor; fbreak; };
-			AssignBinaryLShift => { type = T_AssignBinaryLShift; fbreak; };
-			AssignBinaryRShift => { type = T_AssignBinaryRShift; fbreak; };
-			
-			NumericAddition => { type = T_NumericAddition; fbreak; };
-			NumericSubstraction => { type = T_NumericSubstraction; fbreak; };
-			NumericMultiplication => { type = T_NumericMultiplication; fbreak; };
-			NumericDivision => { type = T_NumericDivision; fbreak; };
-			NumericModulo => { type = T_NumericModulo; fbreak; };
-			
-			BinaryNot => { type = T_BinaryNot; fbreak; };
-			BinaryAnd => { type = T_BinaryAnd; fbreak; };
-			BinaryOr => { type = T_BinaryOr; fbreak; };
-			BinaryXor => { type = T_BinaryXor; fbreak; };
-			BinaryLShift => { type = T_BinaryLShift; fbreak; };
-			BinaryRShift => { type = T_BinaryRShift; fbreak; };
-			
-			LogicalNot => { type = T_LogicalNot; fbreak; };
-			LogicalAnd => { type = T_LogicalAnd; fbreak; };
-			LogicalOr => { type = T_LogicalOr; fbreak; };
-			
-			RelationalEqual => { type = T_RelationalEqual; fbreak; };
-			RelationalDifferent => { type = T_RelationalDifferent; fbreak; };
-			RelationalLesser => { type = T_RelationalLesser; fbreak; };
-			RelationalGreater => { type = T_RelationalGreater; fbreak; };
-			RelationalLesserOrEqual => { type = T_RelationalLesserOrEqual; fbreak; };
-			RelationalGreaterOrEqual => { type = T_RelationalGreaterOrEqual; fbreak; };
-			
-			LBrace => { type = T_LBrace; fbreak; };
-			RBrace => { type = T_RBrace; fbreak; };
-			
-			LParenthesis => { type = T_LParenthesis; fbreak; };
-			RParenthesis => { type = T_RParenthesis; fbreak; };
-			
-			LBracket => { type = T_LBracket; fbreak; };
-			RBracket => { type = T_RBracket; fbreak; };
-			
-			Dot => { type = T_Dot; fbreak; };
-			Comma => { type = T_Comma; fbreak; };
-			Semicolon => { type = T_Semicolon; fbreak; };
-			Colon => { type = T_Colon; fbreak; };
-			
-			Mixed => { type = T_Mixed; fbreak; };
-			Void => { type = T_Void; fbreak; };
+            Number    => { type = T_Number; fbreak; };
+            Spaces    => { type = T_Spaces; fbreak; };
 
-			This => { type = T_This; fbreak; };
-			Super => { type = T_Super; fbreak; };
+            Newline   => { type = T_Newline; fbreak; };
 
-			New => { type = T_New; fbreak; };
+            any       => { fbreak; };
 
-			Function => { type = T_Function; fbreak; };
-			Class => { type = T_Class; fbreak; };
+        *|;
 
-			Public => { type = T_Public; fbreak; };
-			Private => { type = T_Private; fbreak; };
+    }%%;
 
-			Import => { type = T_Import; fbreak; };
-			From => { type = T_From; fbreak; };
-			As => { type = T_As; fbreak; };
-			
-			Return => { type = T_Return; fbreak; };
-			
-			Identifier => { type = T_Identifier; fbreak; };
-			Number => { type = T_Number; fbreak; };
-			String => { type = T_String; fbreak; };
-			
-			Spaces => { type = T_Spaces; fbreak; };
-			Newline => { type = T_Newline; fbreak; };
-			
-			any => { fbreak; };
-			
-		*|;
-	}%%;
-	
-	%% variable p mP;
-	%% variable pe mPe;
-	%% variable eof mEof;
-	
-	%% variable ts mTs;
-	%% variable te mTe;
-	
-	%% variable cs mCs;
-	%% variable act mAct;
-	
-	if ( mP == mPe )
-		return new Lexeme( );
-	
-	int type = 0;
-	
-	%% write init;
-	%% write exec;
-	
-	if ( ! type )
-		throw Exception( position( ), "Invalid symbol" );
-	
-	unsigned int size = mTe - mTs;
-	
-	if ( type == T_Newline )
-		mPosition.first = 1, ++ mPosition.second;
-	else
-		mPosition.first += size;
-	
-	return new Lexeme( type, mTs, size );
+    // Nommage des diverses variables de Ragel. Nous utilisons
+    // des variables membres afin de conserver l'état de la machine
+    // entre les appels à la méthode consume()
+
+    %% variable p   mP   ;
+    %% variable pe  mPe  ;
+    %% variable eof mEof ;
+
+    %% variable ts  mTs  ;
+    %% variable te  mTe  ;
+
+    %% variable cs  mCs  ;
+    %% variable act mAct ;
+
+    // Tant que des lexemes n'ont pas été consommés,
+    // pas besoin de lancer la machine
+
+    if ( ! mPendingLexemes.empty( ) ) {
+
+        lexer::Lexeme * lexeme = mPendingLexemes.front( );
+        mPendingLexemes.pop( );
+
+        return lexeme;
+
+    }
+
+    // Si l'on est à la fin de la chaine d'entrée, on
+    // renvoie un jeton de fin d'entrée
+
+    if ( mP == mPe ) {
+
+        if ( mCurrentLevel ) {
+
+            -- mCurrentLevel;
+
+            return new lexer::Lexeme( T_Dedent, mPosition );
+
+        } else {
+
+            return new lexer::Lexeme( T_EOF, mPosition );
+
+        }
+
+    }
+
+    // Variable qui contiendra le type du lexème à la fin
+    // de l'exécution de la machine
+
+    int type = 0;
+
+    // Lancement de la machine
+
+    %% write init;
+    %% write exec;
+
+    // Si le symbole est inconnu, on jette une exception
+
+    if ( ! type )
+        throw lexer::Exception( "Invalid symbol" );
+
+    // Calcul de la taille total du texte contenu dans le lexème
+
+    unsigned int size = mTe - mTs;
+
+    // Modification de la position interne de la machine. N'est
+    // utilisé qu'à des fins informatives (par exemple en cas d'erreur
+    // de parsing)
+
+    if ( type == T_Newline ) {
+
+        mPosition.line += 1;
+        mPosition.column = size;
+
+
+        if ( size >= 2 && mTs[ 0 ] == '\r' && mTs[ 1 ] == '\n' ) {
+            mPosition.column -= 2;
+        } else {
+            mPosition.column -= 1;
+        }
+
+    } else {
+
+        mPosition.column += size;
+
+    }
+
+    // Construction du lexème à partir des informations récupérées par
+    // la machine
+
+    lexer::Lexeme * lexeme = new lexer::Lexeme( type, std::string( mTs, size ), mPosition );
+
+    // Si le lexème est une nouvelle ligne, on l'enregistre puis on
+    // vérifie le type du lexème suivant
+
+    if ( lexeme->type( ) == T_Newline ) {
+
+        mLastNewline.reset( lexeme );
+
+        return this->consume( );
+
+    }
+
+    // Si le lexème n'est pas une nouvelle ligne et qu'une nouvelle ligne
+    // a déjà été trouvée, nous générons les incrémentations ou décrémentations
+    // qui s'imposent
+
+    if ( mLastNewline.get( ) ) {
+
+        std::string str = mLastNewline->as< std::string >( );
+
+        std::size_t start = str.find_first_of( '\t' );
+        std::size_t end = str.find_last_of( '\t' );
+        unsigned int level = start != std::string::npos ? 1 + end - start : 0;
+
+        for ( ; mCurrentLevel < level; ++ mCurrentLevel )
+            mPendingLexemes.push( new lexer::Lexeme( T_Indent, mLastNewline->position( ) ) );
+        for ( ; mCurrentLevel > level; -- mCurrentLevel )
+            mPendingLexemes.push( new lexer::Lexeme( T_Dedent, mLastNewline->position( ) ) );
+
+        mPendingLexemes.push( lexeme );
+        mLastNewline.reset( );
+
+        return this->consume( );
+
+    }
+
+    // Pas de comportement spécial relatif à l'offside rule, nous pouvons
+    // renvoyer le lexème généré.
+
+    return lexeme;
 }
