@@ -2,6 +2,8 @@
 
 #include "p9/ast/Expression.hh"
 #include "p9/ast/Visitor.hh"
+#include "p9/lexer/Lexeme.hh"
+#include "p9/lexer/Type.hh"
 
 namespace p9
 {
@@ -15,9 +17,9 @@ namespace p9
         public:
 
             BinaryOperator ( void )
-            : mType        ( 0 )
-            , mLeft        (   )
-            , mRight       (   )
+            : mType        ( lexer::T_Invalid )
+            , mLeft        (                  )
+            , mRight       (                  )
             {
             }
 
@@ -28,7 +30,7 @@ namespace p9
             {
             }
 
-            BinaryOperator ( int type, ast::Expression * left = 0, ast::Expression * right = 0 )
+            BinaryOperator ( lexer::Type type, ast::Expression * left = 0, ast::Expression * right = 0 )
             : mType        ( type  )
             , mLeft        ( left  )
             , mRight       ( right )
@@ -37,12 +39,12 @@ namespace p9
 
         public:
 
-            int type( void ) const
+            lexer::Type type( void ) const
             {
                 return mType;
             }
 
-            BinaryOperator & type( int type )
+            BinaryOperator & type( lexer::Type type )
             {
                 mType = type;
 
@@ -96,7 +98,7 @@ namespace p9
 
         private:
 
-            int mType;
+            lexer::Type mType;
 
             std::auto_ptr< ast::Expression > mLeft;
             std::auto_ptr< ast::Expression > mRight;

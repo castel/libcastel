@@ -38,13 +38,13 @@ build/generated/lexer: sources/lexer/Lexer.rl
 	@${MKDIR} -p "$(dir ${@})"
 	@${RAGEL} -C -o build/generated/lexer sources/lexer/Lexer.rl
 
-build/generated/lexemes build/generated/parser: sources/parser/parse.lm
+build/generated/parser: sources/parser/parse.lm
 	@printf "%s@ Generating lemon p9 parser.%s\n" "${CYAN}" "${EOS}"
 	@${MKDIR} -p "$(dir ${@})"
 	@${LEMON} sources/parser/parse.lm
 	@${RM} sources/parser/parse.out
+	@${RM} sources/parser/parse.h
 	@${MV} sources/parser/parse.c build/generated/parser
-	@${MV} sources/parser/parse.h build/generated/lexemes
 
 $(DEPS): build/dependencies/%.d: %.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "${GREEN}" "${<}" "${EOS}"

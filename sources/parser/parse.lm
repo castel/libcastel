@@ -1,24 +1,23 @@
-%token_type       { lexer::Lexeme * }
-%token_destructor { delete $$;      }
-%token_prefix     T_
+%token_prefix     { lexer::lexer::T_ }
+%token_type       { lexer::Lexeme *  }
+%token_destructor { delete $$;       }
 
 %left Add Substract.
 %left Multiply Divide Modulo.
 
 %nonassoc Spaces Newline.
 %nonassoc Indent Dedent.
-%nonassoc EOF.
 
 %include {
 
     #include <iostream>
     #include <cassert>
 
-    #include "p9/lexer/Lexeme.hh"
-
     #include "p9/ast/BinaryOperator.hh"
     #include "p9/ast/Number.hh"
     #include "p9/ast/Token.hh"
+    #include "p9/lexer/Lexeme.hh"
+    #include "p9/lexer/Type.hh"
 
     using namespace p9;
 
@@ -41,11 +40,11 @@ expression(A) ::= binaryoperator(U). { A = U; }
 expression(A) ::= numberliteral(U).  { A = U; }
 
 %type binaryoperator { ast::BinaryOperator * }
-binaryoperator(A) ::= expression(U) Add       expression(V). { A = new ast::BinaryOperator( T_Add,       U, V ); }
-binaryoperator(A) ::= expression(U) Substract expression(V). { A = new ast::BinaryOperator( T_Substract, U, V ); }
-binaryoperator(A) ::= expression(U) Multiply  expression(V). { A = new ast::BinaryOperator( T_Multiply,  U, V ); }
-binaryoperator(A) ::= expression(U) Divide    expression(V). { A = new ast::BinaryOperator( T_Divide,    U, V ); }
-binaryoperator(A) ::= expression(U) Modulo    expression(V). { A = new ast::BinaryOperator( T_Modulo,    U, V ); }
+binaryoperator(A) ::= expression(U) Add       expression(V). { A = new ast::BinaryOperator( lexer::T_Add,       U, V ); }
+binaryoperator(A) ::= expression(U) Substract expression(V). { A = new ast::BinaryOperator( lexer::T_Substract, U, V ); }
+binaryoperator(A) ::= expression(U) Multiply  expression(V). { A = new ast::BinaryOperator( lexer::T_Multiply,  U, V ); }
+binaryoperator(A) ::= expression(U) Divide    expression(V). { A = new ast::BinaryOperator( lexer::T_Divide,    U, V ); }
+binaryoperator(A) ::= expression(U) Modulo    expression(V). { A = new ast::BinaryOperator( lexer::T_Modulo,    U, V ); }
 
 %type numberliteral { ast::Number * }
 numberliteral(A) ::= Number(U). { A = new ast::Number(*U); }

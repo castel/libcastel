@@ -1,11 +1,10 @@
 #include <iostream>
 #include <iterator>
 
-#include "build/generated/lexemes"
-
 #include "p9/lexer/Exception.hh"
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Lexer.hh"
+#include "p9/lexer/Type.hh"
 
 using namespace p9;
 using namespace p9::lexer;
@@ -110,7 +109,7 @@ Lexeme * Lexer::consume( void )
     // Variable qui contiendra le type du lexème à la fin
     // de l'exécution de la machine
 
-    int type = 0;
+    lexer::Type type = lexer::T_Invalid;
 
     // Lancement de la machine
 
@@ -119,7 +118,7 @@ Lexeme * Lexer::consume( void )
 
     // Si le symbole est inconnu, on jette une exception
 
-    if ( ! type )
+    if ( type == lexer::T_Invalid )
         throw lexer::Exception( "Invalid symbol" );
 
     // Calcul de la taille total du texte contenu dans le lexème

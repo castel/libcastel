@@ -1,10 +1,9 @@
 #include <cstdlib>
 #include <memory>
 
-#include "build/generated/lexemes"
-
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Lexer.hh"
+#include "p9/lexer/Type.hh"
 #include "p9/parser/Exception.hh"
 #include "p9/parser/Parser.hh"
 
@@ -27,16 +26,16 @@ ast::Token * Parser::exec( void )
  loop:
     lexeme.reset( mLexer.consume( ) );
 
-    if ( lexeme->type( ) == T_Spaces || lexeme->type( ) == T_Newline )
+    if ( lexeme->type( ) == lexer::T_Spaces || lexeme->type( ) == lexer::T_Newline )
         goto loop;
 
     p9parserIsValid = true;
-    Parse( lemonParser, lexeme->type( ) != T_EOF ? lexeme->type( ) : 0, lexeme.get( ) );
+    Parse( lemonParser, lexeme->type( ), lexeme.get( ) );
 
     if ( ! p9parserIsValid )
         goto syntaxError;
 
-    if ( lexeme->type( ) == T_EOF )
+    if ( lexeme->type( ) == lexer::T_EOF )
         goto endOfFile;
 
     lexeme.release( );

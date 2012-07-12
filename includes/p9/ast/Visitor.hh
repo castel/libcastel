@@ -16,8 +16,12 @@ namespace p9
 
         public:
 
-            virtual void visit( BinaryOperator & ) = 0;
-            virtual void visit( Number         & ) = 0;
+            virtual ~Visitor( void ) {}
+
+        public:
+
+            virtual void visit( ast::BinaryOperator & ) = 0;
+            virtual void visit( ast::Number         & ) = 0;
 
         };
 

@@ -2,6 +2,7 @@
 
 #include "p9/ast/Expression.hh"
 #include "p9/ast/Visitor.hh"
+#include "p9/lexer/Lexeme.hh"
 
 namespace p9
 {
