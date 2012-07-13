@@ -14,7 +14,7 @@
     #include <cassert>
 
     #include "p9/ast/expr/Binary.hh"
-    #include "p9/ast/Number.hh"
+    #include "p9/ast/expr/Number.hh"
     #include "p9/ast/Token.hh"
     #include "p9/lexer/Lexeme.hh"
     #include "p9/lexer/Type.hh"
@@ -46,5 +46,5 @@ binaryoperator(A) ::= expression(U) Multiply  expression(V). { A = new ast::expr
 binaryoperator(A) ::= expression(U) Divide    expression(V). { A = new ast::expr::Binary( lexer::T_Divide,    U, V ); }
 binaryoperator(A) ::= expression(U) Modulo    expression(V). { A = new ast::expr::Binary( lexer::T_Modulo,    U, V ); }
 
-%type numberliteral { ast::Number * }
-numberliteral(A) ::= Number(U). { A = new ast::Number(*U); }
+%type numberliteral { ast::expr::Number * }
+numberliteral(A) ::= Number(U). { A = new ast::expr::Number(*U); }

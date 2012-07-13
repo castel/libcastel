@@ -6,11 +6,10 @@ namespace p9
     namespace ast
     {
 
-        class Number;
-
         namespace expr
         {
             class Binary;
+            class Number;
         }
 
         namespace stmt
@@ -32,7 +31,7 @@ namespace p9
         public:
 
             virtual void visit( ast::expr::Binary & ) = 0;
-            virtual void visit( ast::Number       & ) = 0;
+            virtual void visit( ast::expr::Number & ) = 0;
 
         };
 
