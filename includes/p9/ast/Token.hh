@@ -1,12 +1,12 @@
 #pragma once
 
+#include "p9/utils/Visitor.hh"
+
 namespace p9
 {
 
     namespace ast
     {
-
-        class Visitor;
 
         class Token
         {
@@ -17,7 +17,7 @@ namespace p9
 
         public:
 
-            virtual void accept( Visitor & visitor ) = 0;
+            virtual void accept( utils::Visitor & visitor ) = 0;
 
         };
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "p9/ast/Token.hh"
-
 namespace p9
 {
 
@@ -18,6 +16,11 @@ namespace p9
         namespace stmt
         {
         }
+
+    }
+
+    namespace utils
+    {
 
         class Visitor
         {

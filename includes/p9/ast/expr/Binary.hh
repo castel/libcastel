@@ -1,9 +1,9 @@
 #pragma once
 
 #include "p9/ast/Expression.hh"
-#include "p9/ast/Visitor.hh"
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Type.hh"
+#include "p9/utils/Visitor.hh"
 
 namespace p9
 {
@@ -87,7 +87,7 @@ namespace p9
 
             public:
 
-                virtual void accept( Visitor & visitor )
+                virtual void accept( utils::Visitor & visitor )
                 {
                     visitor.visit( *this );
                 }
