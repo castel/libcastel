@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "p9/ast/Expression.hh"
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Type.hh"
