@@ -27,7 +27,7 @@ namespace p9
             {
                 mNext.reset( next );
 
-                return *this;
+                return static_cast< T& >( *this );
             }
 
             T * takeNext( void )
