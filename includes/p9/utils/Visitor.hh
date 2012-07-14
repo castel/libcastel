@@ -17,6 +17,7 @@ namespace p9
         namespace stmt
         {
             class Expression;
+            class Return;
         }
 
     }
@@ -39,6 +40,7 @@ namespace p9
             virtual void visit( ast::expr::Number   & ) = 0;
 
             virtual void visit( ast::stmt::Expression & ) = 0;
+            virtual void visit( ast::stmt::Return     & ) = 0;
 
         };
 

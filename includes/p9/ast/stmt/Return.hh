@@ -15,33 +15,33 @@ namespace p9
         namespace stmt
         {
 
-            class Expression : public ast::Statement
+            class Return : public ast::Statement
             {
 
             public:
 
-                Expression    ( ast::Expression * expression = nullptr )
-                : mExpression ( expression )
+                Return         ( ast::Expression * returnValue = nullptr )
+                : mReturnValue ( returnValue )
                 {
                 }
 
             public:
 
-                ast::Expression * expression( void ) const
+                ast::Expression * returnValue( void ) const
                 {
-                    return mExpression.get( );
+                    return mReturnValue.get( );
                 }
 
-                Expression & expression( ast::Expression * expression )
+                Return & returnValue( ast::Expression * returnValue )
                 {
-                    mExpression.reset( expression );
+                    mReturnValue.reset( returnValue );
 
                     return *this;
                 }
 
-                ast::Expression * takeExpression( void )
+                ast::Expression * takeReturnValue( void )
                 {
-                    return mExpression.release( );
+                    return mReturnValue.release( );
                 }
 
             public:
@@ -53,7 +53,7 @@ namespace p9
 
             private:
 
-                std::unique_ptr< ast::Expression > mExpression;
+                std::unique_ptr< ast::Expression > mReturnValue;
 
             };
 
