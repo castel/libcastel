@@ -44,10 +44,10 @@ protected:
 
 private:
 
-    std::auto_ptr< std::string > mSource;
+    std::unique_ptr< std::string > mSource;
 
-    std::auto_ptr< p9::lexer::Lexer > mLexer;
+    std::unique_ptr< p9::lexer::Lexer > mLexer;
 
-    std::auto_ptr< p9::parser::Parser > mParser;
+    std::unique_ptr< p9::parser::Parser > mParser;
 
 };

@@ -20,7 +20,7 @@ GREEN    = $(shell printf "\033[32m")
 BROWN    = $(shell printf "\033[33m")
 EOS      = $(shell printf "\033[00m")
 
-CXXFLAGS += -I./includes -I.
+CXXFLAGS += -std=c++11 -I./includes -I.
 
 all: $(LIBRARY)
 	@printf "Compilation done, output is build/${LIBRARY}\n"

@@ -10,5 +10,5 @@ void P9Tests::literalNumbers( void )
 {
     this->initParser( &fromString, "0+1" );
 
-    std::auto_ptr< ast::Token > root( this->parser( ).exec( ) );
+    std::unique_ptr< ast::Token > root( this->parser( ).exec( ) );
 }

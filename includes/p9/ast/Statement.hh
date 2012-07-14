@@ -9,7 +9,7 @@ namespace p9
     namespace ast
     {
 
-        class Expression : public ast::Token, utils::Linked< Expression>
+        class Statement : public ast::Token, utils::Linked< Statement >
         {
 
         };

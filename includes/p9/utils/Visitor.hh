@@ -9,11 +9,14 @@ namespace p9
         namespace expr
         {
             class Binary;
+            class Call;
+            class Function;
             class Number;
         }
 
         namespace stmt
         {
+            class Expression;
         }
 
     }
@@ -30,8 +33,12 @@ namespace p9
 
         public:
 
-            virtual void visit( ast::expr::Binary & ) = 0;
-            virtual void visit( ast::expr::Number & ) = 0;
+            virtual void visit( ast::expr::Binary   & ) = 0;
+            virtual void visit( ast::expr::Call     & ) = 0;
+            virtual void visit( ast::expr::Function & ) = 0;
+            virtual void visit( ast::expr::Number   & ) = 0;
+
+            virtual void visit( ast::stmt::Expression & ) = 0;
 
         };
 

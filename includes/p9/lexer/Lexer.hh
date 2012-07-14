@@ -39,7 +39,7 @@ namespace p9
         private:
 
             std::queue< Lexeme * > mPendingLexemes;
-            std::auto_ptr< Lexeme > mLastNewline;
+            std::unique_ptr< Lexeme > mLastNewline;
 
             unsigned int mCurrentLevel;
 

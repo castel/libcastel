@@ -15,14 +15,15 @@
 
     #include "p9/ast/expr/Binary.hh"
     #include "p9/ast/expr/Number.hh"
-    #include "p9/ast/Token.hh"
+    #include "p9/ast/stmt/Expression.hh"
+    #include "p9/ast/Statement.hh"
     #include "p9/lexer/Lexeme.hh"
     #include "p9/lexer/Type.hh"
 
     using namespace p9;
 
     static bool p9parserIsValid;
-    static ast::Token * p9parserRootToken;
+    static ast::Statement * p9parserRootStatement;
 
 }
 
@@ -32,8 +33,14 @@
 
 }
 
-%type program { ast::Token * }
-program ::= expression(U). { p9parserRootToken = U; }
+%type program { ast::Statement * }
+program ::= statement(U). { p9parserRootStatement = U; }
+
+%type statement { ast::Statement * }
+statement(A) ::= expressionstatement(U). { A = U; }
+
+%type expressionstatement { ast::Statement * }
+expressionstatement(A) ::= expression(U). { A = new ast::stmt::Expression( U ); }
 
 %type expression { ast::Expression * }
 expression(A) ::= binaryoperator(U). { A = U; }

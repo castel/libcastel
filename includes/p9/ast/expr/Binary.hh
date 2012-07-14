@@ -56,11 +56,6 @@ namespace p9
                     return mLeft.get( );
                 }
 
-                ast::Expression * right( void ) const
-                {
-                    return mRight.get( );
-                }
-
                 Binary & left( ast::Expression * expression )
                 {
                     mLeft.reset( expression );
@@ -68,18 +63,23 @@ namespace p9
                     return *this;
                 }
 
+                ast::Expression * takeLeft( void )
+                {
+                    return mLeft.release( );
+                }
+
+            public:
+
+                ast::Expression * right( void ) const
+                {
+                    return mRight.get( );
+                }
+
                 Binary & right( ast::Expression * expression )
                 {
                     mRight.reset( expression );
 
                     return *this;
-                }
-
-            public:
-
-                ast::Expression * takeLeft( void )
-                {
-                    return mLeft.release( );
                 }
 
                 ast::Expression * takeRight( void )
@@ -98,8 +98,8 @@ namespace p9
 
                 lexer::Type mType;
 
-                std::auto_ptr< ast::Expression > mLeft;
-                std::auto_ptr< ast::Expression > mRight;
+                std::unique_ptr< ast::Expression > mLeft;
+                std::unique_ptr< ast::Expression > mRight;
 
             };
 

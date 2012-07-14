@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "p9/ast/Token.hh"
+#include "p9/ast/Statement.hh"
 #include "p9/lexer/Lexer.hh"
 
 namespace p9
@@ -19,7 +19,7 @@ namespace p9
 
         public:
 
-            ast::Token * exec( void );
+            ast::Statement * exec( void );
 
         private:
 

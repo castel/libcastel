@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <memory>
 
+#include "p9/ast/Statement.hh"
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Lexer.hh"
 #include "p9/lexer/Type.hh"
@@ -17,9 +18,9 @@ Parser::Parser( lexer::Lexer & lexer )
 {
 }
 
-ast::Token * Parser::exec( void )
+ast::Statement * Parser::exec( void )
 {
-    std::auto_ptr< lexer::Lexeme > lexeme;
+    std::unique_ptr< lexer::Lexeme > lexeme;
 
     void * lemonParser = ParseAlloc( malloc );
 
@@ -50,5 +51,5 @@ ast::Token * Parser::exec( void )
  endOfFile:
     ParseFree( lemonParser, free );
 
-    return p9parserRootToken;
+    return p9parserRootStatement;
 }
