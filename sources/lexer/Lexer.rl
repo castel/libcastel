@@ -4,7 +4,7 @@
 #include "p9/lexer/Exception.hh"
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Lexer.hh"
-#include "p9/lexer/Type.hh"
+#include "p9/lexer/Token.hh"
 
 using namespace p9;
 using namespace p9::lexer;
@@ -12,7 +12,7 @@ using namespace p9::lexer;
 %% machine p9lexer;
 %% write data;
 
-Lexer::Lexer( char const * p, std::size_t n )
+Lexer::Lexer          ( char const * p, std::size_t n )
     : mP              ( p      )
     , mPe             ( mP + n )
     , mEof            ( mPe    )
@@ -31,31 +31,50 @@ Lexeme * Lexer::consume( void )
 {
     %%{
 
-        Add       = '+';
-        Substract = '-';
-        Multiply  = '*';
-        Divide    = '/';
-        Modulo    = '%';
+        Function     = 'function';
+        Return       = 'return';
 
-        Number = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+);
+        Add          = '+';
+        Substract    = '-';
+        Multiply     = '*';
+        Divide       = '/';
+        Modulo       = '%';
 
-        Spaces = [ ]+;
-        Newline = ('\r''\n'|'\r'|'\n')('\t'*);
+        LParenthesis = '(';
+        RParenthesis = ')';
+
+        Colon        = ':';
+        Comma        = ',';
+
+        Number       = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+);
+        Identifier   = [a-zA-Z]+[0-9a-zA-Z_]*;
+
+        Spaces       = [ ]+;
+        Newline      = ('\r''\n'|'\r'|'\n')('\t'*);
 
         main := |*
 
-            Add       => { type = T_Add;       fbreak; };
-            Substract => { type = T_Substract; fbreak; };
-            Multiply  => { type = T_Multiply;  fbreak; };
-            Divide    => { type = T_Divide;    fbreak; };
-            Modulo    => { type = T_Modulo;    fbreak; };
+            Function    => { type = lexer::TFunction;      fbreak; };
+            Return      => { type = lexer::TReturn;        fbreak; };
 
-            Number    => { type = T_Number; fbreak; };
-            Spaces    => { type = T_Spaces; fbreak; };
+            Add          => { type = lexer::TAdd;          fbreak; };
+            Substract    => { type = lexer::TSubstract;    fbreak; };
+            Multiply     => { type = lexer::TMultiply;     fbreak; };
+            Divide       => { type = lexer::TDivide;       fbreak; };
+            Modulo       => { type = lexer::TModulo;       fbreak; };
 
-            Newline   => { type = T_Newline; fbreak; };
+            LParenthesis => { type = lexer::TLParenthesis; fbreak; };
+            RParenthesis => { type = lexer::TRParenthesis; fbreak; };
 
-            any       => { fbreak; };
+            Colon        => { type = lexer::TColon;        fbreak; };
+
+            Number       => { type = lexer::TNumber;       fbreak; };
+            Identifier   => { type = lexer::TIdentifier;   fbreak; };
+
+            Spaces       => { type = lexer::TSpaces;       fbreak; };
+            Newline      => { type = lexer::TNewline;      fbreak; };
+
+            any          => { fbreak; };
 
         *|;
 
@@ -96,29 +115,26 @@ Lexeme * Lexer::consume( void )
 
             -- mCurrentLevel;
 
-            return new lexer::Lexeme( T_Dedent, mPosition );
+            return new lexer::Lexeme( lexer::TDedent, mPosition );
 
         } else {
 
-            return new lexer::Lexeme( T_EOF, mPosition );
+            return new lexer::Lexeme( lexer::TEOF, mPosition );
 
         }
 
     }
 
-    // Variable qui contiendra le type du lexème à la fin
-    // de l'exécution de la machine
-
-    lexer::Type type = lexer::T_Invalid;
-
     // Lancement de la machine
+
+    lexer::Token type;
 
     %% write init;
     %% write exec;
 
     // Si le symbole est inconnu, on jette une exception
 
-    if ( type == lexer::T_Invalid )
+    if ( type == lexer::TInvalid )
         throw lexer::Exception( "Invalid symbol" );
 
     // Calcul de la taille total du texte contenu dans le lexème
@@ -129,7 +145,7 @@ Lexeme * Lexer::consume( void )
     // utilisé qu'à des fins informatives (par exemple en cas d'erreur
     // de parsing)
 
-    if ( type == T_Newline ) {
+    if ( type == lexer::TNewline ) {
 
         mPosition.line += 1;
         mPosition.column = size;
@@ -155,7 +171,7 @@ Lexeme * Lexer::consume( void )
     // Si le lexème est une nouvelle ligne, on l'enregistre puis on
     // vérifie le type du lexème suivant
 
-    if ( lexeme->type( ) == T_Newline ) {
+    if ( lexeme->type( ) == lexer::TNewline ) {
 
         mLastNewline.reset( lexeme );
 
@@ -176,9 +192,9 @@ Lexeme * Lexer::consume( void )
         unsigned int level = start != std::string::npos ? 1 + end - start : 0;
 
         for ( ; mCurrentLevel < level; ++ mCurrentLevel )
-            mPendingLexemes.push( new lexer::Lexeme( T_Indent, mLastNewline->position( ) ) );
+            mPendingLexemes.push( new lexer::Lexeme( lexer::TIndent, mLastNewline->position( ) ) );
         for ( ; mCurrentLevel > level; -- mCurrentLevel )
-            mPendingLexemes.push( new lexer::Lexeme( T_Dedent, mLastNewline->position( ) ) );
+            mPendingLexemes.push( new lexer::Lexeme( lexer::TDedent, mLastNewline->position( ) ) );
 
         mPendingLexemes.push( lexeme );
         mLastNewline.reset( );

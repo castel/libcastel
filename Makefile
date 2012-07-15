@@ -10,9 +10,10 @@ RM       = rm
 
 CXXFLAGS = -g
 
-SRCS     = $(shell find sources -name '*.cc')
+SRCS     = $(shell (find sources -name '*.cc' ; echo sources/lexer/Lexer.cc) | sort | uniq)
+HDRS     = $(shell (find includes -name '*.hh' ; echo includes/p9/lexer/MangledTokens.hh) | sort | uniq)
+DEPS     = $(addprefix build/dependencies/,$(SRCS:.cc=.d) $(HDRS:.hh=.d))
 OBJS     = $(addprefix build/objects/,$(SRCS:.cc=.o))
-DEPS     = $(addprefix build/dependencies/,$(SRCS:.cc=.d))
 
 PURPLE   = $(shell printf "\033[35m")
 CYAN     = $(shell printf "\033[36m")
@@ -29,24 +30,22 @@ $(LIBRARY): build/$(LIBRARY)
 
 -include $(DEPS)
 
-build/$(LIBRARY): $(OBJS)
+build/$(LIBRARY): $(OBJS) includes/p9/lexer/MangledTokens.hh
 	@printf "%s# Merging object files.%s\n" "${PURPLE}" "${EOS}"
 	@${AR} rcs build/$(LIBRARY) ${OBJS}
 
-build/generated/lexer: sources/lexer/Lexer.rl
+sources/lexer/Lexer.cc: sources/lexer/Lexer.rl
 	@printf "%s+ Generating ragel p9 lexer.%s\n" "${CYAN}" "${EOS}"
-	@${MKDIR} -p "$(dir ${@})"
-	@${RAGEL} -C -o build/generated/lexer sources/lexer/Lexer.rl
+	@${RAGEL} -C -o sources/lexer/Lexer.cc sources/lexer/Lexer.rl
 
-build/generated/parser: sources/parser/parse.lm
+includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc: sources/parser/parse.lm
 	@printf "%s@ Generating lemon p9 parser.%s\n" "${CYAN}" "${EOS}"
-	@${MKDIR} -p "$(dir ${@})"
 	@${LEMON} sources/parser/parse.lm
 	@${RM} sources/parser/parse.out
-	@${RM} sources/parser/parse.h
-	@${MV} sources/parser/parse.c build/generated/parser
+	@${MV} sources/parser/parse.h includes/p9/lexer/MangledTokens.hh
+	@${MV} sources/parser/parse.c sources/parser/parse.cc
 
-$(DEPS): build/dependencies/%.d: %.cc
+$(DEPS): build/dependencies/%.d: %.cc | includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "${GREEN}" "${<}" "${EOS}"
 	@${MKDIR} -p "$(dir ${@})"
 	@${CXX} ${CXXFLAGS} -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "${<}" > $(@)

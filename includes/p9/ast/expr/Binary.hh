@@ -4,7 +4,7 @@
 
 #include "p9/ast/Expression.hh"
 #include "p9/lexer/Lexeme.hh"
-#include "p9/lexer/Type.hh"
+#include "p9/lexer/Token.hh"
 #include "p9/utils/Visitor.hh"
 
 namespace p9
@@ -22,13 +22,13 @@ namespace p9
             public:
 
                 Binary   ( void )
-                : mType  ( lexer::T_Invalid )
-                , mLeft  (                  )
-                , mRight (                  )
+                : mType  ( lexer::TInvalid )
+                , mLeft  (                 )
+                , mRight (                 )
                 {
                 }
 
-                Binary   ( lexer::Type type, ast::Expression * left = 0, ast::Expression * right = 0 )
+                Binary   ( lexer::Token type, ast::Expression * left = nullptr, ast::Expression * right = nullptr )
                 : mType  ( type  )
                 , mLeft  ( left  )
                 , mRight ( right )
@@ -37,12 +37,12 @@ namespace p9
 
             public:
 
-                lexer::Type type( void ) const
+                lexer::Token type( void ) const
                 {
                     return mType;
                 }
 
-                Binary & type( lexer::Type type )
+                Binary & type( lexer::Token type )
                 {
                     mType = type;
 
@@ -96,7 +96,7 @@ namespace p9
 
             private:
 
-                lexer::Type mType;
+                lexer::Token mType;
 
                 std::unique_ptr< ast::Expression > mLeft;
                 std::unique_ptr< ast::Expression > mRight;

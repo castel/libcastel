@@ -1,9 +1,12 @@
-%token_prefix     { lexer::lexer::T_ }
-%token_type       { lexer::Lexeme *  }
-%token_destructor { delete $$;       }
+%token_prefix       P9_LEXER_MANGLEDTOKENS_
+%token_type       { lexer::Lexeme *         }
+%token_destructor { delete $$;              }
 
+%left Call.
 %left Add Substract.
 %left Multiply Divide Modulo.
+
+%left LParenthesis RParenthesis.
 
 %nonassoc Spaces Newline.
 %nonassoc Indent Dedent.
@@ -14,11 +17,15 @@
     #include <cassert>
 
     #include "p9/ast/expr/Binary.hh"
+    #include "p9/ast/expr/Call.hh"
+    #include "p9/ast/expr/Function.hh"
     #include "p9/ast/expr/Number.hh"
     #include "p9/ast/stmt/Expression.hh"
+    #include "p9/ast/stmt/Return.hh"
+    #include "p9/ast/Expression.hh"
     #include "p9/ast/Statement.hh"
     #include "p9/lexer/Lexeme.hh"
-    #include "p9/lexer/Type.hh"
+    #include "p9/lexer/Token.hh"
 
     using namespace p9;
 
@@ -28,30 +35,65 @@
 }
 
 %syntax_error {
-
     p9parserIsValid = false;
-
 }
 
-%type program { ast::Statement * }
-program ::= statement(U). { p9parserRootStatement = U; }
+%type program                                                                           { ast::Statement *           }
+program ::= statements(U).                                                              { p9parserRootStatement = U; }
 
-%type statement { ast::Statement * }
-statement(A) ::= expressionstatement(U). { A = U; }
+%type statements                                                                        { ast::Statement * }
+statements(A) ::= statementlist(U).                                                     { A = U;           }
+statements(A) ::= .                                                                     { A = nullptr;     }
 
-%type expressionstatement { ast::Statement * }
-expressionstatement(A) ::= expression(U). { A = new ast::stmt::Expression( U ); }
+%type statementlist                                                                     { ast::Statement *     }
+statementlist(A) ::= statement(U) statementlist(V).                                     { A = U; A->next( V ); }
+statementlist(A) ::= statement(U).                                                      { A = U;               }
 
-%type expression { ast::Expression * }
-expression(A) ::= binaryoperator(U). { A = U; }
-expression(A) ::= numberliteral(U).  { A = U; }
+%type statement                                                                         { ast::Statement * }
+statement(A) ::= expressionstatement(U) Newline.                                        { A = U;           }
+statement(A) ::= returnstatement(U) Newline.                                            { A = U;           }
 
-%type binaryoperator { ast::expr::Binary * }
-binaryoperator(A) ::= expression(U) Add       expression(V). { A = new ast::expr::Binary( lexer::T_Add,       U, V ); }
-binaryoperator(A) ::= expression(U) Substract expression(V). { A = new ast::expr::Binary( lexer::T_Substract, U, V ); }
-binaryoperator(A) ::= expression(U) Multiply  expression(V). { A = new ast::expr::Binary( lexer::T_Multiply,  U, V ); }
-binaryoperator(A) ::= expression(U) Divide    expression(V). { A = new ast::expr::Binary( lexer::T_Divide,    U, V ); }
-binaryoperator(A) ::= expression(U) Modulo    expression(V). { A = new ast::expr::Binary( lexer::T_Modulo,    U, V ); }
+%type expressionstatement                                                               { ast::Statement *                    }
+expressionstatement(A) ::= expression(U).                                               { A = new ast::stmt::Expression( U ); }
 
-%type numberliteral { ast::expr::Number * }
-numberliteral(A) ::= Number(U). { A = new ast::expr::Number(*U); }
+%type returnstatement                                                                   { ast::Statement *                }
+returnstatement(A) ::= KReturn.                                                         { A = new ast::stmt::Return( );   }
+returnstatement(A) ::= KReturn expression(U).                                           { A = new ast::stmt::Return( U ); }
+
+%type expression                                                                        { ast::Expression * }
+expression(A) ::= binaryexpression(U).                                                  { A = U;            }
+expression(A) ::= numberexpression(U).                                                  { A = U;            }
+expression(A) ::= functionexpression(U).                                                { A = U;            }
+expression(A) ::= callexpression(U).                                                    { A = U;            }
+
+%type binaryexpression                                                                  { ast::expr::Binary *                                    }
+binaryexpression(A) ::= expression(U) Add       expression(V).                          { A = new ast::expr::Binary( lexer::TAdd,       U, V ); }
+binaryexpression(A) ::= expression(U) Substract expression(V).                          { A = new ast::expr::Binary( lexer::TSubstract, U, V ); }
+binaryexpression(A) ::= expression(U) Multiply  expression(V).                          { A = new ast::expr::Binary( lexer::TMultiply,  U, V ); }
+binaryexpression(A) ::= expression(U) Divide    expression(V).                          { A = new ast::expr::Binary( lexer::TDivide,    U, V ); }
+binaryexpression(A) ::= expression(U) Modulo    expression(V).                          { A = new ast::expr::Binary( lexer::TModulo,    U, V ); }
+
+%type callexpression                                                                    { ast::expr::Call *                }
+callexpression(A) ::= expression(U) arguments(V).                                       { A = new ast::expr::Call( U, V ); }
+
+%type arguments                                                                         { ast::expr::Call::Argument * }
+arguments(A) ::= LParenthesis RParenthesis.                                             { A = nullptr;                }
+arguments(A) ::= LParenthesis argumentlist(U) RParenthesis.                             { A = U;                      }
+
+%type argumentlist                                                                      { ast::expr::Call::Argument *                           }
+argumentlist(A) ::= expression(U) Comma argumentlist(V).                                { A = new ast::expr::Call::Argument( U ); A->next( V ); }
+argumentlist(A) ::= expression(U).                                                      { A = new ast::expr::Call::Argument( U );               }
+
+%type numberexpression                                                                  { ast::expr::Number *            }
+numberexpression(A) ::= Number(U).                                                      { A = new ast::expr::Number(*U); }
+
+%type functionexpression                                                                { ast::expr::Function *                }
+functionexpression(A) ::= KFunction parameters(U) Colon Indent statementlist(V) Dedent. { A = new ast::expr::Function( U, V ); }
+
+%type parameters                                                                        { ast::expr::Function::Parameter * }
+parameters(A) ::= LParenthesis RParenthesis.                                            { A = nullptr;                     }
+parameters(A) ::= LParenthesis parameterlist(U) RParenthesis.                           { A = U;                           }
+
+%type parameterlist                                                                     { ast::expr::Function::Parameter *                            }
+parameterlist(A) ::= Identifier(U) Comma parameterlist(V).                              { A = new ast::expr::Function::Parameter( *U ); A->next( V ); }
+parameterlist(A) ::= Identifier(U).                                                     { A = new ast::expr::Function::Parameter( *U );               }

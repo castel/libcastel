@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include "p9/lexer/Position.hh"
-#include "p9/lexer/Type.hh"
+#include "p9/lexer/Token.hh"
 
 namespace p9
 {
@@ -16,14 +16,14 @@ namespace p9
 
         public:
 
-            Lexeme      ( lexer::Type type, lexer::Position position = lexer::Position( ) )
+            Lexeme      ( lexer::Token type, lexer::Position position = lexer::Position( ) )
             : mType     ( type     )
             , mText     (          )
             , mPosition ( position )
             {
             }
 
-            Lexeme      ( lexer::Type type, std::string const & text, lexer::Position position )
+            Lexeme      ( lexer::Token type, std::string const & text, lexer::Position position )
             : mType     ( type     )
             , mText     ( text     )
             , mPosition ( position )
@@ -32,7 +32,7 @@ namespace p9
 
         public:
 
-            lexer::Type type( void ) const
+            lexer::Token type( void ) const
             {
                 return mType;
             }
@@ -55,7 +55,7 @@ namespace p9
 
         private:
 
-            lexer::Type mType;
+            lexer::Token mType;
 
             std::string mText;
 
