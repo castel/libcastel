@@ -91,8 +91,9 @@ numberexpression(A) ::= Number(U).                                              
 functionexpression(A) ::= KFunction parameters(U) Colon Indent statementlist(V) Dedent. { A = new ast::expr::Function( U, V ); }
 
 %type parameters                                                                        { ast::expr::Function::Parameter * }
-parameters(A) ::= LParenthesis RParenthesis.                                            { A = nullptr;                     }
 parameters(A) ::= LParenthesis parameterlist(U) RParenthesis.                           { A = U;                           }
+parameters(A) ::= LParenthesis RParenthesis.                                            { A = nullptr;                     }
+parameters(A) ::= .                                                                     { A = nullptr;                     }
 
 %type parameterlist                                                                     { ast::expr::Function::Parameter *                            }
 parameterlist(A) ::= Identifier(U) Comma parameterlist(V).                              { A = new ast::expr::Function::Parameter( *U ); A->next( V ); }
