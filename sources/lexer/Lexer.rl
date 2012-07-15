@@ -194,10 +194,8 @@ Lexeme * Lexer::consume( void )
         std::size_t end = str.find_last_of( '\t' );
         unsigned int level = start != std::string::npos ? 1 + end - start : 0;
 
-        if ( mCurrentLevel == level ) {
-            std::cout << 42 << std::endl;
+        if ( mCurrentLevel == level )
             mPendingLexemes.push( mLastNewline.release( ) );
-        }
         for ( ; mCurrentLevel < level; ++ mCurrentLevel )
             mPendingLexemes.push( new lexer::Lexeme( lexer::TIndent, mLastNewline->position( ) ) );
         for ( ; mCurrentLevel > level; -- mCurrentLevel )
