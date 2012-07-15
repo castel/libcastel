@@ -31,7 +31,6 @@ ast::Statement * Parser::exec( void )
         goto loop;
 
     p9parserIsValid = true;
-    std::cout << '[' << lexeme->type() << ']' << std::endl;
     Parse( lemonParser, lexeme->type( ), lexeme.get( ) );
 
     if ( ! p9parserIsValid )
