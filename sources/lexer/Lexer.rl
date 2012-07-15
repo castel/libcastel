@@ -106,36 +106,40 @@ Lexeme * Lexer::consume( void )
 
     }
 
+    lexer::Token type;
+
     // Si l'on est à la fin de la chaine d'entrée, on
     // renvoie un jeton de fin d'entrée
 
     if ( mP == mPe ) {
 
+        mTs = mTe = mP;
+
         if ( mCurrentLevel ) {
 
             -- mCurrentLevel;
 
-            return new lexer::Lexeme( lexer::TDedent, mPosition );
+            type = lexer::TDedent;
 
         } else {
 
-            return new lexer::Lexeme( lexer::TEOF, mPosition );
+            type = lexer::TEOF;
 
         }
 
+    } else {
+
+        // Lancement de la machine
+
+        %% write init;
+        %% write exec;
+
+        // Si le symbole est inconnu, on jette une exception
+
+        if ( type == lexer::TInvalid )
+            throw lexer::Exception( "Invalid symbol" );
+
     }
-
-    // Lancement de la machine
-
-    lexer::Token type;
-
-    %% write init;
-    %% write exec;
-
-    // Si le symbole est inconnu, on jette une exception
-
-    if ( type == lexer::TInvalid )
-        throw lexer::Exception( "Invalid symbol" );
 
     // Calcul de la taille total du texte contenu dans le lexème
 
@@ -149,7 +153,6 @@ Lexeme * Lexer::consume( void )
 
         mPosition.line += 1;
         mPosition.column = size;
-
 
         if ( size >= 2 && mTs[ 0 ] == '\r' && mTs[ 1 ] == '\n' ) {
             mPosition.column -= 2;
@@ -191,6 +194,10 @@ Lexeme * Lexer::consume( void )
         std::size_t end = str.find_last_of( '\t' );
         unsigned int level = start != std::string::npos ? 1 + end - start : 0;
 
+        if ( mCurrentLevel == level ) {
+            std::cout << 42 << std::endl;
+            mPendingLexemes.push( mLastNewline.release( ) );
+        }
         for ( ; mCurrentLevel < level; ++ mCurrentLevel )
             mPendingLexemes.push( new lexer::Lexeme( lexer::TIndent, mLastNewline->position( ) ) );
         for ( ; mCurrentLevel > level; -- mCurrentLevel )
