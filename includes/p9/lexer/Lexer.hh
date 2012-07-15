@@ -47,6 +47,10 @@ namespace p9
 
             lexer::Position mPosition;
 
+        private:
+
+            bool mNLInjected;
+
         };
 
     }

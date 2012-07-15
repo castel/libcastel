@@ -24,6 +24,7 @@ Lexer::Lexer          ( char const * p, std::size_t n )
     , mLastNewline    (        )
     , mCurrentLevel   ( 0      )
     , mPosition       ( 1, 1   )
+    , mNLInjected     ( false  )
 {
 }
 
@@ -120,6 +121,11 @@ Lexeme * Lexer::consume( void )
             -- mCurrentLevel;
 
             type = lexer::TDedent;
+
+        } else if ( ! mNLInjected ) {
+
+            type = lexer::TNewline;
+            mNLInjected = true;
 
         } else {
 
