@@ -1,6 +1,3 @@
-#include <iostream>
-#include <iterator>
-
 #include "p9/lexer/Exception.hh"
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Lexer.hh"

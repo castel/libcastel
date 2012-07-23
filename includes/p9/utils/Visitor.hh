@@ -12,6 +12,7 @@ namespace p9
             class Call;
             class Function;
             class Number;
+            class Variable;
         }
 
         namespace stmt
@@ -39,6 +40,7 @@ namespace p9
             virtual void visit( ast::expr::Call     & ) = 0;
             virtual void visit( ast::expr::Function & ) = 0;
             virtual void visit( ast::expr::Number   & ) = 0;
+            virtual void visit( ast::expr::Variable & ) = 0;
 
             virtual void visit( ast::stmt::Expression & ) = 0;
             virtual void visit( ast::stmt::If         & ) = 0;

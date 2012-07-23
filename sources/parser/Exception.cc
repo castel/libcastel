@@ -1,3 +1,6 @@
+#include <sstream>
+#include <string>
+
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Position.hh"
 #include "p9/parser/Exception.hh"
@@ -13,6 +16,6 @@ Exception::Exception ( std::string const & message, lexer::Lexeme * lexeme )
     lexer::Position const & position = mLexeme->position( );
 
     std::ostringstream stringstream;
-    stringstream << message << " at " << position.toString( );
+    stringstream << message << " #" << lexeme->type( ) << " \"" << lexeme->as< std::string >( ) << "\" at " << position.toString( );
     mWhat = stringstream.str( );
 }

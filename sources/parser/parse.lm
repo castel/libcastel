@@ -13,13 +13,13 @@
 
 %include {
 
-    #include <iostream>
     #include <cassert>
 
     #include "p9/ast/expr/Binary.hh"
     #include "p9/ast/expr/Call.hh"
     #include "p9/ast/expr/Function.hh"
     #include "p9/ast/expr/Number.hh"
+    #include "p9/ast/expr/Variable.hh"
     #include "p9/ast/stmt/Expression.hh"
     #include "p9/ast/stmt/Return.hh"
     #include "p9/ast/Expression.hh"
@@ -65,8 +65,9 @@ expression(A) ::= binaryexpression(U).                                          
 expression(A) ::= numberexpression(U).                                                                            { A = U;            }
 expression(A) ::= functionexpression(U).                                                                          { A = U;            }
 expression(A) ::= callexpression(U).                                                                              { A = U;            }
+expression(A) ::= variableexpression(U).                                                                          { A = U;            }
 
-%type binaryexpression                                                                                            { ast::expr::Binary *                                    }
+%type binaryexpression                                                                                            { ast::expr::Binary *                                   }
 binaryexpression(A) ::= expression(U) Add       expression(V).                                                    { A = new ast::expr::Binary( lexer::TAdd,       U, V ); }
 binaryexpression(A) ::= expression(U) Substract expression(V).                                                    { A = new ast::expr::Binary( lexer::TSubstract, U, V ); }
 binaryexpression(A) ::= expression(U) Multiply  expression(V).                                                    { A = new ast::expr::Binary( lexer::TMultiply,  U, V ); }
@@ -84,8 +85,11 @@ arguments(A) ::= LParenthesis argumentlist(U) RParenthesis.                     
 argumentlist(A) ::= expression(U) Comma argumentlist(V).                                                          { A = new ast::expr::Call::Argument( U ); A->next( V ); }
 argumentlist(A) ::= expression(U).                                                                                { A = new ast::expr::Call::Argument( U );               }
 
-%type numberexpression                                                                                            { ast::expr::Number *            }
-numberexpression(A) ::= Number(U).                                                                                { A = new ast::expr::Number(*U); }
+%type numberexpression                                                                                            { ast::expr::Number *              }
+numberexpression(A) ::= Number(U).                                                                                { A = new ast::expr::Number( *U ); }
+
+%type variableexpression                                                                                          { ast::expr::Variable *              }
+variableexpression(A) ::= Identifier(U).                                                                          { A = new ast::expr::Variable( *U ); }
 
 %type functionexpression                                                                                          { ast::expr::Function *                }
 functionexpression(A) ::= LParenthesis KFunction parameters(U) Colon Indent statementlist(V) Dedent RParenthesis. { A = new ast::expr::Function( U, V ); }
