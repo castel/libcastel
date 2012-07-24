@@ -36,84 +36,84 @@ CXXFLAGS_PARSE   = $(CXXFLAGS)
 CXXFLAGS_ENGINE  = $(CXXFLAGS) $(shell llvm-config --cxxflags) -fexceptions
 CXXFLAGS_RUNTIME = $(CXXFLAGS)
 
-all: ${LIBRARY_PARSE} ${LIBRARY_ENGINE} ${LIBRARY_RUNTIME}
+all: $(LIBRARY_PARSE) $(LIBRARY_ENGINE) $(LIBRARY_RUNTIME)
 	@printf "Compilation done.\n"
 
 $(LIBRARY_PARSE): build/$(LIBRARY_PARSE)
 $(LIBRARY_ENGINE): build/$(LIBRARY_ENGINE)
 $(LIBRARY_RUNTIME): build/$(LIBRARY_RUNTIME)
 
--include $(DEPS)
+-include $(DEPS_PARSE) $(DEPS_ENGINE) $(DEPS_RUNTIME)
 
 build/$(LIBRARY_PARSE): $(OBJS_PARSE) includes/p9/lexer/MangledTokens.hh
-	@printf "%s# Merging object files for ${LIBRARY_PARSE}.%s\n" "${PURPLE}" "${EOS}"
-	@${AR} rcs build/$(LIBRARY_PARSE) ${OBJS_PARSE}
+	@printf "%s# Merging object files for $(LIBRARY_PARSE).%s\n" "$(PURPLE)" "$(EOS)"
+	@$(AR) rcs build/$(LIBRARY_PARSE) $(OBJS_PARSE)
 
 build/$(LIBRARY_ENGINE): $(OBJS_ENGINE)
-	@printf "%s# Merging object files for ${LIBRARY_ENGINE}.%s\n" "${PURPLE}" "${EOS}"
-	@${AR} rcs build/$(LIBRARY_ENGINE) ${OBJS_ENGINE}
+	@printf "%s# Merging object files for $(LIBRARY_ENGINE).%s\n" "$(PURPLE)" "$(EOS)"
+	@$(AR) rcs build/$(LIBRARY_ENGINE) $(OBJS_ENGINE)
 
 build/$(LIBRARY_RUNTIME): $(OBJS_RUNTIME)
-	@printf "%s# Merging object files for ${LIBRARY_RUNTIME}.%s\n" "${PURPLE}" "${EOS}"
-	@${AR} rcs build/$(LIBRARY_RUNTIME) ${OBJS_RUNTIME}
+	@printf "%s# Merging object files for $(LIBRARY_RUNTIME).%s\n" "$(PURPLE)" "$(EOS)"
+	@$(AR) rcs build/$(LIBRARY_RUNTIME) $(OBJS_RUNTIME)
 
 sources/lexer/Lexer.cc: sources/lexer/Lexer.rl
-	@printf "%s+ Generating ragel p9 lexer.%s\n" "${CYAN}" "${EOS}"
-	@${RAGEL} -C -o sources/lexer/Lexer.cc sources/lexer/Lexer.rl
+	@printf "%s+ Generating ragel p9 lexer.%s\n" "$(CYAN)" "$(EOS)"
+	@$(RAGEL) -C -o sources/lexer/Lexer.cc sources/lexer/Lexer.rl
 
 includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc: sources/parser/parse.lm
-	@printf "%s@ Generating lemon p9 parser.%s\n" "${CYAN}" "${EOS}"
-	@${LEMON} sources/parser/parse.lm
-	@${RM} sources/parser/parse.out
-	@${MV} sources/parser/parse.h includes/p9/lexer/MangledTokens.hh
-	@${MV} sources/parser/parse.c sources/parser/parse.cc
+	@printf "%s@ Generating lemon p9 parser.%s\n" "$(CYAN)" "$(EOS)"
+	@$(LEMON) sources/parser/parse.lm
+	@$(RM) sources/parser/parse.out
+	@$(MV) sources/parser/parse.h includes/p9/lexer/MangledTokens.hh
+	@$(MV) sources/parser/parse.c sources/parser/parse.cc
 
 $(DEPS_PARSE): build/dependencies/%.d: %.cc | includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc
-	@printf "%s+ Generating dependency file for %s.%s\n" "${GREEN}" "${<}" "${EOS}"
-	@${MKDIR} -p "$(dir ${@})"
-	@${CXX} ${CXXFLAGS_PARSE} -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "${<}" > $(@)
+	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
+	@$(MKDIR) -p "$(dir $(@))"
+	@$(CXX) $(CXXFLAGS_PARSE) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
 $(DEPS_ENGINE): build/dependencies/%.d: %.cc | includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc
-	@printf "%s+ Generating dependency file for %s.%s\n" "${GREEN}" "${<}" "${EOS}"
-	@${MKDIR} -p "$(dir ${@})"
-	@${CXX} ${CXXFLAGS_ENGINE} -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "${<}" > $(@)
+	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
+	@$(MKDIR) -p "$(dir $(@))"
+	@$(CXX) $(CXXFLAGS_ENGINE) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
 $(DEPS_RUNTIME): build/dependencies/%.d: %.cc | includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc
-	@printf "%s+ Generating dependency file for %s.%s\n" "${GREEN}" "${<}" "${EOS}"
-	@${MKDIR} -p "$(dir ${@})"
-	@${CXX} ${CXXFLAGS_RUNTIME} -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "${<}" > $(@)
+	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
+	@$(MKDIR) -p "$(dir $(@))"
+	@$(CXX) $(CXXFLAGS_RUNTIME) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
 $(OBJS_PARSE): build/objects/%.o: %.cc
-	@printf "%s+ Compiling %s.%s\n" "${GREEN}" "${<}" "${EOS}"
-	@${MKDIR} -p "$(dir ${@})"
-	@${CXX} ${CXXFLAGS_PARSE} -c -o "${@}" "${<}"
+	@printf "%s+ Compiling %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
+	@$(MKDIR) -p "$(dir $(@))"
+	@$(CXX) $(CXXFLAGS_PARSE) -c -o "$(@)" "$(<)"
 
 $(OBJS_ENGINE): build/objects/%.o: %.cc
-	@printf "%s+ Compiling %s.%s\n" "${GREEN}" "${<}" "${EOS}"
-	@${MKDIR} -p "$(dir ${@})"
-	@${CXX} ${CXXFLAGS_ENGINE} -c -o "${@}" "${<}"
+	@printf "%s+ Compiling %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
+	@$(MKDIR) -p "$(dir $(@))"
+	@$(CXX) $(CXXFLAGS_ENGINE) -c -o "$(@)" "$(<)"
 
 $(OBJS_RUNTIME): build/objects/%.o: %.cc
-	@printf "%s+ Compiling %s.%s\n" "${GREEN}" "${<}" "${EOS}"
-	@${MKDIR} -p "$(dir ${@})"
-	@${CXX} ${CXXFLAGS_RUNTIME} -c -o "${@}" "${<}"
+	@printf "%s+ Compiling %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
+	@$(MKDIR) -p "$(dir $(@))"
+	@$(CXX) $(CXXFLAGS_RUNTIME) -c -o "$(@)" "$(<)"
 
 clean:
-	@printf "%s- Removing temporary files.%s\n" "${BROWN}" "${EOS}"
-	@${RM} -rf build/generated
-	@${RM} -rf build/objects
+	@printf "%s- Removing temporary files.%s\n" "$(BROWN)" "$(EOS)"
+	@$(RM) -rf build/generated
+	@$(RM) -rf build/objects
 
 clean-dependencies:
-	@printf "%s- Removing dependencies listing.%s\n" "${BROWN}" "${EOS}"
-	@${RM} -rf build/dependencies
+	@printf "%s- Removing dependencies listing.%s\n" "$(BROWN)" "$(EOS)"
+	@$(RM) -rf build/dependencies
 
 fclean: clean
-	@printf "%s- Removing binary files.%s\n" "${BROWN}" "${EOS}"
-	@${RM} -rf build/${LIBRARY_PARSE}
-	@${RM} -rf build/${LIBRARY_ENGINE}
-	@${RM} -rf build/${LIBRARY_RUNTIME}
+	@printf "%s- Removing binary files.%s\n" "$(BROWN)" "$(EOS)"
+	@$(RM) -rf build/$(LIBRARY_PARSE)
+	@$(RM) -rf build/$(LIBRARY_ENGINE)
+	@$(RM) -rf build/$(LIBRARY_RUNTIME)
 
 re: clean-dependencies fclean
 	@$(MAKE) --no-print-directory all
 
-.PHONY: $(LIBRARY_PARSE) ${LIBRARY_ENGINE} ${LIBRARY_RUNTIME} all clean fclean re clean-depends libp9
+.PHONY: $(LIBRARY_PARSE) $(LIBRARY_ENGINE) $(LIBRARY_RUNTIME) all clean fclean re clean-depends libp9
