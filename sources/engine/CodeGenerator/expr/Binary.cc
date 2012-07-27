@@ -26,19 +26,19 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
     switch ( binaryExpression.type( ) ) {
 
     case lexer::TAdd:
-        mValue.reset( mBuilder.CreateFAdd( left, right, "add" ) );
+        mValue.reset( mGenerationEngine.builder( ).CreateFAdd( left, right, "add" ) );
         break;
 
     case lexer::TSubstract:
-        mValue.reset( mBuilder.CreateFSub( left, right, "sub" ) );
+        mValue.reset( mGenerationEngine.builder( ).CreateFSub( left, right, "sub" ) );
         break;
 
     case lexer::TMultiply:
-        mValue.reset( mBuilder.CreateFSub( left, right, "mul" ) );
+        mValue.reset( mGenerationEngine.builder( ).CreateFSub( left, right, "mul" ) );
         break;
 
     case lexer::TDivide:
-        mValue.reset( mBuilder.CreateFDiv( left, right, "div" ) );
+        mValue.reset( mGenerationEngine.builder( ).CreateFDiv( left, right, "div" ) );
         break;
 
     case lexer::TModulo:

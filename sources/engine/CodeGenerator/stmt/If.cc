@@ -20,48 +20,48 @@ void CodeGenerator::visit( ast::stmt::If & astIfStatement )
         throw std::runtime_error( "Missing then branch" );
 
     astIfStatement.condition( )->accept( *this );
-    llvm::Value * conditionValue = mBuilder.CreateFCmpONE( mValue.release( ), llvm::ConstantFP::get( mContext, llvm::APFloat( 0.0 ) ) );
+    llvm::Value * conditionValue = mGenerationEngine.builder( ).CreateFCmpONE( mValue.release( ), llvm::ConstantFP::get( mGenerationEngine.context( ), llvm::APFloat( 0.0 ) ) );
 
-    llvm::Function * function = mBuilder.GetInsertBlock( )->getParent( );
+    llvm::Function * function = mGenerationEngine.builder( ).GetInsertBlock( )->getParent( );
 
     if ( astIfStatement.elseBranch( ) ) {
 
-        llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mContext, "then", function );
-        llvm::BasicBlock * elseBranch = llvm::BasicBlock::Create( mContext, "else" );
-        llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mContext, "finally" );
+        llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mGenerationEngine.context( ), "then", function );
+        llvm::BasicBlock * elseBranch = llvm::BasicBlock::Create( mGenerationEngine.context( ), "else" );
+        llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mGenerationEngine.context( ), "finally" );
 
-        llvm::Value * final = mBuilder.CreateCondBr( conditionValue, thenBranch, elseBranch );
+        llvm::Value * final = mGenerationEngine.builder( ).CreateCondBr( conditionValue, thenBranch, elseBranch );
 
-        mBuilder.SetInsertPoint( thenBranch );
+        mGenerationEngine.builder( ).SetInsertPoint( thenBranch );
         astIfStatement.thenBranch( )->accept( *this );
         if ( thenBranch->empty( ) || ! thenBranch->back( ).isTerminator( ) )
-            mBuilder.CreateBr( finallyBranch );
+            mGenerationEngine.builder( ).CreateBr( finallyBranch );
 
         function->getBasicBlockList( ).push_back( elseBranch );
 
-        mBuilder.SetInsertPoint( elseBranch );
+        mGenerationEngine.builder( ).SetInsertPoint( elseBranch );
         astIfStatement.elseBranch( )->accept( *this );
         if ( elseBranch->empty( ) || ! elseBranch->back( ).isTerminator( ) )
-            mBuilder.CreateBr( finallyBranch );
+            mGenerationEngine.builder( ).CreateBr( finallyBranch );
 
         function->getBasicBlockList( ).push_back( finallyBranch );
 
-        mBuilder.SetInsertPoint( finallyBranch );
+        mGenerationEngine.builder( ).SetInsertPoint( finallyBranch );
 
     } else {
 
-        llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mContext, "then", function );
-        llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mContext, "finally" );
+        llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mGenerationEngine.context( ), "then", function );
+        llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mGenerationEngine.context( ), "finally" );
 
-        llvm::Value * final = mBuilder.CreateCondBr( conditionValue, thenBranch, finallyBranch );
+        llvm::Value * final = mGenerationEngine.builder( ).CreateCondBr( conditionValue, thenBranch, finallyBranch );
 
-        mBuilder.SetInsertPoint( thenBranch );
+        mGenerationEngine.builder( ).SetInsertPoint( thenBranch );
         astIfStatement.thenBranch( )->accept( *this );
-        mBuilder.CreateBr( finallyBranch );
+        mGenerationEngine.builder( ).CreateBr( finallyBranch );
 
         function->getBasicBlockList( ).push_back( finallyBranch );
 
-        mBuilder.SetInsertPoint( finallyBranch );
+        mGenerationEngine.builder( ).SetInsertPoint( finallyBranch );
 
     }
 

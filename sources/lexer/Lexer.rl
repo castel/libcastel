@@ -31,12 +31,14 @@ Lexeme * Lexer::consume( void )
 
         Function     = 'function';
         Return       = 'return';
+        Var          = 'var';
 
         Add          = '+';
         Substract    = '-';
         Multiply     = '*';
         Divide       = '/';
         Modulo       = '%';
+        Equal        = '=';
 
         LParenthesis = '(';
         RParenthesis = ')';
@@ -52,14 +54,16 @@ Lexeme * Lexer::consume( void )
 
         main := |*
 
-            Function    => { type = lexer::TFunction;      fbreak; };
-            Return      => { type = lexer::TReturn;        fbreak; };
+            Function     => { type = lexer::TFunction;     fbreak; };
+            Return       => { type = lexer::TReturn;       fbreak; };
+            Var          => { type = lexer::TVar;          fbreak; };
 
             Add          => { type = lexer::TAdd;          fbreak; };
             Substract    => { type = lexer::TSubstract;    fbreak; };
             Multiply     => { type = lexer::TMultiply;     fbreak; };
             Divide       => { type = lexer::TDivide;       fbreak; };
             Modulo       => { type = lexer::TModulo;       fbreak; };
+            Equal        => { type = lexer::TEqual;        fbreak; };
 
             LParenthesis => { type = lexer::TLParenthesis; fbreak; };
             RParenthesis => { type = lexer::TRParenthesis; fbreak; };

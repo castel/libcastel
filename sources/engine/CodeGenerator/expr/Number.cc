@@ -9,5 +9,5 @@ using namespace p9::engine;
 
 void CodeGenerator::visit( ast::expr::Number & number )
 {
-    mValue.reset( llvm::ConstantFP::get( mContext, llvm::APFloat( number.value( ) ) ) );
+    mValue.reset( llvm::ConstantFP::get( mGenerationEngine.context( ), llvm::APFloat( number.value( ) ) ) );
 }

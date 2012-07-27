@@ -9,10 +9,8 @@
 using namespace p9;
 using namespace p9::engine;
 
-CodeGenerator::CodeGenerator ( llvm::LLVMContext & context, llvm::IRBuilder< > & builder, llvm::Module & module )
-: mContext                   ( context )
-, mBuilder                   ( builder )
-, mModule                    ( module  )
+CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine )
+: mGenerationEngine          ( generationEngine )
 {
 }
 

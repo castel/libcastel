@@ -13,8 +13,9 @@ namespace p9
             TInvalid      = - 1,
             TEOF          =   0,
 
-            TFunction     = P9_LEXER_MANGLEDTOKENS_KFunction,
-            TReturn       = P9_LEXER_MANGLEDTOKENS_KReturn,
+            TFunction     = P9_LEXER_MANGLEDTOKENS_Function,
+            TReturn       = P9_LEXER_MANGLEDTOKENS_Return,
+            TVar          = P9_LEXER_MANGLEDTOKENS_Var,
 
             TNumber       = P9_LEXER_MANGLEDTOKENS_Number,
             TIdentifier   = P9_LEXER_MANGLEDTOKENS_Identifier,
@@ -24,6 +25,7 @@ namespace p9
             TMultiply     = P9_LEXER_MANGLEDTOKENS_Multiply,
             TDivide       = P9_LEXER_MANGLEDTOKENS_Divide,
             TModulo       = P9_LEXER_MANGLEDTOKENS_Modulo,
+            TEqual        = P9_LEXER_MANGLEDTOKENS_Equal,
 
             TLParenthesis = P9_LEXER_MANGLEDTOKENS_LParenthesis,
             TRParenthesis = P9_LEXER_MANGLEDTOKENS_RParenthesis,

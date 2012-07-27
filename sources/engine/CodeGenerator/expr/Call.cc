@@ -14,10 +14,10 @@ void CodeGenerator::visit( ast::expr::Call & call )
     if ( ! call.callee( ) )
         throw std::runtime_error( "Missing callee" );
 
-    llvm::BasicBlock * basicBlock = mBuilder.GetInsertBlock( );
+    llvm::BasicBlock * basicBlock = mGenerationEngine.builder( ).GetInsertBlock( );
     call.callee( )->accept( *this );
     llvm::Value * callee = mValue.release( );
-    mBuilder.SetInsertPoint( basicBlock );
+    mGenerationEngine.builder( ).SetInsertPoint( basicBlock );
 
     std::vector< llvm::Value * > arguments;
     for ( auto & item : call.arguments( ) ) {
@@ -27,5 +27,5 @@ void CodeGenerator::visit( ast::expr::Call & call )
         arguments.push_back( mValue.release( ) );
     }
 
-    mValue.reset( mBuilder.CreateCall( callee, arguments ) );
+    mValue.reset( mGenerationEngine.builder( ).CreateCall( callee, arguments ) );
 }
