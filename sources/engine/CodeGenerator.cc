@@ -10,7 +10,8 @@ using namespace p9;
 using namespace p9::engine;
 
 CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine )
-: mGenerationEngine          ( generationEngine )
+: mGenerationEngine          ( generationEngine  )
+, mLLVMHelpers               ( mGenerationEngine )
 {
 }
 

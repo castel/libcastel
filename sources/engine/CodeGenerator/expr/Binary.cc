@@ -18,31 +18,40 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
         throw std::runtime_error( "Missing right-hand expression" );
 
     binaryExpression.left( )->accept( *this );
-    llvm::Value * left = mValue.release( );
+    llvm::Value * left = mLLVMHelpers.doubleValue( mValue.release( ) );
 
     binaryExpression.right( )->accept( *this );
-    llvm::Value * right = mValue.release( );
+    llvm::Value * right = mLLVMHelpers.doubleValue( mValue.release( ) );
+
+    llvm::Value * result = nullptr;
 
     switch ( binaryExpression.type( ) ) {
 
-    case lexer::TAdd:
-        mValue.reset( mGenerationEngine.builder( ).CreateFAdd( left, right, "add" ) );
+        case lexer::TAdd:
+            result = mGenerationEngine.builder( ).CreateFAdd( left, right, "add" );
         break;
 
-    case lexer::TSubstract:
-        mValue.reset( mGenerationEngine.builder( ).CreateFSub( left, right, "sub" ) );
+        case lexer::TSubstract:
+            result = mGenerationEngine.builder( ).CreateFSub( left, right, "sub" );
         break;
 
-    case lexer::TMultiply:
-        mValue.reset( mGenerationEngine.builder( ).CreateFSub( left, right, "mul" ) );
+        case lexer::TMultiply:
+            result = mGenerationEngine.builder( ).CreateFSub( left, right, "mul" );
         break;
 
-    case lexer::TDivide:
-        mValue.reset( mGenerationEngine.builder( ).CreateFDiv( left, right, "div" ) );
+        case lexer::TDivide:
+            result = mGenerationEngine.builder( ).CreateFDiv( left, right, "div" );
         break;
 
-    case lexer::TModulo:
+        case lexer::TModulo:
+        break;
+
+        default:
+            throw std::runtime_error( "Invalid token type" );
         break;
 
     }
+
+    mValue.reset( mLLVMHelpers.boxDouble( result ) );
+
 }

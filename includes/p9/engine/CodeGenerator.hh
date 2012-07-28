@@ -19,6 +19,7 @@
 #include "p9/ast/stmt/Return.hh"
 #include "p9/ast/Token.hh"
 #include "p9/engine/GenerationEngine.hh"
+#include "p9/engine/LLVMHelpers.hh"
 #include "p9/engine/Scope.hh"
 #include "p9/utils/Visitor.hh"
 
@@ -55,6 +56,7 @@ namespace p9
         private:
 
             engine::GenerationEngine & mGenerationEngine;
+            engine::LLVMHelpers mLLVMHelpers;
 
             std::stack< std::unique_ptr< engine::Scope > > mScopes;
 

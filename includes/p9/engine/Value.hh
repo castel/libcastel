@@ -11,7 +11,7 @@ namespace p9
 
             enum Type {
 
-                DOUBLE
+                DoubleTy
 
             };
 

@@ -23,10 +23,7 @@ void CodeGenerator::visit( ast::expr::Function & function )
 
     llvm::Type * doubleType = llvm::Type::getDoubleTy( mGenerationEngine.context( ) );
 
-    llvm::Type * returnType = doubleType;
-    std::vector< llvm::Type * > parametersTypes;
-
-    llvm::FunctionType * functionType = llvm::FunctionType::get( returnType, parametersTypes, false );
+    llvm::FunctionType * functionType = llvm::FunctionType::get( llvm::PointerType::get( mGenerationEngine.valueStructType( ), 0 ), { }, false );
     llvm::Function * llvmFunction = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "", &mGenerationEngine.module( ) );
 
     llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.context( ), "", llvmFunction );

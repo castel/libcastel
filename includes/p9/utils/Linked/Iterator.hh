@@ -39,6 +39,8 @@ namespace p9
             Iterator & operator++( void )
             {
                 mNode = mNode->next( );
+
+                return *this;
             }
 
         public:

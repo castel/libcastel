@@ -2,7 +2,7 @@ LIBRARY_PARSE    = libP9Parse.a
 LIBRARY_ENGINE   = libP9Engine.a
 LIBRARY_RUNTIME  = libP9Runtime.a
 
-CXX              = g++
+CXX              = clang++
 AR               = ar
 RAGEL            = ragel
 LEMON            = lemon
@@ -31,7 +31,7 @@ GREEN            = $(shell printf "\033[32m")
 BROWN            = $(shell printf "\033[33m")
 EOS              = $(shell printf "\033[00m")
 
-CXXFLAGS         = -g -std=c++11 -I./includes -I.
+CXXFLAGS         = -O0 -g -fPIC -std=c++11 -I./includes -I.
 CXXFLAGS_PARSE   = $(CXXFLAGS)
 CXXFLAGS_ENGINE  = $(CXXFLAGS) $(shell llvm-config --cxxflags) -fexceptions
 CXXFLAGS_RUNTIME = $(CXXFLAGS)
