@@ -2,7 +2,7 @@
 %token_type       { lexer::Lexeme *         }
 %token_destructor { delete $$;              }
 
-%left Equal.
+%left Assign.
 %left Add Substract.
 %left Multiply Divide Modulo.
 %left Call.
@@ -86,6 +86,7 @@ binaryexpression(A) ::= expression(U) Substract expression(V).                  
 binaryexpression(A) ::= expression(U) Multiply  expression(V).                                                   { A = new ast::expr::Binary( lexer::TMultiply,  U, V ); }
 binaryexpression(A) ::= expression(U) Divide    expression(V).                                                   { A = new ast::expr::Binary( lexer::TDivide,    U, V ); }
 binaryexpression(A) ::= expression(U) Modulo    expression(V).                                                   { A = new ast::expr::Binary( lexer::TModulo,    U, V ); }
+binaryexpression(A) ::= expression(U) Assign    expression(V).                                                   { A = new ast::expr::Binary( lexer::TAssign,    U, V ); }
 
 %type callexpression                                                                                             { ast::expr::Call *                }
 callexpression(A) ::= expression(U) arguments(V).                                                                { A = new ast::expr::Call( U, V ); }

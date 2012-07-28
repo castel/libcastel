@@ -8,7 +8,7 @@ using namespace p9::engine;
 
 void CodeGenerator::visit( ast::expr::Variable & astVariableExpression )
 {
-    llvm::AllocaInst * variable = mScopes.top( )->get( astVariableExpression.name( ) );
+    llvm::Value * variable = mScopes.top( )->get( astVariableExpression.name( ) );
 
     mValue.reset( mGenerationEngine.builder( ).CreateLoad( variable ) );
 }

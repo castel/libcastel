@@ -92,7 +92,7 @@ namespace p9
 
             void initRuntimeFunctions( void )
             {
-                llvm::Function::Create( mpllvm::deduce( mContext, & p9_malloc ), llvm::GlobalValue::ExternalLinkage, "p9_malloc", & mModule );
+                llvm::Function::Create( mpllvm::deduce( mContext, & p9Malloc ), llvm::GlobalValue::ExternalLinkage, "p9Malloc", & mModule );
             }
 
         private:

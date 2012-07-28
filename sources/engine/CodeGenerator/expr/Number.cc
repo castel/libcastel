@@ -9,5 +9,5 @@ using namespace p9::engine;
 
 void CodeGenerator::visit( ast::expr::Number & number )
 {
-    mValue.reset( mLLVMHelpers.boxDouble( number.value( ) ) );
+    mValue.reset( mLLVMHelpers.doubleToBox( number.value( ) ) );
 }

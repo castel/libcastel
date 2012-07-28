@@ -17,33 +17,80 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
     if ( ! binaryExpression.right( ) )
         throw std::runtime_error( "Missing right-hand expression" );
 
-    binaryExpression.left( )->accept( *this );
-    llvm::Value * left = mLLVMHelpers.doubleValue( mValue.release( ) );
-
-    binaryExpression.right( )->accept( *this );
-    llvm::Value * right = mLLVMHelpers.doubleValue( mValue.release( ) );
-
-    llvm::Value * result = nullptr;
-
     switch ( binaryExpression.type( ) ) {
 
+        case lexer::TAssign:
+
+            {
+                auto asVariable = dynamic_cast< ast::expr::Variable * >( binaryExpression.left( ) );
+
+                if ( ! asVariable )
+                    throw std::runtime_error( "Invalid lvalue" );
+
+                binaryExpression.right( )->accept( *this );
+                llvm::Value * right = mValue.release( );
+
+                switch ( binaryExpression.type( ) ) {
+                    default: break;
+
+                    case lexer::TAssign:
+                        llvm::Value * destination;
+                        if ( asVariable )
+                            destination = mScopes.top( )->get( asVariable->name( ) );
+                        mGenerationEngine.builder( ).CreateStore( right, destination );
+                    break;
+
+                }
+
+            }
+
+        break;
+
         case lexer::TAdd:
-            result = mGenerationEngine.builder( ).CreateFAdd( left, right, "add" );
-        break;
-
         case lexer::TSubstract:
-            result = mGenerationEngine.builder( ).CreateFSub( left, right, "sub" );
-        break;
-
         case lexer::TMultiply:
-            result = mGenerationEngine.builder( ).CreateFSub( left, right, "mul" );
-        break;
-
         case lexer::TDivide:
-            result = mGenerationEngine.builder( ).CreateFDiv( left, right, "div" );
-        break;
-
         case lexer::TModulo:
+
+            {
+
+                binaryExpression.left( )->accept( *this );
+                llvm::Value * left = mLLVMHelpers.boxToDouble( mValue.release( ) );
+
+                binaryExpression.right( )->accept( *this );
+                llvm::Value * right = mLLVMHelpers.boxToDouble( mValue.release( ) );
+
+                llvm::Value * result = nullptr;
+
+                switch ( binaryExpression.type( ) ) {
+                    default: break;
+
+                    case lexer::TAdd:
+                        result = mGenerationEngine.builder( ).CreateFAdd( left, right, "add" );
+                    break;
+
+                    case lexer::TSubstract:
+                        result = mGenerationEngine.builder( ).CreateFSub( left, right, "sub" );
+                    break;
+
+                    case lexer::TMultiply:
+                        result = mGenerationEngine.builder( ).CreateFSub( left, right, "mul" );
+                    break;
+
+                    case lexer::TDivide:
+                        result = mGenerationEngine.builder( ).CreateFDiv( left, right, "div" );
+                    break;
+
+                    case lexer::TModulo:
+                        throw std::runtime_error( "Not implemented" );
+                    break;
+
+                }
+
+                mValue.reset( mLLVMHelpers.doubleToBox( result ) );
+
+            }
+
         break;
 
         default:
@@ -51,7 +98,5 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
         break;
 
     }
-
-    mValue.reset( mLLVMHelpers.boxDouble( result ) );
 
 }

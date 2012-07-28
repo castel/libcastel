@@ -12,17 +12,17 @@ RM               = rm
 
 SRCS_PARSE       = $(shell (find sources/lexer sources/parser -name '*.cc' ; echo sources/lexer/Lexer.cc) | sort | uniq)
 HDRS_PARSE       = $(shell (find includes/p9/lexer includes/p9/parser includes/p9/ast -name '*.hh' ; echo includes/p9/lexer/MangledTokens.hh) | sort | uniq)
-DEPS_PARSE       = $(addprefix build/dependencies/,$(SRCS_PARSE:.cc=.d) $(HDRS_PARSE:.hh=.d))
+DEPS_PARSE       = $(addprefix build/dependencies/,$(SRCS_PARSE:.cc=.d))
 OBJS_PARSE       = $(addprefix build/objects/,$(SRCS_PARSE:.cc=.o))
 
 SRCS_ENGINE      = $(shell (find sources/engine -name '*.cc') | sort | uniq)
 HDRS_ENGINE      = $(shell (find includes/p9/engine -name '*.hh') | sort | uniq)
-DEPS_ENGINE      = $(addprefix build/dependencies/,$(SRCS_ENGINE:.cc=.d) $(HDRS_ENGINE:.hh=.d))
+DEPS_ENGINE      = $(addprefix build/dependencies/,$(SRCS_ENGINE:.cc=.d))
 OBJS_ENGINE      = $(addprefix build/objects/,$(SRCS_ENGINE:.cc=.o))
 
 SRCS_RUNTIME     = $(shell (find sources/runtime -name '*.cc') | sort | uniq)
 HDRS_RUNTIME     = $(shell (find includes/p9/runtime -name '*.hh') | sort | uniq)
-DEPS_RUNTIME     = $(addprefix build/dependencies/,$(SRCS_RUNTIME:.cc=.d) $(HDRS_RUNTIME:.hh=.d))
+DEPS_RUNTIME     = $(addprefix build/dependencies/,$(SRCS_RUNTIME:.cc=.d))
 OBJS_RUNTIME     = $(addprefix build/objects/,$(SRCS_RUNTIME:.cc=.o))
 
 PURPLE           = $(shell printf "\033[35m")

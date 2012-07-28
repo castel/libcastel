@@ -10,7 +10,7 @@
 
 #include "p9/engine/GenerationEngine.hh"
 #include "p9/engine/Value.hh"
-
+#include <iostream>
 namespace p9
 {
 
@@ -29,50 +29,58 @@ namespace p9
 
         public:
 
-            llvm::Value * doubleValue( llvm::Value * source )
+            llvm::Value * sizeOf( llvm::Type * type )
             {
-                this->forceType< engine::Value::DoubleTy >( source );
+                llvm::Type * targetType = llvm::IntegerType::get( mGenerationEngine.context( ), 32 );
+                llvm::ConstantPointerNull * nullPointer = llvm::ConstantPointerNull::get( llvm::PointerType::get( type, 0 ) );
+                return mGenerationEngine.builder( ).CreatePtrToInt( mpllvm::GEP< 64, 1 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), nullPointer ), targetType );
+            }
 
-                llvm::Value * typecasted = mGenerationEngine.builder( ).CreateBitCast( source, mGenerationEngine.doubleStructPtrType( ) );
+            llvm::Value * allocateObject( llvm::Type * type )
+            {
+                llvm::Function * p9Malloc = mGenerationEngine.module( ).getFunction( "p9Malloc" );
+                llvm::Value * memoryAddress = mGenerationEngine.builder( ).CreateCall( p9Malloc, this->sizeOf( type ) );
+                return mGenerationEngine.builder( ).CreateBitCast( memoryAddress, llvm::PointerType::get( type, 0 ) );
+            }
 
-                llvm::Value * valueIndex = mGenerationEngine.builder( ).CreateGEP( typecasted, std::vector< llvm::Value * >( {
-                    llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 64, 0 ) ),
-                    llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 32, 1 ) ),
-                } ) );
+        public:
+
+            llvm::Value * boxToDouble( llvm::Value * genericBox )
+            {
+                this->forceType< engine::Value::Type::Double >( genericBox );
+
+                llvm::Value * box = mGenerationEngine.builder( ).CreateBitCast( genericBox, mGenerationEngine.doubleStructPtrType( ) );
+
+                llvm::Value * valueIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
 
                 return mGenerationEngine.builder( ).CreateLoad( valueIndex );
             }
 
         public:
 
-            llvm::Value * boxDouble( double n )
+            llvm::Value * doubleToBox( double n )
             {
-                return this->boxDouble( llvm::ConstantFP::get( mGenerationEngine.context( ), llvm::APFloat( n ) ) );
+                return this->doubleToBox( llvm::ConstantFP::get( mGenerationEngine.context( ), llvm::APFloat( n ) ) );
             }
 
-            llvm::Value * boxDouble( llvm::Value * value )
+            llvm::Value * doubleToBox( llvm::Value * value )
             {
-                llvm::Value * size = mGenerationEngine.builder( ).CreatePtrToInt( mGenerationEngine.builder( ).CreateGEP( llvm::ConstantPointerNull::get( mGenerationEngine.doubleStructPtrType( ) ), std::vector< llvm::Value * >( {
-                    llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 64, 1 ) ),
-                } ) ), mpllvm::get< int >( mGenerationEngine.context( ) ) );
+                llvm::Value * box = this->allocateObject( mGenerationEngine.doubleStructType( ) );
+                llvm::Value * type = llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 32, static_cast< std::int32_t>( engine::Value::Type::Double ) ) );
 
-                llvm::Value * memory = mGenerationEngine.builder( ).CreateCall( mGenerationEngine.module( ).getFunction( "p9_malloc" ), size );
-                llvm::Value * box = mGenerationEngine.builder( ).CreateBitCast( memory, mGenerationEngine.doubleStructPtrType( ) );
-                llvm::Value * type = llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 32, engine::Value::DoubleTy ) );
-
-                llvm::Value * typeIndex = mGenerationEngine.builder( ).CreateGEP( box, std::vector< llvm::Value * >( {
-                    llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 64, 0 ) ),
-                    llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 32, 0 ) ),
-                } ) );
-
-                llvm::Value * valueIndex = mGenerationEngine.builder( ).CreateGEP( box, std::vector< llvm::Value * >( {
-                    llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 64, 0 ) ),
-                    llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 32, 1 ) ),
-                } ) );
+                llvm::Value * typeIndex = mpllvm::GEP< 64, 0, 32, 0 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
+                llvm::Value * valueIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
 
                 mGenerationEngine.builder( ).CreateStore( type, typeIndex );
                 mGenerationEngine.builder( ).CreateStore( value, valueIndex );
 
+                return this->boxToGeneric( box );
+            }
+
+        public:
+
+            llvm::Value * boxToGeneric( llvm::Value * box )
+            {
                 return mGenerationEngine.builder( ).CreateBitCast( box, mGenerationEngine.valueStructPtrType( ) );
             }
 

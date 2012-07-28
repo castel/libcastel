@@ -25,7 +25,7 @@ namespace p9
             TMultiply     = P9_LEXER_MANGLEDTOKENS_Multiply,
             TDivide       = P9_LEXER_MANGLEDTOKENS_Divide,
             TModulo       = P9_LEXER_MANGLEDTOKENS_Modulo,
-            TEqual        = P9_LEXER_MANGLEDTOKENS_Equal,
+            TAssign       = P9_LEXER_MANGLEDTOKENS_Assign,
 
             TLParenthesis = P9_LEXER_MANGLEDTOKENS_LParenthesis,
             TRParenthesis = P9_LEXER_MANGLEDTOKENS_RParenthesis,

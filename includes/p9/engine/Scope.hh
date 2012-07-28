@@ -29,7 +29,7 @@ namespace p9
 
         public:
 
-            Scope & create( std::string const & name, llvm::AllocaInst * value )
+            Scope & create( std::string const & name, llvm::Value * value )
             {
                 auto it = mVariables.find( name );
 
@@ -43,7 +43,7 @@ namespace p9
 
         public:
 
-            llvm::AllocaInst * get( std::string const & name ) const
+            llvm::Value * get( std::string const & name ) const
             {
                 auto it = mVariables.find( name );
 
@@ -60,7 +60,7 @@ namespace p9
 
             Scope * mParent;
 
-            std::map< std::string, llvm::AllocaInst * > mVariables;
+            std::map< std::string, llvm::Value * > mVariables;
 
         };
 

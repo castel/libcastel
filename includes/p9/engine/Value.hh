@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace p9
 {
 
@@ -9,9 +11,9 @@ namespace p9
         struct Value
         {
 
-            enum Type {
+            enum class Type : std::int32_t {
 
-                DoubleTy
+                Double
 
             };
 

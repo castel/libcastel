@@ -2,6 +2,6 @@
 
 extern "C" {
 
-    void * p9_malloc( unsigned int size );
+    void * p9Malloc( unsigned int size );
 
 }

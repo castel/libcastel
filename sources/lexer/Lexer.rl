@@ -38,7 +38,7 @@ Lexeme * Lexer::consume( void )
         Multiply     = '*';
         Divide       = '/';
         Modulo       = '%';
-        Equal        = '=';
+        Assign       = '=';
 
         LParenthesis = '(';
         RParenthesis = ')';
@@ -63,7 +63,7 @@ Lexeme * Lexer::consume( void )
             Multiply     => { type = lexer::TMultiply;     fbreak; };
             Divide       => { type = lexer::TDivide;       fbreak; };
             Modulo       => { type = lexer::TModulo;       fbreak; };
-            Equal        => { type = lexer::TEqual;        fbreak; };
+            Assign       => { type = lexer::TAssign;       fbreak; };
 
             LParenthesis => { type = lexer::TLParenthesis; fbreak; };
             RParenthesis => { type = lexer::TRParenthesis; fbreak; };

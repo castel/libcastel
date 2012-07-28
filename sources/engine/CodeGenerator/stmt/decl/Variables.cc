@@ -15,10 +15,10 @@ void CodeGenerator::visit( ast::stmt::decl::Variables & astVariablesDeclarationS
     llvm::BasicBlock & entryBlock = function->getEntryBlock( );
     llvm::IRBuilder< > tmpBuilder( &entryBlock, entryBlock.begin( ) );
 
-    llvm::Type * doubleType = llvm::Type::getDoubleTy( mGenerationEngine.context( ) );
-
-    for ( auto & variable : astVariablesDeclarationStatement.variables( ) )
-        mScopes.top( )->create( variable.name( ), tmpBuilder.CreateAlloca( doubleType ) );
+    for ( auto & variable : astVariablesDeclarationStatement.variables( ) ) {
+        llvm::Value * alloced = mLLVMHelpers.allocateObject( mGenerationEngine.valueStructPtrType( ) );
+        mScopes.top( )->create( variable.name( ), alloced );
+    }
 
     if ( astVariablesDeclarationStatement.next( ) ) {
         astVariablesDeclarationStatement.next( )->accept( *this );
