@@ -4,8 +4,8 @@
 #include <stack>
 
 #include <llvm/Support/IRBuilder.h>
+#include <llvm/Function.h>
 #include <llvm/LLVMContext.h>
-#include <llvm/Module.h>
 #include <llvm/Value.h>
 
 #include "p9/ast/expr/Binary.hh"
@@ -38,7 +38,7 @@ namespace p9
 
         public:
 
-            llvm::Value * codegen( p9::ast::Token & );
+            llvm::Function * codegen( p9::ast::Token & );
 
         private:
 

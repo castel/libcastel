@@ -13,13 +13,21 @@ namespace p9
 
             enum class Type : std::int32_t {
 
-                Double
+                Double,
+                Function,
 
             };
 
             Value::Type type;
 
             union {
+
+                struct {
+
+                    std::int32_t arity;
+                    void * function;
+
+                } functionData;
 
                 struct {
 

@@ -1,6 +1,5 @@
-%token_prefix       P9_LEXER_MANGLEDTOKENS_
-%token_type       { lexer::Lexeme *         }
-%token_destructor { delete $$;              }
+%token_prefix P9_LEXER_MANGLEDTOKENS_
+%token_type   { lexer::Lexeme *     }
 
 %left Assign.
 %left Add Substract.
@@ -48,13 +47,13 @@ statements(A) ::= statementlist(U).                                             
 statements(A) ::= .                                                                                              { A = nullptr;     }
 
 %type statementlist                                                                                              { ast::Statement *     }
-statementlist(A) ::= statement(U) statementlist(V).                                                              { A = U; A->next( V ); }
+statementlist(A) ::= statement(U) Newline statements(V).                                                         { A = U; A->next( V ); }
 statementlist(A) ::= statement(U).                                                                               { A = U;               }
 
 %type statement                                                                                                  { ast::Statement * }
-statement(A) ::= expressionstatement(U) Newline.                                                                 { A = U;           }
-statement(A) ::= returnstatement(U) Newline.                                                                     { A = U;           }
-statement(A) ::= variabledeclarationstatement(U) Newline.                                                        { A = U;           }
+statement(A) ::= expressionstatement(U).                                                                         { A = U;           }
+statement(A) ::= returnstatement(U).                                                                             { A = U;           }
+statement(A) ::= variabledeclarationstatement(U).                                                                { A = U;           }
 
 %type expressionstatement                                                                                        { ast::stmt::Expression *             }
 expressionstatement(A) ::= expression(U).                                                                        { A = new ast::stmt::Expression( U ); }
@@ -106,7 +105,7 @@ numberexpression(A) ::= Number(U).                                              
 variableexpression(A) ::= Identifier(U).                                                                         { A = new ast::expr::Variable( *U ); }
 
 %type functionexpression                                                                                         { ast::expr::Function *                }
-functionexpression(A) ::= LParenthesis Function parameters(U) Colon Indent statementlist(V) Dedent RParenthesis. { A = new ast::expr::Function( U, V ); }
+functionexpression(A) ::= LParenthesis Function parameters(U) Colon Indent statementlist(V) RParenthesis Dedent. { A = new ast::expr::Function( U, V ); }
 
 %type parameters                                                                                                 { ast::expr::Function::Parameter * }
 parameters(A) ::= LParenthesis parameterlist(U) RParenthesis.                                                    { A = U;                           }

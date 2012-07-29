@@ -30,8 +30,9 @@ namespace p9
             , mBuilder       ( mContext       )
             , mModule        ( name, mContext )
             {
-                this->initValueStructType( );
-                this->initDoubleStructType( );
+                this->initBoxType( );
+                this->initFunctionBoxType( );
+                this->initDoubleBoxType( );
                 this->initRuntimeFunctions( );
             }
 
@@ -54,44 +55,43 @@ namespace p9
 
         public:
 
-            llvm::Type * valueStructType( void ) const
+            llvm::Type * boxType( void ) const
             {
-                return mValueStructType;
+                return mBoxType;
             }
 
-            llvm::PointerType * valueStructPtrType( void ) const
+            llvm::Type * functionBoxType( void ) const
             {
-                return llvm::PointerType::get( mValueStructType, 0 );
+                return mFunctionBoxType;
             }
 
-        public:
-
-            llvm::Type * doubleStructType( void ) const
+            llvm::Type * doubleBoxType( void ) const
             {
-                return mDoubleStructType;
-            }
-
-            llvm::PointerType * doubleStructPtrType( void ) const
-            {
-                return llvm::PointerType::get( mDoubleStructType, 0 );
+                return mDoubleBoxType;
             }
 
         private:
 
-            void initValueStructType( void )
+            void initBoxType( void )
             {
-                mValueStructType = mpllvm::craft< std::int32_t >( mContext );
+                mBoxType = mpllvm::craft< std::int32_t >( mContext );
             }
 
-            void initDoubleStructType( void )
+            void initFunctionBoxType( void )
             {
-                mDoubleStructType = mpllvm::craft< std::int32_t, double >( mContext );
+                mFunctionBoxType = mpllvm::craft< std::int32_t, std::int32_t, void * >( mContext );
+            }
+
+            void initDoubleBoxType( void )
+            {
+                mDoubleBoxType = mpllvm::craft< std::int32_t, double >( mContext );
             }
 
         private:
 
             void initRuntimeFunctions( void )
             {
+                llvm::Function::Create( mpllvm::deduce( mContext, & p9Crash ), llvm::GlobalValue::ExternalLinkage, "p9Crash", & mModule );
                 llvm::Function::Create( mpllvm::deduce( mContext, & p9Malloc ), llvm::GlobalValue::ExternalLinkage, "p9Malloc", & mModule );
             }
 
@@ -101,8 +101,9 @@ namespace p9
             llvm::IRBuilder< > mBuilder;
             llvm::Module mModule;
 
-            llvm::Type * mValueStructType;
-            llvm::Type * mDoubleStructType;
+            llvm::Type * mBoxType;
+            llvm::Type * mFunctionBoxType;
+            llvm::Type * mDoubleBoxType;
 
         };
 

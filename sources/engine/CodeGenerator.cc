@@ -1,4 +1,8 @@
+#include <llvm/Analysis/Verifier.h>
 #include <llvm/Support/IRBuilder.h>
+#include <llvm/BasicBlock.h>
+#include <llvm/DerivedTypes.h>
+#include <llvm/Function.h>
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 #include <llvm/Value.h>
@@ -15,9 +19,21 @@ CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine )
 {
 }
 
-llvm::Value * CodeGenerator::codegen( ast::Token & token )
+llvm::Function * CodeGenerator::codegen( ast::Token & token )
 {
-    token.accept( *this );
+    llvm::FunctionType * functionType = llvm::FunctionType::get( llvm::PointerType::get( mGenerationEngine.boxType( ), 0 ), { }, false );
+    llvm::Function * function = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "", & mGenerationEngine.module( ) );
 
-    return mValue.release( );
+    llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.context( ), "", function );
+    mGenerationEngine.builder( ).SetInsertPoint( basicBlock );
+
+    std::unique_ptr< engine::Scope > context( new engine::Scope( ) );
+    mScopes.push( std::move( context ) );
+
+    token.accept( * this );
+    mValue.release( );
+
+    llvm::verifyFunction( * function );
+
+    return function;
 }

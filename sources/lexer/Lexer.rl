@@ -117,13 +117,7 @@ Lexeme * Lexer::consume( void )
 
         mTs = mTe = mP;
 
-        if ( mCurrentLevel ) {
-
-            -- mCurrentLevel;
-
-            type = lexer::TDedent;
-
-        } else if ( ! mNLInjected ) {
+        if ( ! mNLInjected ) {
 
             type = lexer::TNewline;
             mNLInjected = true;
@@ -199,14 +193,19 @@ Lexeme * Lexer::consume( void )
 
         std::size_t start = str.find_first_of( '\t' );
         std::size_t end = str.find_last_of( '\t' );
+
         unsigned int level = start != std::string::npos ? 1 + end - start : 0;
 
         if ( mCurrentLevel == level )
             mPendingLexemes.push( mLastNewline.release( ) );
+
         for ( ; mCurrentLevel < level; ++ mCurrentLevel )
             mPendingLexemes.push( new lexer::Lexeme( lexer::TIndent, mLastNewline->position( ) ) );
-        for ( ; mCurrentLevel > level; -- mCurrentLevel )
+
+        for ( ; mCurrentLevel > level; -- mCurrentLevel ) {
             mPendingLexemes.push( new lexer::Lexeme( lexer::TDedent, mLastNewline->position( ) ) );
+            mPendingLexemes.push( new lexer::Lexeme( lexer::TNewline, mLastNewline->position( ) ) );
+        }
 
         mPendingLexemes.push( lexeme );
         mLastNewline.reset( );

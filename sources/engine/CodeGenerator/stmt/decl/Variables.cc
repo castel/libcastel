@@ -16,7 +16,7 @@ void CodeGenerator::visit( ast::stmt::decl::Variables & astVariablesDeclarationS
     llvm::IRBuilder< > tmpBuilder( &entryBlock, entryBlock.begin( ) );
 
     for ( auto & variable : astVariablesDeclarationStatement.variables( ) ) {
-        llvm::Value * alloced = mLLVMHelpers.allocateObject( mGenerationEngine.valueStructPtrType( ) );
+        llvm::Value * alloced = mLLVMHelpers.allocateObject( llvm::PointerType::get( mGenerationEngine.boxType( ), 0 ) );
         mScopes.top( )->create( variable.name( ), alloced );
     }
 

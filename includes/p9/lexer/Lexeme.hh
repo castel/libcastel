@@ -16,6 +16,13 @@ namespace p9
 
         public:
 
+            Lexeme      ( void )
+            : mType     ( lexer::TInvalid )
+            , mText     (                 )
+            , mPosition (                 )
+            {
+            }
+
             Lexeme      ( lexer::Token type, lexer::Position position = lexer::Position( ) )
             : mType     ( type     )
             , mText     (          )

@@ -7,7 +7,6 @@
 #include <llvm/BasicBlock.h>
 #include <llvm/DerivedTypes.h>
 #include <llvm/Function.h>
-#include <llvm/Type.h>
 
 #include "p9/ast/expr/Function.hh"
 #include "p9/engine/CodeGenerator.hh"
@@ -21,20 +20,25 @@ void CodeGenerator::visit( ast::expr::Function & function )
     if ( ! function.statements( ) )
         throw std::runtime_error( "Missing body" );
 
-    llvm::Type * doubleType = llvm::Type::getDoubleTy( mGenerationEngine.context( ) );
-
-    llvm::FunctionType * functionType = llvm::FunctionType::get( llvm::PointerType::get( mGenerationEngine.valueStructType( ), 0 ), { }, false );
+    llvm::FunctionType * functionType = llvm::FunctionType::get( llvm::PointerType::get( mGenerationEngine.boxType( ), 0 ), { }, false );
     llvm::Function * llvmFunction = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "", &mGenerationEngine.module( ) );
-
-    llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.context( ), "", llvmFunction );
-    mGenerationEngine.builder( ).SetInsertPoint( basicBlock );
 
     std::unique_ptr< engine::Scope > context( new engine::Scope( ) );
     mScopes.push( std::move( context ) );
 
+    llvm::BasicBlock * currentBasicBlock = mGenerationEngine.builder( ).GetInsertBlock( );
+    llvm::BasicBlock::iterator currentPoint = mGenerationEngine.builder( ).GetInsertPoint( );
+
+    llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.context( ), "", llvmFunction );
+    mGenerationEngine.builder( ).SetInsertPoint( basicBlock );
+
     function.statements( )->accept( *this );
     mValue.release( );
 
+    mGenerationEngine.builder( ).SetInsertPoint( currentBasicBlock, currentPoint );
+    mScopes.pop( );
+
     llvm::verifyFunction( * llvmFunction );
-    mValue.reset( llvmFunction );
+
+    mValue.reset( mLLVMHelpers.functionToBox( llvmFunction ) );
 }

@@ -14,18 +14,19 @@ void CodeGenerator::visit( ast::expr::Call & call )
     if ( ! call.callee( ) )
         throw std::runtime_error( "Missing callee" );
 
-    llvm::BasicBlock * basicBlock = mGenerationEngine.builder( ).GetInsertBlock( );
     call.callee( )->accept( *this );
-    llvm::Value * callee = mValue.release( );
-    mGenerationEngine.builder( ).SetInsertPoint( basicBlock );
+    llvm::Value * box = mValue.release( );
 
+    std::int32_t arity = 0;
     std::vector< llvm::Value * > arguments;
     for ( auto & item : call.arguments( ) ) {
         if ( ! item.value( ) )
             throw std::runtime_error( "Missing expression" );
         item.value( )->accept( *this );
         arguments.push_back( mValue.release( ) );
+        ++ arity;
     }
 
-    mValue.reset( mGenerationEngine.builder( ).CreateCall( callee, arguments ) );
+    llvm::Function * function = mLLVMHelpers.boxToFunction( box, arity );
+    mValue.reset( mGenerationEngine.builder( ).CreateCall( function, arguments ) );
 }

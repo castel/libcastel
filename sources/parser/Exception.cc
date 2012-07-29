@@ -11,7 +11,7 @@ using namespace p9::parser;
 
 Exception::Exception ( std::string const & message, lexer::Lexeme * lexeme )
 : mMessage           ( message )
-, mLexeme            ( lexeme )
+, mLexeme            ( lexeme  )
 {
     lexer::Position const & position = mLexeme->position( );
 
