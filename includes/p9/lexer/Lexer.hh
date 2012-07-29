@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <memory>
 #include <queue>
+#include <stack>
 
 #include "p9/lexer/Lexeme.hh"
 #include "p9/lexer/Position.hh"
@@ -26,6 +27,11 @@ namespace p9
 
         private:
 
+            void computeNextLexemes( void );
+            lexer::Lexeme * fetchNextLexeme( void );
+
+        private:
+
             char const * mP;
             char const * mPe;
             char const * mEof;
@@ -38,18 +44,10 @@ namespace p9
 
         private:
 
-            std::queue< Lexeme * > mPendingLexemes;
-            std::unique_ptr< Lexeme > mLastNewline;
-
-            unsigned int mCurrentLevel;
-
-        private:
+            std::queue< Lexeme * > mLexemeQueue;
+            std::stack< unsigned int > mLevelStack;
 
             lexer::Position mPosition;
-
-        private:
-
-            bool mNLInjected;
 
         };
 

@@ -48,6 +48,7 @@ statements(A) ::= .                                                             
 
 %type statementlist                                                                                              { ast::Statement *     }
 statementlist(A) ::= statement(U) Newline statements(V).                                                         { A = U; A->next( V ); }
+statementlist(A) ::= Newline statements(U).                                                                      { A = U;               }
 statementlist(A) ::= statement(U).                                                                               { A = U;               }
 
 %type statement                                                                                                  { ast::Statement * }
@@ -73,10 +74,10 @@ variabledeclarationlist(A) ::= Comma variabledeclaration(U) variabledeclarationl
 variabledeclarationlist(A) ::= .                                                                                 { A = nullptr;                           }
 
 %type expression                                                                                                 { ast::Expression * }
+expression(A) ::= callexpression(U).                                                                             { A = U;            }
 expression(A) ::= binaryexpression(U).                                                                           { A = U;            }
 expression(A) ::= numberexpression(U).                                                                           { A = U;            }
 expression(A) ::= functionexpression(U).                                                                         { A = U;            }
-expression(A) ::= callexpression(U).                                                                             { A = U;            }
 expression(A) ::= variableexpression(U).                                                                         { A = U;            }
 
 %type binaryexpression                                                                                           { ast::expr::Binary *                                   }
@@ -105,7 +106,7 @@ numberexpression(A) ::= Number(U).                                              
 variableexpression(A) ::= Identifier(U).                                                                         { A = new ast::expr::Variable( *U ); }
 
 %type functionexpression                                                                                         { ast::expr::Function *                }
-functionexpression(A) ::= LParenthesis Function parameters(U) Colon Indent statementlist(V) RParenthesis Dedent. { A = new ast::expr::Function( U, V ); }
+functionexpression(A) ::= LParenthesis Function parameters(U) Colon Indent statementlist(V) Dedent RParenthesis. { A = new ast::expr::Function( U, V ); }
 
 %type parameters                                                                                                 { ast::expr::Function::Parameter * }
 parameters(A) ::= LParenthesis parameterlist(U) RParenthesis.                                                    { A = U;                           }
