@@ -31,10 +31,10 @@ GREEN            = $(shell printf "\033[32m")
 BROWN            = $(shell printf "\033[33m")
 EOS              = $(shell printf "\033[00m")
 
-CXXFLAGS         = -O0 -g -fPIC -std=c++11 -I./includes -I.
-CXXFLAGS_PARSE   = $(CXXFLAGS)
-CXXFLAGS_ENGINE  = $(CXXFLAGS) $(shell llvm-config --cxxflags) -fexceptions
-CXXFLAGS_RUNTIME = $(CXXFLAGS)
+CXXFLAGS         = -fPIC -std=c++11 -I./includes -I.
+CXXFLAGS_PARSE   = $(CXXFLAGS) -g -O0
+CXXFLAGS_ENGINE  = $(CXXFLAGS) $(shell llvm-config --cxxflags) -fexceptions -g -O0
+CXXFLAGS_RUNTIME = $(CXXFLAGS) -g -O0
 
 all: $(LIBRARY_PARSE) $(LIBRARY_ENGINE) $(LIBRARY_RUNTIME)
 	@printf "Compilation done.\n"

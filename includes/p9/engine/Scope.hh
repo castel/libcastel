@@ -17,14 +17,16 @@ namespace p9
 
         public:
 
-            Scope     ( void )
-            : mParent ( nullptr )
+            Scope     ( Scope * parent = nullptr )
+            : mParent ( parent )
             {
             }
 
-            Scope     ( Scope & parent )
-            : mParent ( &parent )
+        public:
+
+            bool empty( void ) const
             {
+                return mVariables.empty( );
             }
 
         public:

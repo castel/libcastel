@@ -15,30 +15,55 @@
 using namespace p9;
 using namespace p9::engine;
 
-void CodeGenerator::visit( ast::expr::Function & function )
+void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
 {
-    if ( ! function.statements( ) )
+    /* Checks that the AST has at least one statement */
+    if ( ! astFunctionExpression.statements( ) )
         throw std::runtime_error( "Missing body" );
 
-    llvm::FunctionType * functionType = llvm::FunctionType::get( llvm::PointerType::get( mGenerationEngine.boxType( ), 0 ), { }, false );
-    llvm::Function * llvmFunction = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "", &mGenerationEngine.module( ) );
+    /* Crafts function type - engine::Value * (*)( engine::Value*** environment, engine::Value * arguments... ) */
+    llvm::Type * returnType = mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) );
+    std::vector< llvm::Type * > argumentsTypes;
+    argumentsTypes.push_back( mpllvm::get< engine::Value **** >( mGenerationEngine.llvmContext( ) ) );
+    for ( auto & parameter : astFunctionExpression.parameters( ) )
+        argumentsTypes.push_back( mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) ) );
+    llvm::FunctionType * functionType = llvm::FunctionType::get( returnType, argumentsTypes, false );
 
-    std::unique_ptr< engine::Scope > context( new engine::Scope( ) );
-    mScopes.push( std::move( context ) );
+    /* Creates llvm function */
+    llvm::Function * llvmFunction = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "", & mGenerationEngine.module( ) );
 
-    llvm::BasicBlock * currentBasicBlock = mGenerationEngine.builder( ).GetInsertBlock( );
-    llvm::BasicBlock::iterator currentPoint = mGenerationEngine.builder( ).GetInsertPoint( );
+    /* Gets the current insert point (we will need it later) */
+    llvm::BasicBlock * currentBasicBlock = mGenerationEngine.irBuilder( ).GetInsertBlock( );
+    llvm::BasicBlock::iterator currentPoint = mGenerationEngine.irBuilder( ).GetInsertPoint( );
 
-    llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.context( ), "", llvmFunction );
-    mGenerationEngine.builder( ).SetInsertPoint( basicBlock );
+    /* Sets the IRBuilder insert point at the start of the newly created function */
+    llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.llvmContext( ), "", llvmFunction );
+    mGenerationEngine.irBuilder( ).SetInsertPoint( basicBlock );
 
-    function.statements( )->accept( *this );
-    mValue.release( );
+    /* Starts a new closure, using the parent environment */
+    engine::Closure closure( mGenerationEngine, llvmFunction, ! mClosureStack.empty( ) ? mClosureStack.top( ) : nullptr );
+    mClosureStack.push( & closure );
 
-    mGenerationEngine.builder( ).SetInsertPoint( currentBasicBlock, currentPoint );
-    mScopes.pop( );
+    /* Declares each parameter into the closure */
+    auto llvmArgIterator = llvmFunction->arg_begin( );
+    llvm::Value * environment = llvmArgIterator ++;
+    for ( auto & parameter : astFunctionExpression.parameters( ) )
+        closure.declare( parameter.name( ), llvmArgIterator ++ );
 
+    /* Constructs function body */
+    astFunctionExpression.statements( )->accept( *this );
+
+    /* Clotures the closure */
+    mClosureStack.pop( );
+    closure.finalize( );
+
+    /* Restore insert point */
+    mGenerationEngine.irBuilder( ).SetInsertPoint( currentBasicBlock, currentPoint );
+
+    /* Checks function integrity */
+    llvmFunction->dump( );
     llvm::verifyFunction( * llvmFunction );
 
-    mValue.reset( mLLVMHelpers.functionToBox( llvmFunction ) );
+    /* Pseudo-returns a box containing this function */
+    mValue.reset( mLLVMHelpers.functionToBox( llvmFunction, nullptr ) );
 }

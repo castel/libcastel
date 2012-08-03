@@ -3,16 +3,19 @@
 #include <cstdint>
 #include <vector>
 
+#include <llvm/Support/IRBuilder.h>
 #include <llvm/BasicBlock.h>
 #include <llvm/Constants.h>
 #include <llvm/DerivedTypes.h>
 #include <llvm/Function.h>
+#include <llvm/Module.h>
 #include <llvm/Type.h>
 #include <llvm/Value.h>
 #include <mpllvm/mpllvm.hh>
 
 #include "p9/engine/GenerationEngine.hh"
 #include "p9/engine/Value.hh"
+#include "p9/utils/mpllvmExtensions.hh"
 
 namespace p9
 {
@@ -25,8 +28,10 @@ namespace p9
 
         public:
 
-            LLVMHelpers         ( engine::GenerationEngine & generationEngine )
-            : mGenerationEngine ( generationEngine )
+            LLVMHelpers    ( llvm::LLVMContext & llvmLLVMContext, llvm::IRBuilder< > & irBuilder, llvm::Module & module )
+            : mLLVMContext ( llvmLLVMContext )
+            , mIRBuilder   ( irBuilder   )
+            , mModule      ( module      )
             {
             }
 
@@ -34,112 +39,189 @@ namespace p9
 
             llvm::Value * sizeOf( llvm::Type * type )
             {
-                llvm::Type * targetType = llvm::IntegerType::get( mGenerationEngine.context( ), 32 );
+                /* See here : http://nondot.org/sabre/LLVMNotes/SizeOf-OffsetOf-VariableSizedStructs.txt */
+                llvm::Type * targetType = llvm::IntegerType::get( mLLVMContext, 32 );
                 llvm::ConstantPointerNull * nullPointer = llvm::ConstantPointerNull::get( llvm::PointerType::get( type, 0 ) );
-                return mGenerationEngine.builder( ).CreatePtrToInt( mpllvm::GEP< 64, 1 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), nullPointer ), targetType );
+                return mIRBuilder.CreatePtrToInt( mpllvm::GEP< 64, 1 >::build( mLLVMContext, mIRBuilder, nullPointer ), targetType );
             }
 
-            llvm::Value * allocateObject( llvm::Type * type )
+            llvm::Value * allocateObject( llvm::Type * type, int allocateOnTheStack = false )
             {
-                llvm::Function * p9Malloc = mGenerationEngine.module( ).getFunction( "p9Malloc" );
-                llvm::Value * memoryAddress = mGenerationEngine.builder( ).CreateCall( p9Malloc, this->sizeOf( type ) );
-                return mGenerationEngine.builder( ).CreateBitCast( memoryAddress, llvm::PointerType::get( type, 0 ) );
+                if ( allocateOnTheStack ) {
+                    /* Allocating on the stack using Alloca */
+                    return mIRBuilder.CreateAlloca( type );
+                } else {
+                    /* Allocating using the heap allocation function */
+                    llvm::Function * p9Malloc = mModule.getFunction( "p9Malloc" );
+                    llvm::Value * raw = mIRBuilder.CreateCall( p9Malloc, this->sizeOf( type ) );
+
+                    /* Casting the result to get the right result type */
+                    return mIRBuilder.CreateBitCast( raw, llvm::PointerType::getUnqual( type ) );
+                }
+            }
+
+            llvm::Value * allocateArray( llvm::Type * type, int count, int allocateOnTheStack = false )
+            {
+                /* Crafts the array type */
+                llvm::Type * arrayType = llvm::ArrayType::get( type, count );
+
+                /* Allocates memory for multiple objects */
+                llvm::Value * array = this->allocateObject( arrayType, allocateOnTheStack );
+
+                /* Casts this array reference into a pointer */
+                return array;
+                return mpllvm::GEP< 64, 0, 32, 0 >::build( mLLVMContext, mIRBuilder, array );
             }
 
         public:
 
             llvm::Function * boxToFunction( llvm::Value * genericBox, std::int32_t arity )
             {
+                /* Ensures that the generic dynamic box is really a function */
                 this->forceBoxType< engine::Value::Type::Function >( genericBox );
 
-                llvm::Value * box = mGenerationEngine.builder( ).CreateBitCast( genericBox, llvm::PointerType::get( mGenerationEngine.functionBoxType( ), 0 ) );
+                /* Casts the generic dynamic box into a Function box */
+                llvm::Value * functionBox = mIRBuilder.CreateBitCast( genericBox, llvm::PointerType::getUnqual( mModule.getTypeByName( "box.function" ) ) );
 
-                llvm::Value * arityIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
-                llvm::Value * functionArity = mGenerationEngine.builder( ).CreateLoad( arityIndex );
-                llvm::Value * expectedArity = llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 32, arity ) );
-                llvm::Value * arityCheck = mGenerationEngine.builder( ).CreateICmpNE( functionArity, expectedArity );
+                /**** START : checks function arity ****/
+                llvm::Value * arityIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * functionArity = mIRBuilder.CreateLoad( arityIndex );
+                llvm::Value * expectedArity = llvm::ConstantInt::get( mLLVMContext, llvm::APInt( 32, arity ) );
+                llvm::Value * arityCheck = mIRBuilder.CreateICmpNE( functionArity, expectedArity );
 
-                llvm::Function * outerFunction = mGenerationEngine.builder( ).GetInsertBlock( )->getParent( );
+                llvm::Function * outerFunction = mIRBuilder.GetInsertBlock( )->getParent( );
 
-                llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mGenerationEngine.context( ), "then", outerFunction );
-                llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mGenerationEngine.context( ), "finally" );
+                llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mLLVMContext, "then", outerFunction );
+                llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mLLVMContext, "finally" );
 
-                llvm::Value * conditionalBranching = mGenerationEngine.builder( ).CreateCondBr( arityCheck, thenBranch, finallyBranch );
+                llvm::Value * conditionalBranching = mIRBuilder.CreateCondBr( arityCheck, thenBranch, finallyBranch );
 
-                mGenerationEngine.builder( ).SetInsertPoint( thenBranch );
+                mIRBuilder.SetInsertPoint( thenBranch );
 
-                llvm::Function * runtimeP9Crash = mGenerationEngine.module( ).getFunction( "p9Crash" );
-                llvm::Value * errorMessage = mGenerationEngine.builder( ).CreateBitCast( llvm::ConstantDataArray::getString( mGenerationEngine.context( ), "Bad argument number in function call" ), mpllvm::get< char const * >( mGenerationEngine.context( ) ) );
-                mGenerationEngine.builder( ).CreateCall( runtimeP9Crash, errorMessage );
-                mGenerationEngine.builder( ).CreateUnreachable( );
+                llvm::Function * runtimeP9Crash = mModule.getFunction( "p9Crash" );
+                llvm::Value * errorMessage = mpllvm::GEP< 64, 0 >::build( mLLVMContext, mIRBuilder, llvm::ConstantPointerNull::get( mpllvm::get< char const * >( mLLVMContext ) ) );
+                mIRBuilder.CreateCall( runtimeP9Crash, errorMessage );
+                mIRBuilder.CreateUnreachable( );
 
                 outerFunction->getBasicBlockList( ).push_back( finallyBranch );
 
-                mGenerationEngine.builder( ).SetInsertPoint( finallyBranch );
+                mIRBuilder.SetInsertPoint( finallyBranch );
+                /**** END : checks function arity ****/
 
-                llvm::Type * boxType = llvm::PointerType::get( mGenerationEngine.boxType( ), 0 );
-                llvm::FunctionType * functionType = llvm::FunctionType::get( boxType, std::vector< llvm::Type * >( arity, boxType ), false );
+                /**** START : crafts function type ****/
+                llvm::Type * boxType = llvm::PointerType::getUnqual( mModule.getTypeByName( "box" ) );
+                llvm::Type * environmentType = llvm::PointerType::getUnqual( llvm::PointerType::getUnqual( llvm::PointerType::getUnqual( boxType ) ) );
 
-                llvm::Value * functionIndex = mpllvm::GEP< 64, 0, 32, 2 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
-                llvm::Value * genericFunction = mGenerationEngine.builder( ).CreateLoad( functionIndex );
+                std::vector< llvm::Type * > argumentsTypes( arity + 1, boxType );
+                argumentsTypes[ 0 ] = environmentType;
 
-                return static_cast< llvm::Function * >( mGenerationEngine.builder( ).CreateBitCast( genericFunction, llvm::PointerType::get( functionType, 0 ) ) );
+                llvm::FunctionType * functionType = llvm::FunctionType::get( boxType, argumentsTypes, false );
+                /**** END : crafts function type ****/
+
+                /* Loads the LLVM function pointer (as void*) */
+                llvm::Value * functionIndex = mpllvm::GEP< 64, 0, 32, 2 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * genericFunctionPointer = mIRBuilder.CreateLoad( functionIndex );
+
+                /* Casts the function pointer from void* to an LLVM function pointer */
+                return static_cast< llvm::Function * >( mIRBuilder.CreateBitCast( genericFunctionPointer, llvm::PointerType::getUnqual( functionType ) ) );
 
             }
 
-            llvm::Value * functionToBox( llvm::Function * function )
+            llvm::Value * functionToBox( llvm::Function * llvmFunction, llvm::Value * environment = nullptr )
             {
-                llvm::Value * box = this->allocateObject( mGenerationEngine.functionBoxType( ) );
+                /* Sets a default (empty) environment unless specified */
+                if ( environment == nullptr )
+                    llvm::ConstantPointerNull::get( mpllvm::get< engine::Value *** >( mLLVMContext ) );
 
-                llvm::Value * typeIndex = mpllvm::GEP< 64, 0, 32, 0 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
-                llvm::Value * arityIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
-                llvm::Value * functionIndex = mpllvm::GEP< 64, 0, 32, 2 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
+                /* Allocates enough memory for the new box */
+                llvm::Value * functionBox = this->allocateObject( mModule.getTypeByName( "box.function" ) );
 
-                llvm::Value * genericFunction = mGenerationEngine.builder( ).CreateBitCast( function, mpllvm::get< void * >( mGenerationEngine.context( ) ) );
+                /* Compute fields indexes */
+                llvm::Value * typeIndex = mpllvm::GEP< 64, 0, 32, 0 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * arityIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * functionIndex = mpllvm::GEP< 64, 0, 32, 2 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * environmentIndex = mpllvm::GEP< 64, 0, 32, 3 >::build( mLLVMContext, mIRBuilder, functionBox );
 
-                mGenerationEngine.builder( ).CreateStore( this->boxType< engine::Value::Type::Function >( ), typeIndex );
-                mGenerationEngine.builder( ).CreateStore( llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 32, function->arg_size( ) ) ), arityIndex );
-                mGenerationEngine.builder( ).CreateStore( genericFunction, functionIndex );
+                /* Casts the function pointer from an LLVM function pointer to void* */
+                llvm::Value * genericFunctionPointer = mIRBuilder.CreateBitCast( llvmFunction, mpllvm::get< void * >( mLLVMContext ) );
 
-                return this->boxToGeneric( box );
+                /* Populate box data */
+                mIRBuilder.CreateStore( this->boxType< engine::Value::Type::Function >( ), typeIndex );
+                mIRBuilder.CreateStore( llvm::ConstantInt::get( mLLVMContext, llvm::APInt( 32, llvmFunction->arg_size( ) - 1 ) ), arityIndex );
+                mIRBuilder.CreateStore( genericFunctionPointer, functionIndex );
+                //mIRBuilder.CreateStore( environment, environmentIndex );
+
+                /* Casts the function box into a generic dynamic box */
+                return this->boxToGeneric( functionBox );
+            }
+
+            llvm::Value * callFunctionBox( llvm::Value * genericBox, std::vector< llvm::Value * > const & arguments )
+            {
+                /* Tries to load the inner function */
+                llvm::Function * llvmFunction = this->boxToFunction( genericBox, arguments.size( ) );
+
+                /* Casts the generic dynamic box into a Function box */
+                llvm::Value * functionBox = mIRBuilder.CreateBitCast( genericBox, llvm::PointerType::getUnqual( mModule.getTypeByName( "box.function" ) ) );
+
+                /* Computes environment field index */
+                llvm::Value * environmentIndex = mpllvm::GEP< 64, 0, 32, 3 >::build( mLLVMContext, mIRBuilder, functionBox );
+
+                /* Loads environment */
+                llvm::Value * environment = mIRBuilder.CreateLoad( environmentIndex );
+
+                /* Duplicates the arguments and adds the environment at the front */
+                std::vector< llvm::Value * > duplicatedArguments;
+                duplicatedArguments.push_back( mIRBuilder.CreateBitCast( environment, mpllvm::get< engine::Value **** >( mLLVMContext ) ) );
+                duplicatedArguments.insert( duplicatedArguments.end( ), arguments.begin( ), arguments.end( ) );
+
+                /* Finally returns the call */
+                return mIRBuilder.CreateCall( llvmFunction, duplicatedArguments );
             }
 
         public:
 
             llvm::Value * boxToDouble( llvm::Value * genericBox )
             {
+                /* Ensures that the generic dynamic box is really a function */
                 this->forceBoxType< engine::Value::Type::Double >( genericBox );
 
-                llvm::Value * box = mGenerationEngine.builder( ).CreateBitCast( genericBox, llvm::PointerType::get( mGenerationEngine.doubleBoxType( ), 0 ) );
+                /* Casts the generic dynamic box into a Double box */
+                llvm::Value * doubleBox = mIRBuilder.CreateBitCast( genericBox, llvm::PointerType::getUnqual( mModule.getTypeByName( "box.double" ) ) );
 
-                llvm::Value * valueIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
-
-                return mGenerationEngine.builder( ).CreateLoad( valueIndex );
+                /* Loads and returns the internal value */
+                llvm::Value * valueIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mLLVMContext, mIRBuilder, doubleBox );
+                return mIRBuilder.CreateLoad( valueIndex );
             }
 
             llvm::Value * doubleToBox( double n )
             {
-                return this->doubleToBox( llvm::ConstantFP::get( mGenerationEngine.context( ), llvm::APFloat( n ) ) );
+                /* We just forward this action to the master helper */
+                return this->doubleToBox( llvm::ConstantFP::get( mLLVMContext, llvm::APFloat( n ) ) );
             }
 
             llvm::Value * doubleToBox( llvm::Value * value )
             {
-                llvm::Value * box = this->allocateObject( mGenerationEngine.doubleBoxType( ) );
+                /* Allocates enough memory for the new box */
+                llvm::Value * doubleBox = this->allocateObject( mModule.getTypeByName( "box.double" ) );
 
-                llvm::Value * typeIndex = mpllvm::GEP< 64, 0, 32, 0 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
-                llvm::Value * valueIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mGenerationEngine.context( ), mGenerationEngine.builder( ), box );
+                /* Compute fields indexes */
+                llvm::Value * typeIndex = mpllvm::GEP< 64, 0, 32, 0 >::build( mLLVMContext, mIRBuilder, doubleBox );
+                llvm::Value * valueIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mLLVMContext, mIRBuilder, doubleBox );
 
-                mGenerationEngine.builder( ).CreateStore( this->boxType< engine::Value::Type::Double >( ), typeIndex );
-                mGenerationEngine.builder( ).CreateStore( value, valueIndex );
+                /* Populate box data */
+                mIRBuilder.CreateStore( this->boxType< engine::Value::Type::Double >( ), typeIndex );
+                mIRBuilder.CreateStore( value, valueIndex );
 
-                return this->boxToGeneric( box );
+                /* Casts the double box into a generic dynamic box */
+                return this->boxToGeneric( doubleBox );
             }
 
         public:
 
             llvm::Value * boxToGeneric( llvm::Value * box )
             {
-                return mGenerationEngine.builder( ).CreateBitCast( box, llvm::PointerType::get( mGenerationEngine.boxType( ), 0 ) );
+                /* Casts the input box into a generic dynamic box. It does no check on the input */
+                return mIRBuilder.CreateBitCast( box, llvm::PointerType::getUnqual( mModule.getTypeByName( "box" ) ) );
             }
 
         public:
@@ -147,7 +229,8 @@ namespace p9
             template < engine::Value::Type Type >
             llvm::Value * boxType( void ) const
             {
-                return llvm::ConstantInt::get( mGenerationEngine.context( ), llvm::APInt( 32, static_cast< std::int32_t>( Type ) ) );
+                /* Return an integer LLVM value containing the template parameter box type */
+                return llvm::ConstantInt::get( mLLVMContext, llvm::APInt( 32, static_cast< std::int32_t>( Type ) ) );
             }
 
             template < engine::Value::Type Type >
@@ -160,7 +243,9 @@ namespace p9
 
         private:
 
-            engine::GenerationEngine & mGenerationEngine;
+            llvm::LLVMContext & mLLVMContext;
+            llvm::IRBuilder< > & mIRBuilder;
+            llvm::Module & mModule;
 
         };
 

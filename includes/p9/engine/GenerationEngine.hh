@@ -26,26 +26,24 @@ namespace p9
         public:
 
             GenerationEngine ( std::string const & name )
-            : mContext       (                )
-            , mBuilder       ( mContext       )
-            , mModule        ( name, mContext )
+            : mLLVMContext   (                    )
+            , mIRBuilder     ( mLLVMContext       )
+            , mModule        ( name, mLLVMContext )
             {
-                this->initBoxType( );
-                this->initFunctionBoxType( );
-                this->initDoubleBoxType( );
-                this->initRuntimeFunctions( );
+                this->initTypes( );
+                this->initFunctions( );
             }
 
         public:
 
-            llvm::LLVMContext & context( void )
+            llvm::LLVMContext & llvmContext( void )
             {
-                return mContext;
+                return mLLVMContext;
             }
 
-            llvm::IRBuilder< > & builder( void )
+            llvm::IRBuilder< > & irBuilder( void )
             {
-                return mBuilder;
+                return mIRBuilder;
             }
 
             llvm::Module & module( void )
@@ -53,52 +51,25 @@ namespace p9
                 return mModule;
             }
 
-        public:
+        private:
 
-            llvm::Type * boxType( void ) const
+            void initTypes( void )
             {
-                return mBoxType;
+                mpllvm::structure::create< std::int32_t >( mLLVMContext, "box" );
+                mpllvm::structure::create< std::int32_t, std::int32_t, void *, void * >( mLLVMContext, "box.function" );
+                mpllvm::structure::create< std::int32_t, double >( mLLVMContext, "box.double" );
             }
 
-            llvm::Type * functionBoxType( void ) const
+            void initFunctions( void )
             {
-                return mFunctionBoxType;
-            }
-
-            llvm::Type * doubleBoxType( void ) const
-            {
-                return mDoubleBoxType;
+                mpllvm::function::create( mLLVMContext, "p9Malloc", & p9Malloc, llvm::GlobalValue::ExternalLinkage, & mModule );
+                mpllvm::function::create( mLLVMContext, "p9Crash", & p9Crash, llvm::GlobalValue::ExternalLinkage, & mModule );
             }
 
         private:
 
-            void initBoxType( void )
-            {
-                mBoxType = mpllvm::craft< std::int32_t >( mContext );
-            }
-
-            void initFunctionBoxType( void )
-            {
-                mFunctionBoxType = mpllvm::craft< std::int32_t, std::int32_t, void * >( mContext );
-            }
-
-            void initDoubleBoxType( void )
-            {
-                mDoubleBoxType = mpllvm::craft< std::int32_t, double >( mContext );
-            }
-
-        private:
-
-            void initRuntimeFunctions( void )
-            {
-                llvm::Function::Create( mpllvm::deduce( mContext, & p9Crash ), llvm::GlobalValue::ExternalLinkage, "p9Crash", & mModule );
-                llvm::Function::Create( mpllvm::deduce( mContext, & p9Malloc ), llvm::GlobalValue::ExternalLinkage, "p9Malloc", & mModule );
-            }
-
-        private:
-
-            llvm::LLVMContext mContext;
-            llvm::IRBuilder< > mBuilder;
+            llvm::LLVMContext mLLVMContext;
+            llvm::IRBuilder< > mIRBuilder;
             llvm::Module mModule;
 
             llvm::Type * mBoxType;

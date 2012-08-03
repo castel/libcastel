@@ -7,7 +7,7 @@
 #include "p9/lexer/Token.hh"
 #include "p9/parser/Exception.hh"
 #include "p9/parser/Parser.hh"
-
+#include <iostream>
 using namespace p9;
 using namespace p9::parser;
 
@@ -31,6 +31,7 @@ ast::Statement * Parser::exec( void )
         goto loop;
 
     p9parserIsValid = true;
+    std::cout << lexeme->type( ) << std::endl;
     Parse( lemonParser, lexeme->type( ), lexeme.get( ) );
 
     if ( ! p9parserIsValid )

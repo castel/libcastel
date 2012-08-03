@@ -8,8 +8,8 @@ void CodeGenerator::visit( ast::stmt::Return & astReturnStatement )
 {
     if ( astReturnStatement.returnValue( ) ) {
         astReturnStatement.returnValue( )->accept( *this );
-        mGenerationEngine.builder( ).CreateRet( mValue.release( ) );
+        mGenerationEngine.irBuilder( ).CreateRet( mValue.release( ) );
     } else {
-        mGenerationEngine.builder( ).CreateRetVoid( );
+        mGenerationEngine.irBuilder( ).CreateRetVoid( );
     }
 }

@@ -28,7 +28,7 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
                     throw std::runtime_error( "Invalid lvalue" );
 
                 binaryExpression.right( )->accept( *this );
-                llvm::Value * right = mValue.release( );
+                llvm::Value * value = mValue.release( );
 
                 switch ( binaryExpression.type( ) ) {
                     default: break;
@@ -36,8 +36,7 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
                     case lexer::TAssign:
                         llvm::Value * destination;
                         if ( asVariable )
-                            destination = mScopes.top( )->get( asVariable->name( ) );
-                        mGenerationEngine.builder( ).CreateStore( right, destination );
+                            mClosureStack.top( )->set( asVariable->name( ), value );
                     break;
 
                 }
@@ -66,19 +65,19 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
                     default: break;
 
                     case lexer::TAdd:
-                        result = mGenerationEngine.builder( ).CreateFAdd( left, right, "add" );
+                        result = mGenerationEngine.irBuilder( ).CreateFAdd( left, right, "add" );
                     break;
 
                     case lexer::TSubstract:
-                        result = mGenerationEngine.builder( ).CreateFSub( left, right, "sub" );
+                        result = mGenerationEngine.irBuilder( ).CreateFSub( left, right, "sub" );
                     break;
 
                     case lexer::TMultiply:
-                        result = mGenerationEngine.builder( ).CreateFSub( left, right, "mul" );
+                        result = mGenerationEngine.irBuilder( ).CreateFSub( left, right, "mul" );
                     break;
 
                     case lexer::TDivide:
-                        result = mGenerationEngine.builder( ).CreateFDiv( left, right, "div" );
+                        result = mGenerationEngine.irBuilder( ).CreateFDiv( left, right, "div" );
                     break;
 
                     case lexer::TModulo:

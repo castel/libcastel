@@ -5,35 +5,43 @@
 #include <llvm/Function.h>
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
+#include <llvm/Type.h>
 #include <llvm/Value.h>
 
-#include "p9/ast/Token.hh"
+#include "p9/ast/Statement.hh"
 #include "p9/engine/CodeGenerator.hh"
+#include "p9/utils/mpllvmExtensions.hh"
 
 using namespace p9;
 using namespace p9::engine;
 
-CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine )
-: mGenerationEngine          ( generationEngine  )
-, mLLVMHelpers               ( mGenerationEngine )
+CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine                                                   )
+: mGenerationEngine          ( generationEngine                                                                              )
+, mLLVMHelpers               ( mGenerationEngine.llvmContext( ), mGenerationEngine.irBuilder( ), mGenerationEngine.module( ) )
 {
 }
 
-llvm::Function * CodeGenerator::codegen( ast::Token & token )
+llvm::Function * CodeGenerator::codegen( ast::Statement & astStatement )
 {
-    llvm::FunctionType * functionType = llvm::FunctionType::get( llvm::PointerType::get( mGenerationEngine.boxType( ), 0 ), { }, false );
-    llvm::Function * function = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "", & mGenerationEngine.module( ) );
+    llvm::Type * returnType = mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) );
+    llvm::FunctionType * functionType = llvm::FunctionType::get( returnType, { }, false );
 
-    llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.context( ), "", function );
-    mGenerationEngine.builder( ).SetInsertPoint( basicBlock );
+    llvm::Function * llvmFunction = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "", & mGenerationEngine.module( ) );
 
-    std::unique_ptr< engine::Scope > context( new engine::Scope( ) );
-    mScopes.push( std::move( context ) );
+    llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.llvmContext( ), "", llvmFunction );
+    mGenerationEngine.irBuilder( ).SetInsertPoint( basicBlock );
 
-    token.accept( * this );
+    engine::Closure closure( mGenerationEngine, llvmFunction );
+    mClosureStack.push( & closure );
+
+    astStatement.accept( * this );
     mValue.release( );
 
-    llvm::verifyFunction( * function );
+    mClosureStack.pop( );
+    closure.finalize( );
 
-    return function;
+    mGenerationEngine.module( ).dump();
+    llvm::verifyFunction( * llvmFunction );
+
+    return llvmFunction;
 }

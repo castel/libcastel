@@ -17,10 +17,10 @@
 #include "p9/ast/stmt/Expression.hh"
 #include "p9/ast/stmt/If.hh"
 #include "p9/ast/stmt/Return.hh"
-#include "p9/ast/Token.hh"
+#include "p9/ast/Statement.hh"
+#include "p9/engine/Closure.hh"
 #include "p9/engine/GenerationEngine.hh"
 #include "p9/engine/LLVMHelpers.hh"
-#include "p9/engine/Scope.hh"
 #include "p9/utils/Visitor.hh"
 
 namespace p9
@@ -38,7 +38,7 @@ namespace p9
 
         public:
 
-            llvm::Function * codegen( p9::ast::Token & );
+            llvm::Function * codegen( p9::ast::Statement & );
 
         private:
 
@@ -58,7 +58,7 @@ namespace p9
             engine::GenerationEngine & mGenerationEngine;
             engine::LLVMHelpers mLLVMHelpers;
 
-            std::stack< std::unique_ptr< engine::Scope > > mScopes;
+            std::stack< engine::Closure * > mClosureStack;
 
             std::unique_ptr< llvm::Value > mValue;
 

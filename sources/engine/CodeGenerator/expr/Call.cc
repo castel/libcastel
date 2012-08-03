@@ -11,22 +11,27 @@ using namespace p9::engine;
 
 void CodeGenerator::visit( ast::expr::Call & call )
 {
+    /* Checks that the AST has defined a callee function */
     if ( ! call.callee( ) )
         throw std::runtime_error( "Missing callee" );
 
+    /* Computes the function box which we'll need to inspect */
     call.callee( )->accept( *this );
     llvm::Value * box = mValue.release( );
 
-    std::int32_t arity = 0;
+    /* Computes arguments */
     std::vector< llvm::Value * > arguments;
+
     for ( auto & item : call.arguments( ) ) {
+
         if ( ! item.value( ) )
             throw std::runtime_error( "Missing expression" );
+
         item.value( )->accept( *this );
         arguments.push_back( mValue.release( ) );
-        ++ arity;
+
     }
 
-    llvm::Function * function = mLLVMHelpers.boxToFunction( box, arity );
-    mValue.reset( mGenerationEngine.builder( ).CreateCall( function, arguments ) );
+    /* Pseudo-returns the return value of the inner LLVM function call */
+    mValue.reset( mLLVMHelpers.callFunctionBox( box, arguments ) );
 }

@@ -16,6 +16,8 @@ namespace p9
             TFunction     = P9_LEXER_MANGLEDTOKENS_Function,
             TReturn       = P9_LEXER_MANGLEDTOKENS_Return,
             TVar          = P9_LEXER_MANGLEDTOKENS_Var,
+            TIf           = P9_LEXER_MANGLEDTOKENS_If,
+            TElse         = P9_LEXER_MANGLEDTOKENS_Else,
 
             TNumber       = P9_LEXER_MANGLEDTOKENS_Number,
             TIdentifier   = P9_LEXER_MANGLEDTOKENS_Identifier,

@@ -10,15 +10,13 @@ using namespace p9::engine;
 
 void CodeGenerator::visit( ast::stmt::decl::Variables & astVariablesDeclarationStatement )
 {
-    llvm::Function * function = mGenerationEngine.builder( ).GetInsertBlock( )->getParent( );
+    llvm::Function * function = mGenerationEngine.irBuilder( ).GetInsertBlock( )->getParent( );
 
     llvm::BasicBlock & entryBlock = function->getEntryBlock( );
     llvm::IRBuilder< > tmpBuilder( &entryBlock, entryBlock.begin( ) );
 
-    for ( auto & variable : astVariablesDeclarationStatement.variables( ) ) {
-        llvm::Value * alloced = mLLVMHelpers.allocateObject( llvm::PointerType::get( mGenerationEngine.boxType( ), 0 ) );
-        mScopes.top( )->create( variable.name( ), alloced );
-    }
+    for ( auto & variable : astVariablesDeclarationStatement.variables( ) )
+        mClosureStack.top( )->declare( variable.name( ) );
 
     if ( astVariablesDeclarationStatement.next( ) ) {
         astVariablesDeclarationStatement.next( )->accept( *this );

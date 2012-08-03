@@ -86,9 +86,10 @@ void Lexer::computeNextLexemes( void )
         }
 
         else if ( currentLevel > expectedLevel ) {
-            for ( ; currentLevel > expectedLevel; -- currentLevel )
-                mLexemeQueue.push( new lexer::Lexeme( lexer::TDedent, lastNewline->position( ) ) );
             mLexemeQueue.push( new lexer::Lexeme( lexer::TNewline, lastNewline->position( ) ) );
+            for ( ; currentLevel > expectedLevel; -- currentLevel ) {
+                mLexemeQueue.push( new lexer::Lexeme( lexer::TDedent, lastNewline->position( ) ) );
+            }
         }
 
         mLevelStack.top( ) = currentLevel;
@@ -103,19 +104,17 @@ void Lexer::computeNextLexemes( void )
 
     } else if ( lexeme->type( ) == lexer::TRParenthesis || lexeme->type( ) == lexer::TEOF ) {
 
-        unsigned int currentLevel = mLevelStack.top( );
-        mLevelStack.pop( );
-
+        unsigned int currentLevel = mLevelStack.top( ); mLevelStack.pop( );
         unsigned int expectedLevel = ! mLevelStack.empty( ) ? mLevelStack.top( ) : 0;
 
-        for ( ; currentLevel > expectedLevel; -- currentLevel ) {
+        if ( lexeme->type( ) == lexer::TEOF || currentLevel > expectedLevel ) {
+            mLexemeQueue.push( new lexer::Lexeme( lexer::TNewline, lexeme->position( ) ) );
+        }
+
+        for ( int t = currentLevel; t > expectedLevel; -- t ) {
             mLexemeQueue.push( new lexer::Lexeme( lexer::TDedent, lexeme->position( ) ) );
         }
 
-    }
-
-    if ( lexeme->type( ) == lexer::TEOF ) {
-        mLexemeQueue.push( new lexer::Lexeme( lexer::TNewline, lexeme->position( ) ) );
     }
 
     // Pas de comportement spécial relatif à l'offside rule, nous pouvons
@@ -131,6 +130,8 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
         Function     = 'function';
         Return       = 'return';
         Var          = 'var';
+        If           = 'if';
+        Else         = 'else';
 
         Add          = '+';
         Substract    = '-';
@@ -156,6 +157,8 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
             Function     => { type = lexer::TFunction;     fbreak; };
             Return       => { type = lexer::TReturn;       fbreak; };
             Var          => { type = lexer::TVar;          fbreak; };
+            If           => { type = lexer::TIf;           fbreak; };
+            Else         => { type = lexer::TElse;         fbreak; };
 
             Add          => { type = lexer::TAdd;          fbreak; };
             Substract    => { type = lexer::TSubstract;    fbreak; };
@@ -168,6 +171,7 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
             RParenthesis => { type = lexer::TRParenthesis; fbreak; };
 
             Colon        => { type = lexer::TColon;        fbreak; };
+            Comma        => { type = lexer::TComma;        fbreak; };
 
             Number       => { type = lexer::TNumber;       fbreak; };
             Identifier   => { type = lexer::TIdentifier;   fbreak; };

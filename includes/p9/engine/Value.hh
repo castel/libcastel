@@ -25,6 +25,7 @@ namespace p9
                 struct {
 
                     std::int32_t arity;
+                    void * parentEnvironment;
                     void * function;
 
                 } functionData;

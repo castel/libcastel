@@ -12,6 +12,7 @@ void CodeGenerator::visit( ast::stmt::Expression & astExpressionStatement )
         throw std::runtime_error( "Missing expression" );
 
     astExpressionStatement.expression( )->accept( *this );
+    mValue.release( );
 
     if ( astExpressionStatement.next( ) ) {
         astExpressionStatement.next( )->accept( *this );
