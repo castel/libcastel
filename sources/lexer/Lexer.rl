@@ -1,7 +1,6 @@
 #include "castel/lexer/Exception.hh"
 #include "castel/lexer/Lexeme.hh"
 #include "castel/lexer/Lexer.hh"
-#include "castel/lexer/Token.hh"
 
 using namespace castel;
 using namespace castel::lexer;
@@ -30,7 +29,7 @@ Lexeme * Lexer::consume( void )
         if ( ! mLevelStack.empty( ) ) {
             this->computeNextLexemes( );
         } else {
-            return new lexer::Lexeme( lexer::TInvalid );
+            return new lexer::Lexeme( lexer::Lexeme::Type::Invalid );
         }
     }
 
@@ -54,7 +53,7 @@ void Lexer::computeNextLexemes( void )
 
         lexeme = this->fetchNextLexeme( );
 
-        if ( lexeme->type( ) == lexer::TNewline ) {
+        if ( lexeme->type( ) == lexer::Lexeme::Type::Newline ) {
             lastNewline.reset( lexeme );
         } else {
             break;
@@ -81,14 +80,14 @@ void Lexer::computeNextLexemes( void )
 
         else if ( currentLevel < expectedLevel ) {
             for ( ; currentLevel < expectedLevel; ++ currentLevel ) {
-                mLexemeQueue.push( new lexer::Lexeme( lexer::TIndent, lastNewline->position( ) ) );
+                mLexemeQueue.push( new lexer::Lexeme( lexer::Lexeme::Type::Indent, lastNewline->position( ) ) );
             }
         }
 
         else if ( currentLevel > expectedLevel ) {
-            mLexemeQueue.push( new lexer::Lexeme( lexer::TNewline, lastNewline->position( ) ) );
+            mLexemeQueue.push( new lexer::Lexeme( lexer::Lexeme::Type::Newline, lastNewline->position( ) ) );
             for ( ; currentLevel > expectedLevel; -- currentLevel ) {
-                mLexemeQueue.push( new lexer::Lexeme( lexer::TDedent, lastNewline->position( ) ) );
+                mLexemeQueue.push( new lexer::Lexeme( lexer::Lexeme::Type::Dedent, lastNewline->position( ) ) );
             }
         }
 
@@ -98,21 +97,21 @@ void Lexer::computeNextLexemes( void )
 
     //
 
-    if ( lexeme->type( ) == lexer::TLParenthesis ) {
+    if ( lexeme->type( ) == lexer::Lexeme::Type::LParenthesis ) {
 
         mLevelStack.push( mLevelStack.top( ) );
 
-    } else if ( lexeme->type( ) == lexer::TRParenthesis || lexeme->type( ) == lexer::TEOF ) {
+    } else if ( lexeme->type( ) == lexer::Lexeme::Type::RParenthesis || lexeme->type( ) == lexer::Lexeme::Type::End ) {
 
         unsigned int currentLevel = mLevelStack.top( ); mLevelStack.pop( );
         unsigned int expectedLevel = ! mLevelStack.empty( ) ? mLevelStack.top( ) : 0;
 
-        if ( lexeme->type( ) == lexer::TEOF || currentLevel > expectedLevel ) {
-            mLexemeQueue.push( new lexer::Lexeme( lexer::TNewline, lexeme->position( ) ) );
+        if ( lexeme->type( ) == lexer::Lexeme::Type::End || currentLevel > expectedLevel ) {
+            mLexemeQueue.push( new lexer::Lexeme( lexer::Lexeme::Type::Newline, lexeme->position( ) ) );
         }
 
         for ( int t = currentLevel; t > expectedLevel; -- t ) {
-            mLexemeQueue.push( new lexer::Lexeme( lexer::TDedent, lexeme->position( ) ) );
+            mLexemeQueue.push( new lexer::Lexeme( lexer::Lexeme::Type::Dedent, lexeme->position( ) ) );
         }
 
     }
@@ -154,30 +153,30 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
         main := |*
 
-            Function     => { type = lexer::TFunction;     fbreak; };
-            Return       => { type = lexer::TReturn;       fbreak; };
-            Var          => { type = lexer::TVar;          fbreak; };
-            If           => { type = lexer::TIf;           fbreak; };
-            Else         => { type = lexer::TElse;         fbreak; };
+            Function     => { type = lexer::Lexeme::Type::Function;     fbreak; };
+            Return       => { type = lexer::Lexeme::Type::Return;       fbreak; };
+            Var          => { type = lexer::Lexeme::Type::Var;          fbreak; };
+            If           => { type = lexer::Lexeme::Type::If;           fbreak; };
+            Else         => { type = lexer::Lexeme::Type::Else;         fbreak; };
 
-            Add          => { type = lexer::TAdd;          fbreak; };
-            Substract    => { type = lexer::TSubstract;    fbreak; };
-            Multiply     => { type = lexer::TMultiply;     fbreak; };
-            Divide       => { type = lexer::TDivide;       fbreak; };
-            Modulo       => { type = lexer::TModulo;       fbreak; };
-            Assign       => { type = lexer::TAssign;       fbreak; };
+            Add          => { type = lexer::Lexeme::Type::Add;          fbreak; };
+            Substract    => { type = lexer::Lexeme::Type::Substract;    fbreak; };
+            Multiply     => { type = lexer::Lexeme::Type::Multiply;     fbreak; };
+            Divide       => { type = lexer::Lexeme::Type::Divide;       fbreak; };
+            Modulo       => { type = lexer::Lexeme::Type::Modulo;       fbreak; };
+            Assign       => { type = lexer::Lexeme::Type::Assign;       fbreak; };
 
-            LParenthesis => { type = lexer::TLParenthesis; fbreak; };
-            RParenthesis => { type = lexer::TRParenthesis; fbreak; };
+            LParenthesis => { type = lexer::Lexeme::Type::LParenthesis; fbreak; };
+            RParenthesis => { type = lexer::Lexeme::Type::RParenthesis; fbreak; };
 
-            Colon        => { type = lexer::TColon;        fbreak; };
-            Comma        => { type = lexer::TComma;        fbreak; };
+            Colon        => { type = lexer::Lexeme::Type::Colon;        fbreak; };
+            Comma        => { type = lexer::Lexeme::Type::Comma;        fbreak; };
 
-            Number       => { type = lexer::TNumber;       fbreak; };
-            Identifier   => { type = lexer::TIdentifier;   fbreak; };
+            Number       => { type = lexer::Lexeme::Type::Number;       fbreak; };
+            Identifier   => { type = lexer::Lexeme::Type::Identifier;   fbreak; };
 
-            Spaces       => { type = lexer::TSpaces;       fbreak; };
-            Newline      => { type = lexer::TNewline;      fbreak; };
+            Spaces       => { type = lexer::Lexeme::Type::Spaces;       fbreak; };
+            Newline      => { type = lexer::Lexeme::Type::Newline;      fbreak; };
 
             any          => { fbreak; };
 
@@ -187,14 +186,14 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
     // Variable qui contiendra le type du lexème à la fin de l'itération
 
-    lexer::Token type;
+    lexer::Lexeme::Type type;
 
     if ( mP == mPe ) {
 
         // Nous avons atteint la fin du flux, le lexème est donc de type EOF
 
         mTs = mTe = mP;
-        type = lexer::TEOF;
+        type = lexer::Lexeme::Type::End;
 
     } else {
 
@@ -219,7 +218,7 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
         // Si le symbole est inconnu, on jette une exception
 
-        if ( type == lexer::TInvalid ) {
+        if ( type == lexer::Lexeme::Type::Invalid ) {
             throw lexer::Exception( "Invalid symbol" );
         }
 
@@ -233,7 +232,9 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
     // utilisé qu'à des fins informatives (par exemple en cas d'erreur
     // de parsing)
 
-    if ( type == lexer::TNewline ) {
+    lexer::Position position = mPosition;
+
+    if ( type == lexer::Lexeme::Type::Newline ) {
 
         mPosition.line += 1;
         mPosition.column = size;
@@ -250,8 +251,8 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
     }
 
-    // Dans le cas contraire, un symbole valide est émis.
+    // Emission du symbole final
 
-    return new lexer::Lexeme( type, std::string( mTs, size ), mPosition );
+    return new lexer::Lexeme( type, std::string( mTs, size ), position );
 
 }

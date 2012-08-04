@@ -4,7 +4,6 @@
 
 #include "castel/ast/Expression.hh"
 #include "castel/lexer/Lexeme.hh"
-#include "castel/lexer/Token.hh"
 #include "castel/utils/Visitor.hh"
 
 namespace castel
@@ -22,13 +21,13 @@ namespace castel
             public:
 
                 Binary   ( void )
-                : mType  ( lexer::TInvalid )
-                , mLeft  (                 )
-                , mRight (                 )
+                : mType  ( lexer::Lexeme::Type::Invalid )
+                , mLeft  (                              )
+                , mRight (                              )
                 {
                 }
 
-                Binary   ( lexer::Token type, ast::Expression * left = nullptr, ast::Expression * right = nullptr )
+                Binary   ( lexer::Lexeme::Type type, ast::Expression * left = nullptr, ast::Expression * right = nullptr )
                 : mType  ( type  )
                 , mLeft  ( left  )
                 , mRight ( right )
@@ -37,12 +36,12 @@ namespace castel
 
             public:
 
-                lexer::Token type( void ) const
+                lexer::Lexeme::Type type( void ) const
                 {
                     return mType;
                 }
 
-                Binary & type( lexer::Token type )
+                Binary & type( lexer::Lexeme::Type type )
                 {
                     mType = type;
 
@@ -96,7 +95,7 @@ namespace castel
 
             private:
 
-                lexer::Token mType;
+                lexer::Lexeme::Type mType;
 
                 std::unique_ptr< ast::Expression > mLeft;
                 std::unique_ptr< ast::Expression > mRight;

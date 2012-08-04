@@ -11,7 +11,7 @@ MV               = mv
 RM               = rm
 
 SRCS_PARSE       = $(shell (find sources/lexer sources/parser -name '*.cc' ; echo sources/lexer/Lexer.cc) | sort | uniq)
-HDRS_PARSE       = $(shell (find includes/castel/lexer includes/castel/parser includes/castel/ast -name '*.hh' ; echo includes/castel/lexer/MangledTokens.hh) | sort | uniq)
+HDRS_PARSE       = $(shell (find includes/castel/lexer includes/castel/parser includes/castel/ast -name '*.hh' ; echo includes/castel/lexer/MangledLexemesTypes.hh) | sort | uniq)
 DEPS_PARSE       = $(addprefix build/dependencies/,$(SRCS_PARSE:.cc=.d))
 OBJS_PARSE       = $(addprefix build/objects/,$(SRCS_PARSE:.cc=.o))
 
@@ -45,7 +45,7 @@ $(LIBRARY_RUNTIME): build/$(LIBRARY_RUNTIME)
 
 -include $(DEPS_PARSE) $(DEPS_ENGINE) $(DEPS_RUNTIME)
 
-build/$(LIBRARY_PARSE): $(OBJS_PARSE) includes/castel/lexer/MangledTokens.hh
+build/$(LIBRARY_PARSE): $(OBJS_PARSE) includes/castel/lexer/MangledLexemesTypes.hh
 	@printf "%s# Merging object files for $(LIBRARY_PARSE).%s\n" "$(PURPLE)" "$(EOS)"
 	@$(AR) rcs build/$(LIBRARY_PARSE) $(OBJS_PARSE)
 
@@ -61,24 +61,24 @@ sources/lexer/Lexer.cc: sources/lexer/Lexer.rl
 	@printf "%s+ Generating ragel castel lexer.%s\n" "$(CYAN)" "$(EOS)"
 	@$(RAGEL) -C -o sources/lexer/Lexer.cc sources/lexer/Lexer.rl
 
-includes/castel/lexer/MangledTokens.hh sources/parser/parse.cc: sources/parser/parse.lm
+includes/castel/lexer/MangledLexemesTypes.hh sources/parser/parse.cc: sources/parser/parse.lm
 	@printf "%s@ Generating lemon castel parser.%s\n" "$(CYAN)" "$(EOS)"
 	@$(LEMON) sources/parser/parse.lm
 	@$(RM) sources/parser/parse.out
-	@$(MV) sources/parser/parse.h includes/castel/lexer/MangledTokens.hh
+	@$(MV) sources/parser/parse.h includes/castel/lexer/MangledLexemesTypes.hh
 	@$(MV) sources/parser/parse.c sources/parser/parse.cc
 
-$(DEPS_PARSE): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledTokens.hh sources/parser/parse.cc
+$(DEPS_PARSE): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledLexemesTypes.hh sources/parser/parse.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
 	@$(MKDIR) -p "$(dir $(@))"
 	@$(CXX) $(CXXFLAGS_PARSE) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
-$(DEPS_ENGINE): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledTokens.hh sources/parser/parse.cc
+$(DEPS_ENGINE): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledLexemesTypes.hh sources/parser/parse.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
 	@$(MKDIR) -p "$(dir $(@))"
 	@$(CXX) $(CXXFLAGS_ENGINE) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
-$(DEPS_RUNTIME): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledTokens.hh sources/parser/parse.cc
+$(DEPS_RUNTIME): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledLexemesTypes.hh sources/parser/parse.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
 	@$(MKDIR) -p "$(dir $(@))"
 	@$(CXX) $(CXXFLAGS_RUNTIME) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
@@ -102,7 +102,7 @@ clean:
 	@printf "%s- Removing temporary files.%s\n" "$(BROWN)" "$(EOS)"
 	@$(RM) -rf build/generated
 	@$(RM) -rf build/objects
-	@$(RM) -f includes/castel/lexer/MangledTokens.hh
+	@$(RM) -f includes/castel/lexer/MangledLexemesTypes.hh
 	@$(RM) -f sources/lexer/Lexer.cc
 	@$(RM) -f sources/parser/parse.cc
 

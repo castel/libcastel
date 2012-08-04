@@ -4,10 +4,9 @@
 #include "castel/ast/Statement.hh"
 #include "castel/lexer/Lexeme.hh"
 #include "castel/lexer/Lexer.hh"
-#include "castel/lexer/Token.hh"
 #include "castel/parser/Exception.hh"
 #include "castel/parser/Parser.hh"
-#include <iostream>
+
 using namespace castel;
 using namespace castel::parser;
 
@@ -27,17 +26,16 @@ ast::Statement * Parser::exec( void )
  loop:
     lexeme.reset( mLexer.consume( ) );
 
-    if ( lexeme->type( ) == lexer::TSpaces )
+    if ( lexeme->type( ) == lexer::Lexeme::Type::Spaces )
         goto loop;
 
     castelparserIsValid = true;
-    std::cout << lexeme->type( ) << std::endl;
-    Parse( lemonParser, lexeme->type( ), lexeme.get( ) );
+    Parse( lemonParser, static_cast< int >( lexeme->type( ) ), lexeme.get( ) );
 
     if ( ! castelparserIsValid )
         goto syntaxError;
 
-    if ( lexeme->type( ) == lexer::TEOF )
+    if ( lexeme->type( ) == lexer::Lexeme::Type::End )
         goto endOfFile;
 
     lexeme.release( );

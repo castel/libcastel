@@ -1,4 +1,4 @@
-%token_prefix P9_LEXER_MANGLEDTOKENS_
+%token_prefix CASTEL_LEXER_MANGLEDLEXEMESTYPES_
 %token_type   { lexer::Lexeme *     }
 
 %left Assign.
@@ -27,7 +27,6 @@
     #include "castel/ast/Expression.hh"
     #include "castel/ast/Statement.hh"
     #include "castel/lexer/Lexeme.hh"
-    #include "castel/lexer/Token.hh"
 
     using namespace castel;
 
@@ -91,13 +90,13 @@ expression(A) ::= numberexpression(U).                                          
 expression(A) ::= functionexpression(U).                                                            { A = U;            }
 expression(A) ::= variableexpression(U).                                                            { A = U;            }
 
-%type binaryexpression                                                                              { ast::expr::Binary *                                   }
-binaryexpression(A) ::= expression(U) Add       expression(V).                                      { A = new ast::expr::Binary( lexer::TAdd,       U, V ); }
-binaryexpression(A) ::= expression(U) Substract expression(V).                                      { A = new ast::expr::Binary( lexer::TSubstract, U, V ); }
-binaryexpression(A) ::= expression(U) Multiply  expression(V).                                      { A = new ast::expr::Binary( lexer::TMultiply,  U, V ); }
-binaryexpression(A) ::= expression(U) Divide    expression(V).                                      { A = new ast::expr::Binary( lexer::TDivide,    U, V ); }
-binaryexpression(A) ::= expression(U) Modulo    expression(V).                                      { A = new ast::expr::Binary( lexer::TModulo,    U, V ); }
-binaryexpression(A) ::= expression(U) Assign    expression(V).                                      { A = new ast::expr::Binary( lexer::TAssign,    U, V ); }
+%type binaryexpression                                                                              { ast::expr::Binary *                                                }
+binaryexpression(A) ::= expression(U) Add       expression(V).                                      { A = new ast::expr::Binary( lexer::Lexeme::Type::Add,       U, V ); }
+binaryexpression(A) ::= expression(U) Substract expression(V).                                      { A = new ast::expr::Binary( lexer::Lexeme::Type::Substract, U, V ); }
+binaryexpression(A) ::= expression(U) Multiply  expression(V).                                      { A = new ast::expr::Binary( lexer::Lexeme::Type::Multiply,  U, V ); }
+binaryexpression(A) ::= expression(U) Divide    expression(V).                                      { A = new ast::expr::Binary( lexer::Lexeme::Type::Divide,    U, V ); }
+binaryexpression(A) ::= expression(U) Modulo    expression(V).                                      { A = new ast::expr::Binary( lexer::Lexeme::Type::Modulo,    U, V ); }
+binaryexpression(A) ::= expression(U) Assign    expression(V).                                      { A = new ast::expr::Binary( lexer::Lexeme::Type::Assign,    U, V ); }
 
 %type callexpression                                                                                { ast::expr::Call *                }
 callexpression(A) ::= expression(U) arguments(V).                                                   { A = new ast::expr::Call( U, V ); }

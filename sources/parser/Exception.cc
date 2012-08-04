@@ -13,9 +13,18 @@ Exception::Exception ( std::string const & message, lexer::Lexeme * lexeme )
 : mMessage           ( message )
 , mLexeme            ( lexeme  )
 {
-    lexer::Position const & position = mLexeme->position( );
+    if ( lexeme ) {
 
-    std::ostringstream stringstream;
-    stringstream << message << " #" << lexeme->type( ) << " \"" << lexeme->as< std::string >( ) << "\" at " << position.toString( );
-    mWhat = stringstream.str( );
+        lexer::Position const & position = mLexeme->position( );
+
+        std::ostringstream stringstream;
+        stringstream << message << " " << lexer::Lexeme::constTypeString( lexeme->type( ) ) << " at " << position.toString( );
+        mWhat = stringstream.str( );
+
+    } else {
+
+        mWhat = message;
+
+    }
+
 }

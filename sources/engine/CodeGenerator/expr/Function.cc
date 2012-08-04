@@ -61,7 +61,6 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     mGenerationEngine.irBuilder( ).SetInsertPoint( currentBasicBlock, currentPoint );
 
     /* Checks function integrity */
-    llvmFunction->dump( );
     llvm::verifyFunction( * llvmFunction );
 
     /* Pseudo-returns a box containing this function */

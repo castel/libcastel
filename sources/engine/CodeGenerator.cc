@@ -40,7 +40,6 @@ llvm::Function * CodeGenerator::codegen( ast::Statement & astStatement )
     mClosureStack.pop( );
     closure.finalize( );
 
-    mGenerationEngine.module( ).dump();
     llvm::verifyFunction( * llvmFunction );
 
     return llvmFunction;

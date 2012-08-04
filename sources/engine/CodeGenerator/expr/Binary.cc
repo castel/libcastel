@@ -3,7 +3,7 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/Binary.hh"
-#include "castel/lexer/Token.hh"
+#include "castel/lexer/Lexeme.hh"
 #include "castel/engine/CodeGenerator.hh"
 
 using namespace castel;
@@ -19,7 +19,7 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
 
     switch ( binaryExpression.type( ) ) {
 
-        case lexer::TAssign:
+        case lexer::Lexeme::Type::Assign:
 
             {
                 auto asVariable = dynamic_cast< ast::expr::Variable * >( binaryExpression.left( ) );
@@ -33,7 +33,7 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
                 switch ( binaryExpression.type( ) ) {
                     default: break;
 
-                    case lexer::TAssign:
+                    case lexer::Lexeme::Type::Assign:
                         llvm::Value * destination;
                         if ( asVariable )
                             mClosureStack.top( )->set( asVariable->name( ), value );
@@ -45,11 +45,11 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
 
         break;
 
-        case lexer::TAdd:
-        case lexer::TSubstract:
-        case lexer::TMultiply:
-        case lexer::TDivide:
-        case lexer::TModulo:
+        case lexer::Lexeme::Type::Add:
+        case lexer::Lexeme::Type::Substract:
+        case lexer::Lexeme::Type::Multiply:
+        case lexer::Lexeme::Type::Divide:
+        case lexer::Lexeme::Type::Modulo:
 
             {
 
@@ -64,23 +64,23 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
                 switch ( binaryExpression.type( ) ) {
                     default: break;
 
-                    case lexer::TAdd:
+                    case lexer::Lexeme::Type::Add:
                         result = mGenerationEngine.irBuilder( ).CreateFAdd( left, right, "add" );
                     break;
 
-                    case lexer::TSubstract:
+                    case lexer::Lexeme::Type::Substract:
                         result = mGenerationEngine.irBuilder( ).CreateFSub( left, right, "sub" );
                     break;
 
-                    case lexer::TMultiply:
+                    case lexer::Lexeme::Type::Multiply:
                         result = mGenerationEngine.irBuilder( ).CreateFSub( left, right, "mul" );
                     break;
 
-                    case lexer::TDivide:
+                    case lexer::Lexeme::Type::Divide:
                         result = mGenerationEngine.irBuilder( ).CreateFDiv( left, right, "div" );
                     break;
 
-                    case lexer::TModulo:
+                    case lexer::Lexeme::Type::Modulo:
                         throw std::runtime_error( "Not implemented" );
                     break;
 
