@@ -1,11 +1,11 @@
 #include <sstream>
 #include <string>
 
-#include "p9/lexer/Exception.hh"
-#include "p9/lexer/Lexer.hh"
+#include "castel/lexer/Exception.hh"
+#include "castel/lexer/Lexer.hh"
 
-using namespace p9;
-using namespace p9::lexer;
+using namespace castel;
+using namespace castel::lexer;
 
 Exception::Exception ( std::string const & message )
     : mMessage( message )

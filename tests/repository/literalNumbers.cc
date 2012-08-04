@@ -1,10 +1,10 @@
 #include <memory>
 
-#include <p9/ast/Token.hh>
+#include <castel/ast/Token.hh>
 
 #include "P9Tests.hh"
 
-using namespace p9;
+using namespace castel;
 
 void P9Tests::literalNumbers( void )
 {

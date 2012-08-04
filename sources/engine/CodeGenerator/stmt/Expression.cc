@@ -1,10 +1,10 @@
 #include <stdexcept>
 
-#include "p9/ast/stmt/Expression.hh"
-#include "p9/engine/CodeGenerator.hh"
+#include "castel/ast/stmt/Expression.hh"
+#include "castel/engine/CodeGenerator.hh"
 
-using namespace p9;
-using namespace p9::engine;
+using namespace castel;
+using namespace castel::engine;
 
 void CodeGenerator::visit( ast::stmt::Expression & astExpressionStatement )
 {

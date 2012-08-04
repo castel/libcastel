@@ -8,12 +8,12 @@
 #include <llvm/DerivedTypes.h>
 #include <llvm/Function.h>
 
-#include "p9/ast/expr/Function.hh"
-#include "p9/engine/CodeGenerator.hh"
-#include "p9/engine/Scope.hh"
+#include "castel/ast/expr/Function.hh"
+#include "castel/engine/CodeGenerator.hh"
+#include "castel/engine/Scope.hh"
 
-using namespace p9;
-using namespace p9::engine;
+using namespace castel;
+using namespace castel::engine;
 
 void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
 {

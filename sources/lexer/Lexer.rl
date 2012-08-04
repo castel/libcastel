@@ -1,12 +1,12 @@
-#include "p9/lexer/Exception.hh"
-#include "p9/lexer/Lexeme.hh"
-#include "p9/lexer/Lexer.hh"
-#include "p9/lexer/Token.hh"
+#include "castel/lexer/Exception.hh"
+#include "castel/lexer/Lexeme.hh"
+#include "castel/lexer/Lexer.hh"
+#include "castel/lexer/Token.hh"
 
-using namespace p9;
-using namespace p9::lexer;
+using namespace castel;
+using namespace castel::lexer;
 
-%% machine p9lexer;
+%% machine castellexer;
 %% write data;
 
 Lexer::Lexer       ( char const * p, std::size_t n )

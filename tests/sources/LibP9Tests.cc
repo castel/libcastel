@@ -2,8 +2,8 @@
 #include <sstream>
 #include <string>
 
-#include <p9/lexer/Lexer.hh>
-#include <p9/parser/Parser.hh>
+#include <castel/lexer/Lexer.hh>
+#include <castel/parser/Parser.hh>
 
 #include "LibP9Tests.hh"
 
@@ -23,14 +23,14 @@ void LibP9Tests::initLexer( Method method, std::string const & data )
 {
     this->initSource( method, data );
 
-    mLexer.reset( new p9::lexer::Lexer( mSource->c_str( ), mSource->size( ) ) );
+    mLexer.reset( new castel::lexer::Lexer( mSource->c_str( ), mSource->size( ) ) );
 }
 
 void LibP9Tests::initParser( Method method, std::string const & data )
 {
     this->initLexer( method, data );
 
-    mParser.reset( new p9::parser::Parser( * mLexer ) );
+    mParser.reset( new castel::parser::Parser( * mLexer ) );
 }
 
 std::string LibP9Tests::fromString( std::string const & string )

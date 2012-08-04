@@ -1,6 +1,6 @@
-LIBRARY_PARSE    = libP9Parse.a
-LIBRARY_ENGINE   = libP9Engine.a
-LIBRARY_RUNTIME  = libP9Runtime.a
+LIBRARY_PARSE    = libCastelParse.a
+LIBRARY_ENGINE   = libCastelEngine.a
+LIBRARY_RUNTIME  = libCastelRuntime.a
 
 CXX              = clang++
 AR               = ar
@@ -11,17 +11,17 @@ MV               = mv
 RM               = rm
 
 SRCS_PARSE       = $(shell (find sources/lexer sources/parser -name '*.cc' ; echo sources/lexer/Lexer.cc) | sort | uniq)
-HDRS_PARSE       = $(shell (find includes/p9/lexer includes/p9/parser includes/p9/ast -name '*.hh' ; echo includes/p9/lexer/MangledTokens.hh) | sort | uniq)
+HDRS_PARSE       = $(shell (find includes/castel/lexer includes/castel/parser includes/castel/ast -name '*.hh' ; echo includes/castel/lexer/MangledTokens.hh) | sort | uniq)
 DEPS_PARSE       = $(addprefix build/dependencies/,$(SRCS_PARSE:.cc=.d))
 OBJS_PARSE       = $(addprefix build/objects/,$(SRCS_PARSE:.cc=.o))
 
 SRCS_ENGINE      = $(shell (find sources/engine -name '*.cc') | sort | uniq)
-HDRS_ENGINE      = $(shell (find includes/p9/engine -name '*.hh') | sort | uniq)
+HDRS_ENGINE      = $(shell (find includes/castel/engine -name '*.hh') | sort | uniq)
 DEPS_ENGINE      = $(addprefix build/dependencies/,$(SRCS_ENGINE:.cc=.d))
 OBJS_ENGINE      = $(addprefix build/objects/,$(SRCS_ENGINE:.cc=.o))
 
 SRCS_RUNTIME     = $(shell (find sources/runtime -name '*.cc') | sort | uniq)
-HDRS_RUNTIME     = $(shell (find includes/p9/runtime -name '*.hh') | sort | uniq)
+HDRS_RUNTIME     = $(shell (find includes/castel/runtime -name '*.hh') | sort | uniq)
 DEPS_RUNTIME     = $(addprefix build/dependencies/,$(SRCS_RUNTIME:.cc=.d))
 OBJS_RUNTIME     = $(addprefix build/objects/,$(SRCS_RUNTIME:.cc=.o))
 
@@ -45,7 +45,7 @@ $(LIBRARY_RUNTIME): build/$(LIBRARY_RUNTIME)
 
 -include $(DEPS_PARSE) $(DEPS_ENGINE) $(DEPS_RUNTIME)
 
-build/$(LIBRARY_PARSE): $(OBJS_PARSE) includes/p9/lexer/MangledTokens.hh
+build/$(LIBRARY_PARSE): $(OBJS_PARSE) includes/castel/lexer/MangledTokens.hh
 	@printf "%s# Merging object files for $(LIBRARY_PARSE).%s\n" "$(PURPLE)" "$(EOS)"
 	@$(AR) rcs build/$(LIBRARY_PARSE) $(OBJS_PARSE)
 
@@ -58,27 +58,27 @@ build/$(LIBRARY_RUNTIME): $(OBJS_RUNTIME)
 	@$(AR) rcs build/$(LIBRARY_RUNTIME) $(OBJS_RUNTIME)
 
 sources/lexer/Lexer.cc: sources/lexer/Lexer.rl
-	@printf "%s+ Generating ragel p9 lexer.%s\n" "$(CYAN)" "$(EOS)"
+	@printf "%s+ Generating ragel castel lexer.%s\n" "$(CYAN)" "$(EOS)"
 	@$(RAGEL) -C -o sources/lexer/Lexer.cc sources/lexer/Lexer.rl
 
-includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc: sources/parser/parse.lm
-	@printf "%s@ Generating lemon p9 parser.%s\n" "$(CYAN)" "$(EOS)"
+includes/castel/lexer/MangledTokens.hh sources/parser/parse.cc: sources/parser/parse.lm
+	@printf "%s@ Generating lemon castel parser.%s\n" "$(CYAN)" "$(EOS)"
 	@$(LEMON) sources/parser/parse.lm
 	@$(RM) sources/parser/parse.out
-	@$(MV) sources/parser/parse.h includes/p9/lexer/MangledTokens.hh
+	@$(MV) sources/parser/parse.h includes/castel/lexer/MangledTokens.hh
 	@$(MV) sources/parser/parse.c sources/parser/parse.cc
 
-$(DEPS_PARSE): build/dependencies/%.d: %.cc | includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc
+$(DEPS_PARSE): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledTokens.hh sources/parser/parse.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
 	@$(MKDIR) -p "$(dir $(@))"
 	@$(CXX) $(CXXFLAGS_PARSE) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
-$(DEPS_ENGINE): build/dependencies/%.d: %.cc | includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc
+$(DEPS_ENGINE): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledTokens.hh sources/parser/parse.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
 	@$(MKDIR) -p "$(dir $(@))"
 	@$(CXX) $(CXXFLAGS_ENGINE) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
-$(DEPS_RUNTIME): build/dependencies/%.d: %.cc | includes/p9/lexer/MangledTokens.hh sources/parser/parse.cc
+$(DEPS_RUNTIME): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledTokens.hh sources/parser/parse.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
 	@$(MKDIR) -p "$(dir $(@))"
 	@$(CXX) $(CXXFLAGS_RUNTIME) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
@@ -116,4 +116,4 @@ fclean: clean
 re: clean-dependencies fclean
 	@$(MAKE) --no-print-directory all
 
-.PHONY: $(LIBRARY_PARSE) $(LIBRARY_ENGINE) $(LIBRARY_RUNTIME) all clean fclean re clean-depends libp9
+.PHONY: $(LIBRARY_PARSE) $(LIBRARY_ENGINE) $(LIBRARY_RUNTIME) all clean fclean re clean-depends libcastel

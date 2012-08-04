@@ -17,7 +17,7 @@ BROWN    = $(shell printf "\033[33m")
 EOS      = $(shell printf "\033[00m")
 
 CXXFLAGS += -I../includes -I./includes -I.
-LDFLAGS  += -L../build -lp9 -lcppunit
+LDFLAGS  += -L../build -lcastel -lcppunit
 
 all: $(BINARY)
 	@printf "Compilation done, output is build/${BINARY}\n"
@@ -26,7 +26,7 @@ $(BINARY): build/$(BINARY)
 
 -include $(DEPS)
 
-build/$(BINARY): $(OBJS) ../build/libp9.a
+build/$(BINARY): $(OBJS) ../build/libcastel.a
 	@printf "%s# Linking final executable.%s\n" "${PURPLE}" "${EOS}"
 	@${CXX} -o build/${BINARY} ${OBJS} ${LDFLAGS}
 
@@ -35,10 +35,10 @@ build/generated/testsList:
 	@${MKDIR} -p "$(dir ${@})"
 	@find repository -name '*.cc' -exec basename {} .cc \; | sed 's/\(.*\)/TEST(\1);/' > ${@}
 
-../build/libp9.a: build-libp9 ;
+../build/libcastel.a: build-libp9 ;
 
-build-libp9:
-	@$(MAKE) -s -C .. libp9.a
+build-libcastel:
+	@$(MAKE) -s -C .. libcastel.a
 
 $(DEPS): build/dependencies/%.d: %.cc
 	@printf "%s+ Generating dependency file for %s.%s\n" "${GREEN}" "${<}" "${EOS}"
@@ -66,4 +66,4 @@ fclean: clean
 re: clean-dependencies fclean
 	@$(MAKE) --no-print-directory all
 
-.PHONY: $(BINARY) all clean fclean re clean-depends build-libp9 build/generated/testsList
+.PHONY: $(BINARY) all clean fclean re clean-depends build-libcastel build/generated/testsList

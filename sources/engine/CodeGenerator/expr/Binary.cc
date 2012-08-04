@@ -2,12 +2,12 @@
 
 #include <llvm/Value.h>
 
-#include "p9/ast/expr/Binary.hh"
-#include "p9/lexer/Token.hh"
-#include "p9/engine/CodeGenerator.hh"
+#include "castel/ast/expr/Binary.hh"
+#include "castel/lexer/Token.hh"
+#include "castel/engine/CodeGenerator.hh"
 
-using namespace p9;
-using namespace p9::engine;
+using namespace castel;
+using namespace castel::engine;
 
 void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
 {

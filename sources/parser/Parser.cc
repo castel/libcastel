@@ -1,15 +1,15 @@
 #include <cstdlib>
 #include <memory>
 
-#include "p9/ast/Statement.hh"
-#include "p9/lexer/Lexeme.hh"
-#include "p9/lexer/Lexer.hh"
-#include "p9/lexer/Token.hh"
-#include "p9/parser/Exception.hh"
-#include "p9/parser/Parser.hh"
+#include "castel/ast/Statement.hh"
+#include "castel/lexer/Lexeme.hh"
+#include "castel/lexer/Lexer.hh"
+#include "castel/lexer/Token.hh"
+#include "castel/parser/Exception.hh"
+#include "castel/parser/Parser.hh"
 #include <iostream>
-using namespace p9;
-using namespace p9::parser;
+using namespace castel;
+using namespace castel::parser;
 
 #include "sources/parser/parse.cc"
 
@@ -30,11 +30,11 @@ ast::Statement * Parser::exec( void )
     if ( lexeme->type( ) == lexer::TSpaces )
         goto loop;
 
-    p9parserIsValid = true;
+    castelparserIsValid = true;
     std::cout << lexeme->type( ) << std::endl;
     Parse( lemonParser, lexeme->type( ), lexeme.get( ) );
 
-    if ( ! p9parserIsValid )
+    if ( ! castelparserIsValid )
         goto syntaxError;
 
     if ( lexeme->type( ) == lexer::TEOF )
@@ -52,5 +52,5 @@ ast::Statement * Parser::exec( void )
  endOfFile:
     ParseFree( lemonParser, free );
 
-    return p9parserRootStatement;
+    return castelparserRootStatement;
 }

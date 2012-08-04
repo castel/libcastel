@@ -1,10 +1,10 @@
 #include <sstream>
 #include <string>
 
-#include "p9/lexer/Position.hh"
+#include "castel/lexer/Position.hh"
 
-using namespace p9;
-using namespace p9::lexer;
+using namespace castel;
+using namespace castel::lexer;
 
 Position::Position ( void )
 : line             ( -1 )

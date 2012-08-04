@@ -1,11 +1,11 @@
 #include <llvm/ADT/APFloat.h>
 #include <llvm/Constants.h>
 
-#include "p9/ast/expr/Number.hh"
-#include "p9/engine/CodeGenerator.hh"
+#include "castel/ast/expr/Number.hh"
+#include "castel/engine/CodeGenerator.hh"
 
-using namespace p9;
-using namespace p9::engine;
+using namespace castel;
+using namespace castel::engine;
 
 void CodeGenerator::visit( ast::expr::Number & number )
 {

@@ -6,8 +6,8 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <p9/lexer/Lexer.hh>
-#include <p9/parser/Parser.hh>
+#include <castel/lexer/Lexer.hh>
+#include <castel/parser/Parser.hh>
 
 class LibP9Tests : public CppUnit::TestFixture
 {
@@ -30,10 +30,10 @@ public:
 
 public:
 
-    p9::lexer::Lexer & lexer( void ) const
+    castel::lexer::Lexer & lexer( void ) const
     { return *mLexer; }
 
-    p9::parser::Parser & parser( void ) const
+    castel::parser::Parser & parser( void ) const
     { return *mParser; }
 
 protected:
@@ -46,8 +46,8 @@ private:
 
     std::unique_ptr< std::string > mSource;
 
-    std::unique_ptr< p9::lexer::Lexer > mLexer;
+    std::unique_ptr< castel::lexer::Lexer > mLexer;
 
-    std::unique_ptr< p9::parser::Parser > mParser;
+    std::unique_ptr< castel::parser::Parser > mParser;
 
 };

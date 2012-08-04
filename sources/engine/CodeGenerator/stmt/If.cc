@@ -6,11 +6,11 @@
 #include <llvm/Function.h>
 #include <llvm/Value.h>
 
-#include "p9/ast/stmt/If.hh"
-#include "p9/engine/CodeGenerator.hh"
+#include "castel/ast/stmt/If.hh"
+#include "castel/engine/CodeGenerator.hh"
 
-using namespace p9;
-using namespace p9::engine;
+using namespace castel;
+using namespace castel::engine;
 
 void CodeGenerator::visit( ast::stmt::If & astIfStatement )
 {

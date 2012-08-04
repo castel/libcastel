@@ -1,13 +1,13 @@
 #include <sstream>
 #include <string>
 
-#include "p9/lexer/Lexeme.hh"
-#include "p9/lexer/Position.hh"
-#include "p9/parser/Exception.hh"
-#include "p9/parser/Parser.hh"
+#include "castel/lexer/Lexeme.hh"
+#include "castel/lexer/Position.hh"
+#include "castel/parser/Exception.hh"
+#include "castel/parser/Parser.hh"
 
-using namespace p9;
-using namespace p9::parser;
+using namespace castel;
+using namespace castel::parser;
 
 Exception::Exception ( std::string const & message, lexer::Lexeme * lexeme )
 : mMessage           ( message )

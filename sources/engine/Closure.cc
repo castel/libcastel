@@ -6,12 +6,12 @@
 #include <llvm/Value.h>
 #include <mpllvm/mpllvm.hh>
 
-#include "p9/engine/Closure.hh"
-#include "p9/engine/LLVMHelpers.hh"
-#include "p9/utils/mpllvmExtensions.hh"
+#include "castel/engine/Closure.hh"
+#include "castel/engine/LLVMHelpers.hh"
+#include "castel/utils/mpllvmExtensions.hh"
 
-using namespace p9;
-using p9::engine::Closure;
+using namespace castel;
+using castel::engine::Closure;
 
 void Closure::finalize( void )
 {

@@ -8,12 +8,12 @@
 #include <llvm/Type.h>
 #include <llvm/Value.h>
 
-#include "p9/ast/Statement.hh"
-#include "p9/engine/CodeGenerator.hh"
-#include "p9/utils/mpllvmExtensions.hh"
+#include "castel/ast/Statement.hh"
+#include "castel/engine/CodeGenerator.hh"
+#include "castel/utils/mpllvmExtensions.hh"
 
-using namespace p9;
-using namespace p9::engine;
+using namespace castel;
+using namespace castel::engine;
 
 CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine                                                   )
 : mGenerationEngine          ( generationEngine                                                                              )
