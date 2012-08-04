@@ -102,6 +102,9 @@ clean:
 	@printf "%s- Removing temporary files.%s\n" "$(BROWN)" "$(EOS)"
 	@$(RM) -rf build/generated
 	@$(RM) -rf build/objects
+	@$(RM) -f includes/castel/lexer/MangledTokens.hh
+	@$(RM) -f sources/lexer/Lexer.cc
+	@$(RM) -f sources/parser/parse.cc
 
 clean-dependencies:
 	@printf "%s- Removing dependencies listing.%s\n" "$(BROWN)" "$(EOS)"
