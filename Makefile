@@ -4,13 +4,14 @@ LIBRARY_RUNTIME  = libCastelRuntime.a
 
 CXX              = clang++
 AR               = ar
+RANLIB           = ranlib
 RAGEL            = ragel
 LEMON            = lemon
 MKDIR            = mkdir
 MV               = mv
 RM               = rm
 
-SRCS_PARSE       = $(shell (find sources/lexer sources/parser -name '*.cc' ; echo sources/lexer/Lexer.cc) | sort | uniq)
+SRCS_PARSE       = $(shell (find sources/lexer sources/parser \( -name '*.cc' -a -not -path sources/parser/parse.cc \) ; echo sources/lexer/Lexer.cc) | sort | uniq)
 HDRS_PARSE       = $(shell (find includes/castel/lexer includes/castel/parser includes/castel/ast -name '*.hh' ; echo includes/castel/lexer/MangledLexemesTypes.hh) | sort | uniq)
 DEPS_PARSE       = $(addprefix build/dependencies/,$(SRCS_PARSE:.cc=.d))
 OBJS_PARSE       = $(addprefix build/objects/,$(SRCS_PARSE:.cc=.o))
@@ -48,14 +49,17 @@ $(LIBRARY_RUNTIME): build/$(LIBRARY_RUNTIME)
 build/$(LIBRARY_PARSE): $(OBJS_PARSE) includes/castel/lexer/MangledLexemesTypes.hh
 	@printf "%s# Merging object files for $(LIBRARY_PARSE).%s\n" "$(PURPLE)" "$(EOS)"
 	@$(AR) rcs build/$(LIBRARY_PARSE) $(OBJS_PARSE)
+	@$(RANLIB) build/$(LIBRARY_PARSE)
 
 build/$(LIBRARY_ENGINE): $(OBJS_ENGINE)
 	@printf "%s# Merging object files for $(LIBRARY_ENGINE).%s\n" "$(PURPLE)" "$(EOS)"
 	@$(AR) rcs build/$(LIBRARY_ENGINE) $(OBJS_ENGINE)
+	@$(RANLIB) build/$(LIBRARY_ENGINE)
 
 build/$(LIBRARY_RUNTIME): $(OBJS_RUNTIME)
 	@printf "%s# Merging object files for $(LIBRARY_RUNTIME).%s\n" "$(PURPLE)" "$(EOS)"
 	@$(AR) rcs build/$(LIBRARY_RUNTIME) $(OBJS_RUNTIME)
+	@$(RANLIB) build/$(LIBRARY_RUNTIME)
 
 sources/lexer/Lexer.cc: sources/lexer/Lexer.rl
 	@printf "%s+ Generating ragel castel lexer.%s\n" "$(CYAN)" "$(EOS)"
