@@ -8,7 +8,7 @@
 #include <mpllvm/mpllvm.hh>
 
 #include "castel/engine/Closure.hh"
-#include "castel/engine/Value.hh"
+#include "castel/engine/Box.hh"
 
 namespace castel
 {
@@ -22,7 +22,7 @@ namespace castel
         public:
 
             Descriptor  ( llvm::LLVMContext & llvmContext, engine::Closure::Variable & variable, unsigned int depth               )
-            : mDummy    ( new llvm::LoadInst( llvm::ConstantPointerNull::get( mpllvm::get< engine::Value *** >( llvmContext ) ) ) )
+            : mDummy    ( new llvm::LoadInst( llvm::ConstantPointerNull::get( mpllvm::get< engine::Box *** >( llvmContext ) ) ) )
             , mVariable ( variable                                                                                                )
             , mDepth    ( depth                                                                                                   )
             {

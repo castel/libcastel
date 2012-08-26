@@ -29,7 +29,7 @@ namespace castel
             , mLLVMFunction     ( llvmFunction                                                                                                                  )
             , mParentClosure    ( parentClosure                                                                                                                 )
             , mLevel            ( parentClosure ? parentClosure->level( ) + 1 : 0                                                                               )
-            , mEnvironmentTable ( new llvm::LoadInst( llvm::ConstantPointerNull::get( mpllvm::get< engine::Value **** >( mGenerationEngine.llvmContext( ) ) ) ) )
+            , mEnvironmentTable ( new llvm::LoadInst( llvm::ConstantPointerNull::get( mpllvm::get< engine::Box **** >( mGenerationEngine.llvmContext( ) ) ) ) )
             {
             }
 

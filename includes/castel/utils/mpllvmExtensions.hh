@@ -4,7 +4,7 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 
-#include "castel/engine/Value.hh"
+#include "castel/engine/Box.hh"
 
 namespace mpllvm
 {
@@ -13,7 +13,7 @@ namespace mpllvm
     {
 
         template < >
-        struct TypeResolver< castel::engine::Value > {
+        struct TypeResolver< castel::engine::Box > {
             static llvm::StructType * get( llvm::LLVMContext & llvmContext ) {
                 llvm::Module tempModule( "", llvmContext );
                 return tempModule.getTypeByName( "box" );

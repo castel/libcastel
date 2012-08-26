@@ -23,12 +23,12 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     if ( ! astFunctionExpression.statements( ) )
         throw std::runtime_error( "Missing body" );
 
-    /* Crafts function type - engine::Value * (*)( engine::Value *** environment, engine::Value * arguments... ) */
-    llvm::Type * returnType = mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) );
+    /* Crafts function type - engine::Box * (*)( engine::Box *** environment, engine::Box * arguments... ) */
+    llvm::Type * returnType = mpllvm::get< engine::Box * >( mGenerationEngine.llvmContext( ) );
 
     std::vector< llvm::Type * > argumentsTypes;
-    argumentsTypes.push_back( mpllvm::get< engine::Value *** >( mGenerationEngine.llvmContext( ) ) );
-    argumentsTypes.insert( argumentsTypes.begin( ), std::distance( utils::begin( astFunctionExpression.parameters( ) ), utils::end( astFunctionExpression.parameters( ) ) ), mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) ) );
+    argumentsTypes.push_back( mpllvm::get< engine::Box *** >( mGenerationEngine.llvmContext( ) ) );
+    argumentsTypes.insert( argumentsTypes.begin( ), std::distance( utils::begin( astFunctionExpression.parameters( ) ), utils::end( astFunctionExpression.parameters( ) ) ), mpllvm::get< engine::Box * >( mGenerationEngine.llvmContext( ) ) );
 
     llvm::FunctionType * functionType = llvm::FunctionType::get( returnType, argumentsTypes, false );
 

@@ -9,14 +9,14 @@
 
 #include "castel/engine/Closure.hh"
 #include "castel/engine/LLVMHelpers.hh"
-#include "castel/engine/Value.hh"
+#include "castel/engine/Box.hh"
 
 #include <iostream>
 
 using namespace castel;
 using engine::Closure;
 
-typedef engine::Value * BoxPointer;
+typedef engine::Box * BoxPointer;
 typedef BoxPointer Environment[];
 typedef Environment * EnvironmentTable[];
 
@@ -32,7 +32,7 @@ void Closure::finalize( void )
     /* Duplicates parent environment table (adding an additional entry at the front for the current closure's environment) */
     llvm::Value * parentEnvironmentTable = mLLVMFunction.arg_begin( );
 
-    llvm::Value * environmentTable = llvmHelpers.allocateArray< engine::Value ** >( this->level( ) + 1 );
+    llvm::Value * environmentTable = llvmHelpers.allocateArray< engine::Box ** >( this->level( ) + 1 );
     mEnvironmentTable->replaceAllUsesWith( environmentTable );
 
     for ( int t = 0, T = this->level( ); t < T; ++ t ) {
@@ -56,10 +56,10 @@ void Closure::finalize( void )
             escapingVariables.push_back( variableIterator.second.get( ) );
 
     /* Allocates local environment on the stack */
-    llvm::Value * localEnvironment = llvmHelpers.allocateArray< engine::Value * >( localVariables.size( ), true );
+    llvm::Value * localEnvironment = llvmHelpers.allocateArray< engine::Box * >( localVariables.size( ), true );
 
     /* Allocates escaping environment on the heap */
-    llvm::Value * escapingEnvironment = llvmHelpers.allocateArray< engine::Value * >( escapingVariables.size( ) );
+    llvm::Value * escapingEnvironment = llvmHelpers.allocateArray< engine::Box * >( escapingVariables.size( ) );
 
     /* Stores environment pointer into the environment table */ {
         llvm::Value * environmentEntryPointer = mpllvm::GEP< std::int64_t >::build( mGenerationEngine.llvmContext( ), temporaryBuilder, environmentTable, 0 );

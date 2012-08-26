@@ -12,7 +12,7 @@
 #include <llvm/Type.h>
 #include <mpllvm/mpllvm.hh>
 
-#include "castel/engine/Value.hh"
+#include "castel/engine/Box.hh"
 #include "castel/runtime/library.hh"
 
 namespace castel
@@ -57,7 +57,7 @@ namespace castel
             void initTypes( void )
             {
                 mpllvm::structure::create< std::int32_t >( mLLVMContext, "box" );
-                mpllvm::structure::create< std::int32_t, std::int32_t, void *, engine::Value *** >( mLLVMContext, "box.function" );
+                mpllvm::structure::create< std::int32_t, std::int32_t, void *, engine::Box *** >( mLLVMContext, "box.function" );
                 mpllvm::structure::create< std::int32_t, double >( mLLVMContext, "box.double" );
             }
 

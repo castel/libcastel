@@ -8,7 +8,7 @@ namespace castel
     namespace engine
     {
 
-        struct Value
+        struct Box
         {
 
             enum class Type : std::int32_t {
@@ -18,7 +18,7 @@ namespace castel
 
             };
 
-            Value::Type type;
+            engine::Box::Type type;
 
             union {
 

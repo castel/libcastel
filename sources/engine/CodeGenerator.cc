@@ -15,7 +15,7 @@
 using namespace castel;
 using namespace castel::engine;
 
-typedef engine::Value * BoxPointer;
+typedef engine::Box * BoxPointer;
 typedef BoxPointer Environment[];
 typedef Environment * EnvironmentTable[];
 
@@ -27,8 +27,8 @@ CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine      
 
 llvm::Function * CodeGenerator::codegen( ast::Statement & astStatement )
 {
-    llvm::Type * returnType = mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) );
-    std::vector< llvm::Type * > argsTypes = { mpllvm::get< engine::Value *** >( mGenerationEngine.llvmContext( ) ) };
+    llvm::Type * returnType = mpllvm::get< engine::Box * >( mGenerationEngine.llvmContext( ) );
+    std::vector< llvm::Type * > argsTypes = { mpllvm::get< engine::Box *** >( mGenerationEngine.llvmContext( ) ) };
     llvm::FunctionType * functionType = llvm::FunctionType::get( returnType, argsTypes, false );
 
     llvm::Function * llvmFunction = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "main", & mGenerationEngine.module( ) );

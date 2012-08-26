@@ -14,7 +14,7 @@
 #include <mpllvm/mpllvm.hh>
 
 #include "castel/engine/GenerationEngine.hh"
-#include "castel/engine/Value.hh"
+#include "castel/engine/Box.hh"
 #include "castel/utils/mpllvmExtensions.hh"
 
 namespace castel
@@ -89,7 +89,7 @@ namespace castel
             llvm::Function * boxToFunction( llvm::Value * genericBox, std::int32_t arity )
             {
                 /* Ensures that the generic dynamic box is really a function */
-                this->forceBoxType< engine::Value::Type::Function >( genericBox );
+                this->forceBoxType< engine::Box::Type::Function >( genericBox );
 
                 /* Casts the generic dynamic box into a Function box */
                 llvm::Value * functionBox = mIRBuilder.CreateBitCast( genericBox, llvm::PointerType::getUnqual( mModule.getTypeByName( "box.function" ) ) );
@@ -121,10 +121,10 @@ namespace castel
 
                 /**** START : crafts function type ****/
                 std::vector< llvm::Type * > argumentsTypes;
-                argumentsTypes.push_back( mpllvm::get< engine::Value *** >( mLLVMContext ) );
-                argumentsTypes.insert( argumentsTypes.begin( ), arity, mpllvm::get< engine::Value * >( mLLVMContext ) );
+                argumentsTypes.push_back( mpllvm::get< engine::Box *** >( mLLVMContext ) );
+                argumentsTypes.insert( argumentsTypes.begin( ), arity, mpllvm::get< engine::Box * >( mLLVMContext ) );
 
-                llvm::FunctionType * functionType = llvm::FunctionType::get( mpllvm::get< engine::Value * >( mLLVMContext ), argumentsTypes, false );
+                llvm::FunctionType * functionType = llvm::FunctionType::get( mpllvm::get< engine::Box * >( mLLVMContext ), argumentsTypes, false );
                 /**** END : crafts function type ****/
 
                 /* Loads the LLVM function pointer (as void*) */
@@ -140,7 +140,7 @@ namespace castel
             {
                 /* Sets a default (empty) environment unless specified */
                 if ( environment == nullptr )
-                    llvm::ConstantPointerNull::get( mpllvm::get< engine::Value *** >( mLLVMContext ) );
+                    llvm::ConstantPointerNull::get( mpllvm::get< engine::Box *** >( mLLVMContext ) );
 
                 /* Allocates enough memory for the new box */
                 llvm::Value * functionBox = this->allocateObject( mModule.getTypeByName( "box.function" ) );
@@ -155,10 +155,10 @@ namespace castel
                 llvm::Value * genericFunctionPointer = mIRBuilder.CreateBitCast( llvmFunction, mpllvm::get< void * >( mLLVMContext ) );
 
                 /* Populate box data */
-                mIRBuilder.CreateStore( this->boxType< engine::Value::Type::Function >( ), typeIndex );
+                mIRBuilder.CreateStore( this->boxType< engine::Box::Type::Function >( ), typeIndex );
                 mIRBuilder.CreateStore( llvm::ConstantInt::get( mLLVMContext, llvm::APInt( 32, llvmFunction->arg_size( ) - 1 ) ), arityIndex );
                 mIRBuilder.CreateStore( genericFunctionPointer, functionIndex );
-                mIRBuilder.CreateStore( environment ? environment : llvm::ConstantPointerNull::get( mpllvm::get< engine::Value *** >( mLLVMContext ) ), environmentIndex );
+                mIRBuilder.CreateStore( environment ? environment : llvm::ConstantPointerNull::get( mpllvm::get< engine::Box *** >( mLLVMContext ) ), environmentIndex );
 
                 /* Casts the function box into a generic dynamic box */
                 return this->boxToGeneric( functionBox );
@@ -192,7 +192,7 @@ namespace castel
             llvm::Value * boxToDouble( llvm::Value * genericBox )
             {
                 /* Ensures that the generic dynamic box is really a function */
-                this->forceBoxType< engine::Value::Type::Double >( genericBox );
+                this->forceBoxType< engine::Box::Type::Double >( genericBox );
 
                 /* Casts the generic dynamic box into a Double box */
                 llvm::Value * doubleBox = mIRBuilder.CreateBitCast( genericBox, llvm::PointerType::getUnqual( mModule.getTypeByName( "box.double" ) ) );
@@ -218,7 +218,7 @@ namespace castel
                 llvm::Value * valueIndex = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, doubleBox, 0, 1 );
 
                 /* Populate box data */
-                mIRBuilder.CreateStore( this->boxType< engine::Value::Type::Double >( ), typeIndex );
+                mIRBuilder.CreateStore( this->boxType< engine::Box::Type::Double >( ), typeIndex );
                 mIRBuilder.CreateStore( value, valueIndex );
 
                 /* Casts the double box into a generic dynamic box */
@@ -235,14 +235,14 @@ namespace castel
 
         public:
 
-            template < engine::Value::Type Type >
+            template < engine::Box::Type Type >
             llvm::Value * boxType( void ) const
             {
                 /* Return an integer LLVM value containing the template parameter box type */
                 return llvm::ConstantInt::get( mLLVMContext, llvm::APInt( 32, static_cast< std::int32_t>( Type ) ) );
             }
 
-            template < engine::Value::Type Type >
+            template < engine::Box::Type Type >
             llvm::Value * forceBoxType( llvm::Value * value )
             {
                 /* security check here */
