@@ -1,3 +1,5 @@
+#pragma once
+
 #include <map>
 #include <string>
 
@@ -15,13 +17,19 @@ namespace castel
         class Closure
         {
 
+        private:
+
+            class Variable;
+            class Descriptor;
+
         public:
 
-            Closure             ( engine::GenerationEngine & generationEngine, llvm::Function * llvmFunction, engine::Closure * parentClosure = nullptr )
-            : mFinalized        ( false            )
-            , mGenerationEngine ( generationEngine )
-            , mLLVMFunction     ( llvmFunction     )
-            , mParentClosure    ( parentClosure    )
+            Closure             ( engine::GenerationEngine & generationEngine, llvm::Function & llvmFunction, engine::Closure * parentClosure = nullptr         )
+            : mGenerationEngine ( generationEngine                                                                                                              )
+            , mLLVMFunction     ( llvmFunction                                                                                                                  )
+            , mParentClosure    ( parentClosure                                                                                                                 )
+            , mLevel            ( parentClosure ? parentClosure->level( ) + 1 : 0                                                                               )
+            , mEnvironmentTable ( new llvm::LoadInst( llvm::ConstantPointerNull::get( mpllvm::get< engine::Value **** >( mGenerationEngine.llvmContext( ) ) ) ) )
             {
             }
 
@@ -31,32 +39,51 @@ namespace castel
 
         public:
 
-            void declare( std::string const & name, llvm::Value * initializer = nullptr );
-            llvm::Value * get( std::string const & name );
-            llvm::Value * set( std::string const & name, llvm::Value * );
+            unsigned int level( void ) const
+            {
+                return mLevel;
+            }
+
+            llvm::Value * environmentTable( void ) const
+            {
+                return mEnvironmentTable;
+            }
+
+        public:
+
+            void declare ( std::string const & name, llvm::Value * initializer = nullptr );
+
+        public:
+
+            llvm::Value * get ( std::string const & name );
+            llvm::Value * set ( std::string const & name, llvm::Value * );
 
         private:
 
-            llvm::Value * recurseAddressorSearch( std::string const & name );
+            engine::Closure::Descriptor * descriptor                ( std::string const & name );
 
-            llvm::Value * variableAddressor( std::string const & name );
-            llvm::Value * escapedVariableAddressor( std::string const & name );
+            engine::Closure::Descriptor * createDescriptor          ( std::string const & name, int depth = 0 );
+            engine::Closure::Descriptor * recurseDescriptorCreation ( std::string const & name, int depth );
 
         private:
 
-            bool mFinalized;
+            unsigned int mLevel;
 
             engine::GenerationEngine & mGenerationEngine;
-
-            llvm::Function * mLLVMFunction;
+            llvm::Function &  mLLVMFunction;
 
             engine::Closure * mParentClosure;
 
-            std::map< std::string, llvm::Value * > mLocalValues;
-            std::map< std::string, llvm::Value * > mEscapingValues;
+            std::map< std::string, std::unique_ptr< engine::Closure::Variable > >   mVariables;
+            std::map< std::string, std::unique_ptr< engine::Closure::Descriptor > > mDescriptors;
+
+            llvm::Value * mEnvironmentTable;
 
         };
 
     }
 
 }
+
+#include "castel/engine/Closure/Descriptor.hh"
+#include "castel/engine/Closure/Variable.hh"

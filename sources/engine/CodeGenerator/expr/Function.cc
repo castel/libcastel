@@ -1,3 +1,4 @@
+#include <iterator>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -11,6 +12,7 @@
 #include "castel/ast/expr/Function.hh"
 #include "castel/engine/CodeGenerator.hh"
 #include "castel/engine/Scope.hh"
+#include "castel/utils/Linked.hh"
 
 using namespace castel;
 using namespace castel::engine;
@@ -21,12 +23,13 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     if ( ! astFunctionExpression.statements( ) )
         throw std::runtime_error( "Missing body" );
 
-    /* Crafts function type - engine::Value * (*)( engine::Value*** environment, engine::Value * arguments... ) */
+    /* Crafts function type - engine::Value * (*)( engine::Value *** environment, engine::Value * arguments... ) */
     llvm::Type * returnType = mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) );
+
     std::vector< llvm::Type * > argumentsTypes;
-    argumentsTypes.push_back( mpllvm::get< engine::Value **** >( mGenerationEngine.llvmContext( ) ) );
-    for ( auto & parameter : astFunctionExpression.parameters( ) )
-        argumentsTypes.push_back( mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) ) );
+    argumentsTypes.push_back( mpllvm::get< engine::Value *** >( mGenerationEngine.llvmContext( ) ) );
+    argumentsTypes.insert( argumentsTypes.begin( ), std::distance( utils::begin( astFunctionExpression.parameters( ) ), utils::end( astFunctionExpression.parameters( ) ) ), mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) ) );
+
     llvm::FunctionType * functionType = llvm::FunctionType::get( returnType, argumentsTypes, false );
 
     /* Creates llvm function */
@@ -41,7 +44,7 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     mGenerationEngine.irBuilder( ).SetInsertPoint( basicBlock );
 
     /* Starts a new closure, using the parent environment */
-    engine::Closure closure( mGenerationEngine, llvmFunction, ! mClosureStack.empty( ) ? mClosureStack.top( ) : nullptr );
+    engine::Closure closure( mGenerationEngine, * llvmFunction, ! mClosureStack.empty( ) ? mClosureStack.top( ) : nullptr );
     mClosureStack.push( & closure );
 
     /* Declares each parameter into the closure */
@@ -61,8 +64,9 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     mGenerationEngine.irBuilder( ).SetInsertPoint( currentBasicBlock, currentPoint );
 
     /* Checks function integrity */
-    llvm::verifyFunction( * llvmFunction );
+    //llvmFunction->dump( );
+    //llvm::verifyFunction( * llvmFunction );
 
-    /* Pseudo-returns a box containing this function */
-    mValue.reset( mLLVMHelpers.functionToBox( llvmFunction, nullptr ) );
+    /* Pseudo-returns a box containing this function, linked with the current function environment table */
+    mValue.reset( mLLVMHelpers.functionToBox( llvmFunction, mClosureStack.top( )->environmentTable( ) ) );
 }

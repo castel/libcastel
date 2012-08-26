@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iterator>
+
 namespace castel
 {
 
@@ -7,7 +9,7 @@ namespace castel
     {
 
         template < typename T >
-        class Linked< T >::Iterator
+        class Linked< T >::Iterator : public std::iterator< std::input_iterator_tag, T >
         {
 
         public:

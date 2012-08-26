@@ -42,10 +42,10 @@ namespace castel
                 /* See here : http://nondot.org/sabre/LLVMNotes/SizeOf-OffsetOf-VariableSizedStructs.txt */
                 llvm::Type * targetType = llvm::IntegerType::get( mLLVMContext, 32 );
                 llvm::ConstantPointerNull * nullPointer = llvm::ConstantPointerNull::get( llvm::PointerType::get( type, 0 ) );
-                return mIRBuilder.CreatePtrToInt( mpllvm::GEP< 64, 1 >::build( mLLVMContext, mIRBuilder, nullPointer ), targetType );
+                return mIRBuilder.CreatePtrToInt( mpllvm::GEP< std::int64_t >::build( mLLVMContext, mIRBuilder, nullPointer, 1 ), targetType );
             }
 
-            llvm::Value * allocateObject( llvm::Type * type, int allocateOnTheStack = false )
+            llvm::Value * allocateObject( llvm::Type * type, bool allocateOnTheStack = false )
             {
                 if ( allocateOnTheStack ) {
                     /* Allocating on the stack using Alloca */
@@ -60,7 +60,13 @@ namespace castel
                 }
             }
 
-            llvm::Value * allocateArray( llvm::Type * type, int count, int allocateOnTheStack = false )
+            template < typename Type >
+            llvm::Value * allocateObject( bool allocateOnTheStack = false )
+            {
+                return this->allocateObject( mpllvm::get< Type >( mLLVMContext ), allocateOnTheStack );
+            }
+
+            llvm::Value * allocateArray( llvm::Type * type, int count, bool allocateOnTheStack = false )
             {
                 /* Crafts the array type */
                 llvm::Type * arrayType = llvm::ArrayType::get( type, count );
@@ -69,8 +75,13 @@ namespace castel
                 llvm::Value * array = this->allocateObject( arrayType, allocateOnTheStack );
 
                 /* Casts this array reference into a pointer */
-                return array;
-                return mpllvm::GEP< 64, 0, 32, 0 >::build( mLLVMContext, mIRBuilder, array );
+                return mpllvm::GEP< std::int64_t, std::int64_t >::build( mLLVMContext, mIRBuilder, array, 0, 0 );
+            }
+
+            template < typename Type >
+            llvm::Value * allocateArray( int count, bool allocateOnTheStack = false )
+            {
+                return this->allocateArray( mpllvm::get< Type >( mLLVMContext ), count, allocateOnTheStack );
             }
 
         public:
@@ -84,7 +95,7 @@ namespace castel
                 llvm::Value * functionBox = mIRBuilder.CreateBitCast( genericBox, llvm::PointerType::getUnqual( mModule.getTypeByName( "box.function" ) ) );
 
                 /**** START : checks function arity ****/
-                llvm::Value * arityIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * arityIndex = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, functionBox, 0, 1 );
                 llvm::Value * functionArity = mIRBuilder.CreateLoad( arityIndex );
                 llvm::Value * expectedArity = llvm::ConstantInt::get( mLLVMContext, llvm::APInt( 32, arity ) );
                 llvm::Value * arityCheck = mIRBuilder.CreateICmpNE( functionArity, expectedArity );
@@ -99,7 +110,7 @@ namespace castel
                 mIRBuilder.SetInsertPoint( thenBranch );
 
                 llvm::Function * runtimeCastelCrash = mModule.getFunction( "castelCrash" );
-                llvm::Value * errorMessage = mpllvm::GEP< 64, 0 >::build( mLLVMContext, mIRBuilder, llvm::ConstantPointerNull::get( mpllvm::get< char const * >( mLLVMContext ) ) );
+                llvm::Value * errorMessage = mpllvm::GEP< std::int64_t >::build( mLLVMContext, mIRBuilder, llvm::ConstantPointerNull::get( mpllvm::get< char const * >( mLLVMContext ) ), 0 );
                 mIRBuilder.CreateCall( runtimeCastelCrash, errorMessage );
                 mIRBuilder.CreateUnreachable( );
 
@@ -109,17 +120,15 @@ namespace castel
                 /**** END : checks function arity ****/
 
                 /**** START : crafts function type ****/
-                llvm::Type * boxType = llvm::PointerType::getUnqual( mModule.getTypeByName( "box" ) );
-                llvm::Type * environmentType = llvm::PointerType::getUnqual( llvm::PointerType::getUnqual( llvm::PointerType::getUnqual( boxType ) ) );
+                std::vector< llvm::Type * > argumentsTypes;
+                argumentsTypes.push_back( mpllvm::get< engine::Value *** >( mLLVMContext ) );
+                argumentsTypes.insert( argumentsTypes.begin( ), arity, mpllvm::get< engine::Value * >( mLLVMContext ) );
 
-                std::vector< llvm::Type * > argumentsTypes( arity + 1, boxType );
-                argumentsTypes[ 0 ] = environmentType;
-
-                llvm::FunctionType * functionType = llvm::FunctionType::get( boxType, argumentsTypes, false );
+                llvm::FunctionType * functionType = llvm::FunctionType::get( mpllvm::get< engine::Value * >( mLLVMContext ), argumentsTypes, false );
                 /**** END : crafts function type ****/
 
                 /* Loads the LLVM function pointer (as void*) */
-                llvm::Value * functionIndex = mpllvm::GEP< 64, 0, 32, 2 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * functionIndex = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, functionBox, 0, 2 );
                 llvm::Value * genericFunctionPointer = mIRBuilder.CreateLoad( functionIndex );
 
                 /* Casts the function pointer from void* to an LLVM function pointer */
@@ -137,10 +146,10 @@ namespace castel
                 llvm::Value * functionBox = this->allocateObject( mModule.getTypeByName( "box.function" ) );
 
                 /* Compute fields indexes */
-                llvm::Value * typeIndex = mpllvm::GEP< 64, 0, 32, 0 >::build( mLLVMContext, mIRBuilder, functionBox );
-                llvm::Value * arityIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mLLVMContext, mIRBuilder, functionBox );
-                llvm::Value * functionIndex = mpllvm::GEP< 64, 0, 32, 2 >::build( mLLVMContext, mIRBuilder, functionBox );
-                llvm::Value * environmentIndex = mpllvm::GEP< 64, 0, 32, 3 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * typeIndex        = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, functionBox, 0, 0 );
+                llvm::Value * arityIndex       = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, functionBox, 0, 1 );
+                llvm::Value * functionIndex    = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, functionBox, 0, 2 );
+                llvm::Value * environmentIndex = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, functionBox, 0, 3 );
 
                 /* Casts the function pointer from an LLVM function pointer to void* */
                 llvm::Value * genericFunctionPointer = mIRBuilder.CreateBitCast( llvmFunction, mpllvm::get< void * >( mLLVMContext ) );
@@ -149,7 +158,7 @@ namespace castel
                 mIRBuilder.CreateStore( this->boxType< engine::Value::Type::Function >( ), typeIndex );
                 mIRBuilder.CreateStore( llvm::ConstantInt::get( mLLVMContext, llvm::APInt( 32, llvmFunction->arg_size( ) - 1 ) ), arityIndex );
                 mIRBuilder.CreateStore( genericFunctionPointer, functionIndex );
-                //mIRBuilder.CreateStore( environment, environmentIndex );
+                mIRBuilder.CreateStore( environment ? environment : llvm::ConstantPointerNull::get( mpllvm::get< engine::Value *** >( mLLVMContext ) ), environmentIndex );
 
                 /* Casts the function box into a generic dynamic box */
                 return this->boxToGeneric( functionBox );
@@ -164,14 +173,14 @@ namespace castel
                 llvm::Value * functionBox = mIRBuilder.CreateBitCast( genericBox, llvm::PointerType::getUnqual( mModule.getTypeByName( "box.function" ) ) );
 
                 /* Computes environment field index */
-                llvm::Value * environmentIndex = mpllvm::GEP< 64, 0, 32, 3 >::build( mLLVMContext, mIRBuilder, functionBox );
+                llvm::Value * environmentIndex = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, functionBox, 0, 3 );
 
                 /* Loads environment */
                 llvm::Value * environment = mIRBuilder.CreateLoad( environmentIndex );
 
                 /* Duplicates the arguments and adds the environment at the front */
                 std::vector< llvm::Value * > duplicatedArguments;
-                duplicatedArguments.push_back( mIRBuilder.CreateBitCast( environment, mpllvm::get< engine::Value **** >( mLLVMContext ) ) );
+                duplicatedArguments.push_back( environment );
                 duplicatedArguments.insert( duplicatedArguments.end( ), arguments.begin( ), arguments.end( ) );
 
                 /* Finally returns the call */
@@ -189,7 +198,7 @@ namespace castel
                 llvm::Value * doubleBox = mIRBuilder.CreateBitCast( genericBox, llvm::PointerType::getUnqual( mModule.getTypeByName( "box.double" ) ) );
 
                 /* Loads and returns the internal value */
-                llvm::Value * valueIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mLLVMContext, mIRBuilder, doubleBox );
+                llvm::Value * valueIndex = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, doubleBox, 0, 1 );
                 return mIRBuilder.CreateLoad( valueIndex );
             }
 
@@ -205,8 +214,8 @@ namespace castel
                 llvm::Value * doubleBox = this->allocateObject( mModule.getTypeByName( "box.double" ) );
 
                 /* Compute fields indexes */
-                llvm::Value * typeIndex = mpllvm::GEP< 64, 0, 32, 0 >::build( mLLVMContext, mIRBuilder, doubleBox );
-                llvm::Value * valueIndex = mpllvm::GEP< 64, 0, 32, 1 >::build( mLLVMContext, mIRBuilder, doubleBox );
+                llvm::Value * typeIndex  = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, doubleBox, 0, 0 );
+                llvm::Value * valueIndex = mpllvm::GEP< std::int64_t, std::int32_t >::build( mLLVMContext, mIRBuilder, doubleBox, 0, 1 );
 
                 /* Populate box data */
                 mIRBuilder.CreateStore( this->boxType< engine::Value::Type::Double >( ), typeIndex );

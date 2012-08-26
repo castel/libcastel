@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <iostream>
 
 #include <llvm/Value.h>
 
@@ -27,7 +28,9 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
                 if ( ! asVariable )
                     throw std::runtime_error( "Invalid lvalue" );
 
+                        std::cout << "kikoo1" << std::endl;
                 binaryExpression.right( )->accept( *this );
+                        std::cout << "kikoo2" << std::endl;
                 llvm::Value * value = mValue.release( );
 
                 switch ( binaryExpression.type( ) ) {
@@ -35,6 +38,7 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
 
                     case lexer::Lexeme::Type::Assign:
                         llvm::Value * destination;
+                        std::cout << "kikoo" << std::endl;
                         if ( asVariable )
                             mClosureStack.top( )->set( asVariable->name( ), value );
                     break;

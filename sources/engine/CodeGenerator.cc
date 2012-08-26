@@ -15,6 +15,10 @@
 using namespace castel;
 using namespace castel::engine;
 
+typedef engine::Value * BoxPointer;
+typedef BoxPointer Environment[];
+typedef Environment * EnvironmentTable[];
+
 CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine                                                   )
 : mGenerationEngine          ( generationEngine                                                                              )
 , mLLVMHelpers               ( mGenerationEngine.llvmContext( ), mGenerationEngine.irBuilder( ), mGenerationEngine.module( ) )
@@ -24,14 +28,15 @@ CodeGenerator::CodeGenerator ( engine::GenerationEngine & generationEngine      
 llvm::Function * CodeGenerator::codegen( ast::Statement & astStatement )
 {
     llvm::Type * returnType = mpllvm::get< engine::Value * >( mGenerationEngine.llvmContext( ) );
-    llvm::FunctionType * functionType = llvm::FunctionType::get( returnType, { }, false );
+    std::vector< llvm::Type * > argsTypes = { mpllvm::get< engine::Value *** >( mGenerationEngine.llvmContext( ) ) };
+    llvm::FunctionType * functionType = llvm::FunctionType::get( returnType, argsTypes, false );
 
-    llvm::Function * llvmFunction = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "", & mGenerationEngine.module( ) );
+    llvm::Function * llvmFunction = llvm::Function::Create( functionType, llvm::Function::ExternalLinkage, "main", & mGenerationEngine.module( ) );
 
     llvm::BasicBlock * basicBlock = llvm::BasicBlock::Create( mGenerationEngine.llvmContext( ), "", llvmFunction );
     mGenerationEngine.irBuilder( ).SetInsertPoint( basicBlock );
 
-    engine::Closure closure( mGenerationEngine, llvmFunction );
+    engine::Closure closure( mGenerationEngine, * llvmFunction );
     mClosureStack.push( & closure );
 
     astStatement.accept( * this );
@@ -39,8 +44,6 @@ llvm::Function * CodeGenerator::codegen( ast::Statement & astStatement )
 
     mClosureStack.pop( );
     closure.finalize( );
-
-    llvm::verifyFunction( * llvmFunction );
 
     return llvmFunction;
 }
