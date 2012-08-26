@@ -74,7 +74,7 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
                     break;
 
                     case lexer::Lexeme::Type::Multiply:
-                        result = mGenerationEngine.irBuilder( ).CreateFSub( left, right, "mul" );
+                        result = mGenerationEngine.irBuilder( ).CreateFMul( left, right, "mul" );
                     break;
 
                     case lexer::Lexeme::Type::Divide:
