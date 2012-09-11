@@ -23,7 +23,7 @@ void CodeGenerator::visit( ast::expr::Call & astCallExpression )
     llvm::Value * box = mValue.release( );
 
     /* Computes arguments */
-    llvm::Value * argc = llvm::ConstantInt::get( mContext.llvmContext( ), llvm::APInt( 8, std::distance( utils::begin( astCallExpression.arguments( ) ), utils::end( astCallExpression.arguments( ) ) ) ) );
+    llvm::Value * argc = llvm::ConstantInt::get( mContext.llvmContext( ), llvm::APInt( 32, std::distance( utils::begin( astCallExpression.arguments( ) ), utils::end( astCallExpression.arguments( ) ) ) ) );
     llvm::Value * argv = mContext.irBuilder( ).CreateCastelAllocate< runtime::Box * >( argc );
 
     int argumentIndex = 0;
@@ -40,5 +40,5 @@ void CodeGenerator::visit( ast::expr::Call & astCallExpression )
     }
 
     /* Pseudo-returns the return value of the inner LLVM function call */
-    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_callOperator", argc, argv ) );
+    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_callOperator", mClosureStack.top( )->environmentTable( ), box, argc, argv ) );
 }
