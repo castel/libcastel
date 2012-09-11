@@ -15,6 +15,7 @@
 
     #include <cassert>
 
+    #include "castel/ast/expr/Boolean.hh"
     #include "castel/ast/expr/Binary.hh"
     #include "castel/ast/expr/Call.hh"
     #include "castel/ast/expr/Function.hh"
@@ -85,11 +86,16 @@ ifstatement(A) ::= If expression(U) Colon statementblock(V) Else Colon statement
 ifstatement(A) ::= If expression(U) Colon statementblock(V).                                        { A = new ast::stmt::If( U, V );    }
 
 %type expression                                                                                    { ast::Expression * }
-expression(A) ::= callexpression(U).                                                                { A = U;            }
+expression(A) ::= booleanexpression(U).                                                             { A = U;            }
 expression(A) ::= binaryexpression(U).                                                              { A = U;            }
+expression(A) ::= callexpression(U).                                                                { A = U;            }
 expression(A) ::= numberexpression(U).                                                              { A = U;            }
 expression(A) ::= functionexpression(U).                                                            { A = U;            }
 expression(A) ::= variableexpression(U).                                                            { A = U;            }
+
+%type booleanexpression                                                                             { ast::expr::Boolean * }
+booleanexpression(A) ::= False.                                                                     { A = new ast::expr::Boolean( false ); }
+booleanexpression(A) ::= True.                                                                      { A = new ast::expr::Boolean( true );  }
 
 %type binaryexpression                                                                              { ast::expr::Binary *                                                }
 binaryexpression(A) ::= expression(U) Add       expression(V).                                      { A = new ast::expr::Binary( lexer::Lexeme::Type::Add,       U, V ); }

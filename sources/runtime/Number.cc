@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "castel/runtime/Box.hh"
 #include "castel/runtime/Number.hh"
 #include "castel/runtime/api.hh"
@@ -60,4 +62,9 @@ runtime::Box * Number::callOperator( unsigned int, runtime::Box ** )
     castel_crash( "Numbers are not callables" );
 
     return nullptr;
+}
+
+bool Number::booleanOperator( void )
+{
+    return ! std::isnan( mNumber ) && mNumber != 0.0;
 }

@@ -8,6 +8,7 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Value.h>
 
+#include "castel/ast/expr/Boolean.hh"
 #include "castel/ast/expr/Binary.hh"
 #include "castel/ast/expr/Call.hh"
 #include "castel/ast/expr/Function.hh"
@@ -44,11 +45,14 @@ namespace castel
 
         private:
 
+            virtual void visit( ast::expr::Boolean         & );
             virtual void visit( ast::expr::Binary          & );
             virtual void visit( ast::expr::Call            & );
             virtual void visit( ast::expr::Function        & );
             virtual void visit( ast::expr::Number          & );
             virtual void visit( ast::expr::Variable        & );
+
+        public:
 
             virtual void visit( ast::stmt::decl::Variables & );
             virtual void visit( ast::stmt::Expression      & );

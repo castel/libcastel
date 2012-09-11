@@ -7,6 +7,9 @@ DEMANGLE_LEXEME_TYPE ( Var          )
 DEMANGLE_LEXEME_TYPE ( If           )
 DEMANGLE_LEXEME_TYPE ( Else         )
 
+DEMANGLE_LEXEME_TYPE ( False        )
+DEMANGLE_LEXEME_TYPE ( True         )
+
 DEMANGLE_LEXEME_TYPE ( Number       )
 DEMANGLE_LEXEME_TYPE ( Identifier   )
 

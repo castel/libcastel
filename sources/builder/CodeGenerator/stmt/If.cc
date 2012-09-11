@@ -20,8 +20,8 @@ void CodeGenerator::visit( ast::stmt::If & astIfStatement )
         throw std::runtime_error( "Missing then branch" );
 
     astIfStatement.condition( )->accept( * this );
-    llvm::Value * testValue = /*todo*/llvm::ConstantFP::get( mContext.llvmContext( ), llvm::APFloat( 0.0 ) );
-    llvm::Value * conditionValue = mContext.irBuilder( ).CreateFCmpONE( testValue, llvm::ConstantFP::get( mContext.llvmContext( ), llvm::APFloat( 0.0 ) ) );
+    llvm::Value * testValue = mContext.irBuilder( ).CreateCastelCall( "castel_booleanOperator", mValue.release( ) );
+    llvm::Value * conditionValue = mContext.irBuilder( ).CreateICmpEQ( testValue, llvm::ConstantInt::getTrue( mContext.llvmContext( ) ) );
 
     llvm::Function * llvmFunction = mContext.irBuilder( ).GetInsertBlock( )->getParent( );
 

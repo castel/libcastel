@@ -44,3 +44,8 @@ runtime::Box * Function::callOperator( unsigned int argc, runtime::Box ** argv )
 {
     return mFunction( mEnvironmentTable, argc, argv );
 }
+
+bool Function::booleanOperator( void )
+{
+    return true;
+}

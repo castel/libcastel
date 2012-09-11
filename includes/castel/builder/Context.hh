@@ -9,6 +9,7 @@
 #include <llvm/Module.h>
 
 #include "castel/builder/IRBuilder.hh"
+#include "castel/runtime/api/boolean.hh"
 #include "castel/runtime/api/function.hh"
 #include "castel/runtime/api/number.hh"
 #include "castel/runtime/api.hh"
@@ -49,9 +50,11 @@ namespace castel
                 REGISTER_FUNCTION( castel_callOperator );
                 REGISTER_FUNCTION( castel_accessOperator );
 
-                REGISTER_FUNCTION( castelNumber_create );
+                REGISTER_FUNCTION( castel_booleanOperator );
 
+                REGISTER_FUNCTION( castelBoolean_create );
                 REGISTER_FUNCTION( castelFunction_create );
+                REGISTER_FUNCTION( castelNumber_create );
 
                 #undef REGISTER_FUNCTION
                 #undef TO_STRING

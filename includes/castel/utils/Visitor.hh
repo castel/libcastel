@@ -8,6 +8,7 @@ namespace castel
 
         namespace expr
         {
+            class Boolean;
             class Binary;
             class Call;
             class Function;
@@ -41,11 +42,14 @@ namespace castel
 
         public:
 
+            virtual void visit( ast::expr::Boolean         & ) = 0;
             virtual void visit( ast::expr::Binary          & ) = 0;
             virtual void visit( ast::expr::Call            & ) = 0;
             virtual void visit( ast::expr::Function        & ) = 0;
             virtual void visit( ast::expr::Number          & ) = 0;
             virtual void visit( ast::expr::Variable        & ) = 0;
+
+        public:
 
             virtual void visit( ast::stmt::decl::Variables & ) = 0;
             virtual void visit( ast::stmt::Expression      & ) = 0;

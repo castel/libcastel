@@ -11,27 +11,40 @@ namespace castel
     namespace runtime
     {
 
-        class Function : public runtime::Box
+        class Boolean : public runtime::Box
         {
 
         public:
 
-            typedef runtime::Box * ( * InternalFunction )( runtime::Box *** environmentTable, unsigned int argc, runtime::Box ** argv );
+            typedef bool InternalBoolean;
 
         public:
 
-            static Function * create( InternalFunction function, runtime::Box *** environmentTable )
+            static Boolean * create( InternalBoolean boolean )
             {
-                void * memory = castel_allocate( 1, sizeof( Function ) );
-                return new ( memory ) Function( function, environmentTable );
+                void * memory = castel_allocate( 1, sizeof( Boolean ) );
+                return new ( memory ) Boolean( boolean );
             }
 
         private:
 
-            Function            ( InternalFunction function, runtime::Box *** environmentTable )
-            : mFunction         ( function         )
-            , mEnvironmentTable ( environmentTable )
+            Boolean    ( InternalBoolean boolean )
+            : mBoolean ( boolean )
             {
+            }
+
+        public:
+
+            InternalBoolean boolean( void ) const
+            {
+                return mBoolean;
+            }
+
+            Boolean & boolean( InternalBoolean boolean )
+            {
+                mBoolean = boolean;
+
+                return * this;
             }
 
         public:
@@ -48,12 +61,11 @@ namespace castel
 
         public:
 
-            virtual bool booleanOperator( void );
+            virtual bool booleanOperator ( void );
 
         private:
 
-            InternalFunction mFunction;
-            runtime::Box *** mEnvironmentTable;
+            InternalBoolean mBoolean;
 
         };
 

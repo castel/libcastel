@@ -132,6 +132,9 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
         If           = 'if';
         Else         = 'else';
 
+        False        = 'false';
+        True         = 'true';
+
         Add          = '+';
         Substract    = '-';
         Multiply     = '*';
@@ -158,6 +161,9 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
             Var          => { type = lexer::Lexeme::Type::Var;          fbreak; };
             If           => { type = lexer::Lexeme::Type::If;           fbreak; };
             Else         => { type = lexer::Lexeme::Type::Else;         fbreak; };
+
+            False        => { type = lexer::Lexeme::Type::False;        fbreak; };
+            True         => { type = lexer::Lexeme::Type::True;         fbreak; };
 
             Add          => { type = lexer::Lexeme::Type::Add;          fbreak; };
             Substract    => { type = lexer::Lexeme::Type::Substract;    fbreak; };

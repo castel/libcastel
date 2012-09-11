@@ -61,7 +61,13 @@ namespace castel
             virtual runtime::Box * divisionOperator       ( runtime::Box * operand );
             virtual runtime::Box * moduloOperator         ( runtime::Box * operand );
 
+        public:
+
             virtual runtime::Box * callOperator ( unsigned int argc, runtime::Box ** argv );
+
+        public:
+
+            virtual bool booleanOperator ( void );
 
         private:
 
