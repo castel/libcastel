@@ -1,5 +1,5 @@
 LIBRARY_PARSE    = libCastelParse.a
-LIBRARY_ENGINE   = libCastelEngine.a
+LIBRARY_BUILD    = libCastelBuild.a
 LIBRARY_RUNTIME  = libCastelRuntime.a
 
 CXX              = g++
@@ -16,10 +16,10 @@ HDRS_PARSE       = $(shell (find includes/castel/lexer includes/castel/parser in
 DEPS_PARSE       = $(addprefix build/dependencies/,$(SRCS_PARSE:.cc=.d))
 OBJS_PARSE       = $(addprefix build/objects/,$(SRCS_PARSE:.cc=.o))
 
-SRCS_ENGINE      = $(shell (find sources/engine \( -name '*.cc' -a -not -name '.*' \) ) | sort | uniq)
-HDRS_ENGINE      = $(shell (find includes/castel/engine \( -name '*.hh' -a -not -name '.*' \) ) | sort | uniq)
-DEPS_ENGINE      = $(addprefix build/dependencies/,$(SRCS_ENGINE:.cc=.d))
-OBJS_ENGINE      = $(addprefix build/objects/,$(SRCS_ENGINE:.cc=.o))
+SRCS_BUILD       = $(shell (find sources/builder \( -name '*.cc' -a -not -name '.*' \) ) | sort | uniq)
+HDRS_BUILD       = $(shell (find includes/castel/builder \( -name '*.hh' -a -not -name '.*' \) ) | sort | uniq)
+DEPS_BUILD       = $(addprefix build/dependencies/,$(SRCS_BUILD:.cc=.d))
+OBJS_BUILD       = $(addprefix build/objects/,$(SRCS_BUILD:.cc=.o))
 
 SRCS_RUNTIME     = $(shell (find sources/runtime \( -name '*.cc' -a -not -name '.*' \) ) | sort | uniq)
 HDRS_RUNTIME     = $(shell (find includes/castel/runtime \( -name '*.hh' -a -not -name '.*' \) ) | sort | uniq)
@@ -34,28 +34,28 @@ EOS              = $(shell printf "\033[00m")
 
 override CXXFLAGS += -fPIC -std=c++11 -I./includes -I.
 
-CXXFLAGS_PARSE   = $(CXXFLAGS) -g -O0
-CXXFLAGS_ENGINE  = $(CXXFLAGS) -g -O0 $(shell llvm-config --cxxflags) -fexceptions -g -O0
-CXXFLAGS_RUNTIME = $(CXXFLAGS) -g -O0
+CXXFLAGS_PARSE   = $(CXXFLAGS) -g
+CXXFLAGS_BUILD   = $(CXXFLAGS) -g $(shell llvm-config --cppflags)
+CXXFLAGS_RUNTIME = $(CXXFLAGS) -g
 
-all: $(LIBRARY_PARSE) $(LIBRARY_ENGINE) $(LIBRARY_RUNTIME)
+all: $(LIBRARY_PARSE) $(LIBRARY_BUILD) $(LIBRARY_RUNTIME)
 	@printf "Compilation done.\n"
 
 $(LIBRARY_PARSE): build/$(LIBRARY_PARSE)
-$(LIBRARY_ENGINE): build/$(LIBRARY_ENGINE)
+$(LIBRARY_BUILD): build/$(LIBRARY_BUILD)
 $(LIBRARY_RUNTIME): build/$(LIBRARY_RUNTIME)
 
--include $(DEPS_PARSE) $(DEPS_ENGINE) $(DEPS_RUNTIME)
+-include $(DEPS_PARSE) $(DEPS_BUILD) $(DEPS_RUNTIME)
 
 build/$(LIBRARY_PARSE): $(OBJS_PARSE) includes/castel/lexer/MangledLexemesTypes.hh
 	@test -t && printf "%s# Merging object files for $(LIBRARY_PARSE).%s\n" "$(PURPLE)" "$(EOS)"
 	@$(AR) rcs build/$(LIBRARY_PARSE) $(OBJS_PARSE)
 	@$(RANLIB) build/$(LIBRARY_PARSE)
 
-build/$(LIBRARY_ENGINE): $(OBJS_ENGINE)
-	@test -t && printf "%s# Merging object files for $(LIBRARY_ENGINE).%s\n" "$(PURPLE)" "$(EOS)"
-	@$(AR) rcs build/$(LIBRARY_ENGINE) $(OBJS_ENGINE)
-	@$(RANLIB) build/$(LIBRARY_ENGINE)
+build/$(LIBRARY_BUILD): $(OBJS_BUILD)
+	@test -t && printf "%s# Merging object files for $(LIBRARY_BUILD).%s\n" "$(PURPLE)" "$(EOS)"
+	@$(AR) rcs build/$(LIBRARY_BUILD) $(OBJS_BUILD)
+	@$(RANLIB) build/$(LIBRARY_BUILD)
 
 build/$(LIBRARY_RUNTIME): $(OBJS_RUNTIME)
 	@test -t && printf "%s# Merging object files for $(LIBRARY_RUNTIME).%s\n" "$(PURPLE)" "$(EOS)"
@@ -78,10 +78,10 @@ $(DEPS_PARSE): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledLexem
 	@$(MKDIR) -p "$(dir $(@))"
 	@$(CXX) $(CXXFLAGS_PARSE) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
-$(DEPS_ENGINE): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledLexemesTypes.hh sources/parser/parse.cc
+$(DEPS_BUILD): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledLexemesTypes.hh sources/parser/parse.cc
 	@test -t && printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
 	@$(MKDIR) -p "$(dir $(@))"
-	@$(CXX) $(CXXFLAGS_ENGINE) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
+	@$(CXX) $(CXXFLAGS_BUILD) -MM -MG -MT "$(patsubst build/dependencies/%,build/objects/%,$(@:.d=.o))" "$(<)" > $(@)
 
 $(DEPS_RUNTIME): build/dependencies/%.d: %.cc | includes/castel/lexer/MangledLexemesTypes.hh sources/parser/parse.cc
 	@test -t && printf "%s+ Generating dependency file for %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
@@ -93,10 +93,10 @@ $(OBJS_PARSE): build/objects/%.o: %.cc
 	@$(MKDIR) -p "$(dir $(@))"
 	@$(CXX) $(CXXFLAGS_PARSE) -c -o "$(@)" "$(<)"
 
-$(OBJS_ENGINE): build/objects/%.o: %.cc
+$(OBJS_BUILD): build/objects/%.o: %.cc
 	@test -t && printf "%s+ Compiling %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
 	@$(MKDIR) -p "$(dir $(@))"
-	@$(CXX) $(CXXFLAGS_ENGINE) -c -o "$(@)" "$(<)"
+	@$(CXX) $(CXXFLAGS_BUILD) -c -o "$(@)" "$(<)"
 
 $(OBJS_RUNTIME): build/objects/%.o: %.cc
 	@test -t && printf "%s+ Compiling %s.%s\n" "$(GREEN)" "$(<)" "$(EOS)"
@@ -118,7 +118,7 @@ clean-dependencies:
 fclean: clean
 	@test -t && printf "%s- Removing binary files.%s\n" "$(BROWN)" "$(EOS)"
 	@$(RM) -rf build/$(LIBRARY_PARSE)
-	@$(RM) -rf build/$(LIBRARY_ENGINE)
+	@$(RM) -rf build/$(LIBRARY_BUILD)
 	@$(RM) -rf build/$(LIBRARY_RUNTIME)
 
 re: clean-dependencies fclean
@@ -127,4 +127,4 @@ re: clean-dependencies fclean
 check-syntax:
 	@$(MAKE) CXXFLAGS=-fsyntax-only -W $(patsubst %_flymake.cc,%.cc,$(CHK_SOURCES)) $(patsubst %_flymake.cc,build/objects/%.o,$(CHK_SOURCES))
 
-.PHONY: $(LIBRARY_PARSE) $(LIBRARY_ENGINE) $(LIBRARY_RUNTIME) all clean fclean re clean-depends check-syntax libcastel
+.PHONY: $(LIBRARY_PARSE) $(LIBRARY_BUILD) $(LIBRARY_RUNTIME) all clean fclean re clean-depends check-syntax libcastel
