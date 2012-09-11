@@ -92,6 +92,7 @@ expression(A) ::= callexpression(U).                                            
 expression(A) ::= numberexpression(U).                                                              { A = U;            }
 expression(A) ::= functionexpression(U).                                                            { A = U;            }
 expression(A) ::= variableexpression(U).                                                            { A = U;            }
+expression(A) ::= parenthesisexpression(U).                                                         { A = U;            }
 
 %type booleanexpression                                                                             { ast::expr::Boolean * }
 booleanexpression(A) ::= False.                                                                     { A = new ast::expr::Boolean( false ); }
@@ -125,9 +126,11 @@ variableexpression(A) ::= Identifier(U).                                        
 %type functionexpression                                                                            { ast::expr::Function *                }
 functionexpression(A) ::= LParenthesis Function parameters(U) Colon statementblock(V) RParenthesis. { A = new ast::expr::Function( U, V ); }
 
+%type parenthesisexpression                                                                         { ast::Expression * }
+parenthesisexpression(A) ::= LParenthesis expression(U) RParenthesis.                               { A = U;            }
+
 %type parameters                                                                                    { ast::expr::Function::Parameter * }
-parameters(A) ::= LParenthesis parameterlist(U) RParenthesis.                                       { A = U;                           }
-parameters(A) ::= LParenthesis RParenthesis.                                                        { A = nullptr;                     }
+parameters(A) ::= parameterlist(U).                                                                 { A = U;                           }
 parameters(A) ::= .                                                                                 { A = nullptr;                     }
 
 %type parameterlist                                                                                 { ast::expr::Function::Parameter *                            }
