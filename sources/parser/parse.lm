@@ -76,8 +76,9 @@ variabledeclarationstatement(A) ::= Var variabledeclarations(U) Newline.        
 variabledeclarations(A) ::= variabledeclaration(U) Comma variabledeclarations(V).                   { A = U; U->next( V );                   }
 variabledeclarations(A) ::= variabledeclaration(U).                                                 { A = U;                                 }
 
-%type variabledeclaration                                                                           { ast::stmt::decl::Variables::Variable *              }
-variabledeclaration(A) ::= Identifier(U).                                                           { A = new ast::stmt::decl::Variables::Variable( *U ); }
+%type variabledeclaration                                                                           { ast::stmt::decl::Variables::Variable *                  }
+variabledeclaration(A) ::= Identifier(U).                                                           { A = new ast::stmt::decl::Variables::Variable( *U );     }
+variabledeclaration(A) ::= Identifier(U) Assign expression(V).                                      { A = new ast::stmt::decl::Variables::Variable( *U, V ); }
 
 %type ifstatement                                                                                   { ast::stmt::If *                   }
 ifstatement(A) ::= If expression(U) Colon statementblock(V) Else Colon statementblock(W).           { A = new ast::stmt::If( U, V, W ); }
