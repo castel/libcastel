@@ -3,7 +3,7 @@
 
 using namespace castel;
 
-runtime::Box * castel_callOperator( runtime::Box *** environment, runtime::Box * operand, unsigned int argc, runtime::Box ** argv )
+runtime::Box * castel_callOperator( runtime::Box * operand, unsigned int argc, runtime::Box ** argv )
 {
-    return operand->callOperator( environment, argc, argv );
+    return operand->callOperator( argc, argv );
 }

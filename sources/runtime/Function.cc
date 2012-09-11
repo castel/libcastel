@@ -5,42 +5,42 @@
 using namespace castel;
 using runtime::Function;
 
-runtime::Box * Function::additionOperator( runtime::Box ***, runtime::Box * )
+runtime::Box * Function::additionOperator( runtime::Box * )
 {
     castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Function::substractionOperator( runtime::Box ***, runtime::Box * )
+runtime::Box * Function::substractionOperator( runtime::Box * )
 {
     castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Function::multiplicationOperator( runtime::Box ***, runtime::Box * )
+runtime::Box * Function::multiplicationOperator( runtime::Box * )
 {
     castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Function::divisionOperator( runtime::Box ***, runtime::Box * )
+runtime::Box * Function::divisionOperator( runtime::Box * )
 {
     castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Function::moduloOperator( runtime::Box ***, runtime::Box * )
+runtime::Box * Function::moduloOperator( runtime::Box * )
 {
     castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Function::callOperator( runtime::Box *** environment, unsigned int argc, runtime::Box ** argv )
+runtime::Box * Function::callOperator( unsigned int argc, runtime::Box ** argv )
 {
-    return mFunction( environment, argc, argv );
+    return mFunction( mEnvironmentTable, argc, argv );
 }

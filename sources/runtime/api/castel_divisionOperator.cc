@@ -3,7 +3,7 @@
 
 using namespace castel;
 
-runtime::Box * castel_divisionOperator( runtime::Box *** environment, runtime::Box * leftOperand, runtime::Box * rightOperand )
+runtime::Box * castel_divisionOperator( runtime::Box * leftOperand, runtime::Box * rightOperand )
 {
-    return leftOperand->divisionOperator( environment, rightOperand );
+    return leftOperand->divisionOperator( rightOperand );
 }

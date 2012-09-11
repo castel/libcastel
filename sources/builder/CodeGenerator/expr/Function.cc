@@ -56,5 +56,5 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     mContext.irBuilder( ).SetInsertPoint( llvmCurrentBasicBlock, llvmCurrentPoint );
 
     /* Pseudo-returns a box containing this function, linked with the current function environment table */
-    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castelFunction_create", llvmFunction ) );
+    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castelFunction_create", llvmFunction, mClosureStack.top( )->environmentTable( ) ) );
 }

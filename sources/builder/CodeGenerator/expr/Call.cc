@@ -40,5 +40,5 @@ void CodeGenerator::visit( ast::expr::Call & astCallExpression )
     }
 
     /* Pseudo-returns the return value of the inner LLVM function call */
-    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_callOperator", mClosureStack.top( )->environmentTable( ), box, argc, argv ) );
+    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_callOperator", box, argc, argv ) );
 }

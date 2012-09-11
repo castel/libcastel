@@ -16,36 +16,38 @@ namespace castel
 
         public:
 
-            typedef runtime::Box * ( * InternalFunction )( runtime::Box *** environment, unsigned int argc, runtime::Box ** argv );
+            typedef runtime::Box * ( * InternalFunction )( runtime::Box *** environmentTable, unsigned int argc, runtime::Box ** argv );
 
         public:
 
-            static Function * create( InternalFunction function )
+            static Function * create( InternalFunction function, runtime::Box *** environmentTable )
             {
                 void * memory = castel_allocate( 1, sizeof( Function ) );
-                return new ( memory ) Function( function );
+                return new ( memory ) Function( function, environmentTable );
             }
 
         private:
 
-            Function    ( InternalFunction function )
-            : mFunction ( function )
+            Function            ( InternalFunction function, runtime::Box *** environmentTable )
+            : mFunction         ( function         )
+            , mEnvironmentTable ( environmentTable )
             {
             }
 
         public:
 
-            virtual runtime::Box * additionOperator       ( runtime::Box *** environment, runtime::Box * operand );
-            virtual runtime::Box * substractionOperator   ( runtime::Box *** environment, runtime::Box * operand );
-            virtual runtime::Box * multiplicationOperator ( runtime::Box *** environment, runtime::Box * operand );
-            virtual runtime::Box * divisionOperator       ( runtime::Box *** environment, runtime::Box * operand );
-            virtual runtime::Box * moduloOperator         ( runtime::Box *** environment, runtime::Box * operand );
+            virtual runtime::Box * additionOperator       ( runtime::Box * operand );
+            virtual runtime::Box * substractionOperator   ( runtime::Box * operand );
+            virtual runtime::Box * multiplicationOperator ( runtime::Box * operand );
+            virtual runtime::Box * divisionOperator       ( runtime::Box * operand );
+            virtual runtime::Box * moduloOperator         ( runtime::Box * operand );
 
-            virtual runtime::Box * callOperator ( runtime::Box *** environment, unsigned int argc, runtime::Box ** argv );
+            virtual runtime::Box * callOperator ( unsigned int argc, runtime::Box ** argv );
 
         private:
 
             InternalFunction mFunction;
+            runtime::Box *** mEnvironmentTable;
 
         };
 

@@ -5,7 +5,7 @@
 using namespace castel;
 using runtime::Number;
 
-runtime::Box * Number::additionOperator( runtime::Box ***, runtime::Box * operand )
+runtime::Box * Number::additionOperator( runtime::Box * operand )
 {
     runtime::Number * numberOperand = dynamic_cast< runtime::Number * >( operand );
 
@@ -15,7 +15,7 @@ runtime::Box * Number::additionOperator( runtime::Box ***, runtime::Box * operan
     return runtime::Number::create( mNumber + numberOperand->mNumber );
 }
 
-runtime::Box * Number::substractionOperator( runtime::Box ***, runtime::Box * operand )
+runtime::Box * Number::substractionOperator( runtime::Box * operand )
 {
     runtime::Number * numberOperand = dynamic_cast< runtime::Number * >( operand );
 
@@ -25,7 +25,7 @@ runtime::Box * Number::substractionOperator( runtime::Box ***, runtime::Box * op
     return runtime::Number::create( mNumber - numberOperand->mNumber );
 }
 
-runtime::Box * Number::multiplicationOperator( runtime::Box ***, runtime::Box * operand )
+runtime::Box * Number::multiplicationOperator( runtime::Box * operand )
 {
     runtime::Number * numberOperand = dynamic_cast< runtime::Number * >( operand );
 
@@ -35,7 +35,7 @@ runtime::Box * Number::multiplicationOperator( runtime::Box ***, runtime::Box * 
     return runtime::Number::create( mNumber * numberOperand->mNumber );
 }
 
-runtime::Box * Number::divisionOperator( runtime::Box ***, runtime::Box * operand )
+runtime::Box * Number::divisionOperator( runtime::Box * operand )
 {
     runtime::Number * numberOperand = dynamic_cast< runtime::Number * >( operand );
 
@@ -45,7 +45,7 @@ runtime::Box * Number::divisionOperator( runtime::Box ***, runtime::Box * operan
     return runtime::Number::create( mNumber / numberOperand->mNumber );
 }
 
-runtime::Box * Number::moduloOperator( runtime::Box ***, runtime::Box * operand )
+runtime::Box * Number::moduloOperator( runtime::Box * operand )
 {
     runtime::Number * numberOperand = dynamic_cast< runtime::Number * >( operand );
 
@@ -55,7 +55,7 @@ runtime::Box * Number::moduloOperator( runtime::Box ***, runtime::Box * operand 
     return runtime::Number::create( static_cast< int >( mNumber ) % static_cast< int >( numberOperand->mNumber ) );
 }
 
-runtime::Box * Number::callOperator( runtime::Box ***, unsigned int, runtime::Box ** )
+runtime::Box * Number::callOperator( unsigned int, runtime::Box ** )
 {
     castel_crash( "Numbers are not callables" );
 

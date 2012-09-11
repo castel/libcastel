@@ -3,7 +3,7 @@
 
 using namespace castel;
 
-runtime::Box * castel_substractionOperator( runtime::Box *** environment, runtime::Box * leftOperand, runtime::Box * rightOperand )
+runtime::Box * castel_substractionOperator( runtime::Box * leftOperand, runtime::Box * rightOperand )
 {
-    return leftOperand->substractionOperator( environment, rightOperand );
+    return leftOperand->substractionOperator( rightOperand );
 }

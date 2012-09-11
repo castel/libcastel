@@ -66,23 +66,23 @@ void CodeGenerator::visit( ast::expr::Binary & binaryExpression )
                     default: break;
 
                     case lexer::Lexeme::Type::Add:
-                        result = mContext.irBuilder( ).CreateCastelCall( "castel_additionOperator", mClosureStack.top( )->environmentTable( ), leftOperand, rightOperand );
+                        result = mContext.irBuilder( ).CreateCastelCall( "castel_additionOperator", leftOperand, rightOperand );
                     break;
 
                     case lexer::Lexeme::Type::Substract:
-                        result = mContext.irBuilder( ).CreateCastelCall( "castel_substractionOperator", mClosureStack.top( )->environmentTable( ), leftOperand, rightOperand );
+                        result = mContext.irBuilder( ).CreateCastelCall( "castel_substractionOperator", leftOperand, rightOperand );
                     break;
 
                     case lexer::Lexeme::Type::Multiply:
-                        result = mContext.irBuilder( ).CreateCastelCall( "castel_multiplicationOperator", mClosureStack.top( )->environmentTable( ), leftOperand, rightOperand );
+                        result = mContext.irBuilder( ).CreateCastelCall( "castel_multiplicationOperator", leftOperand, rightOperand );
                     break;
 
                     case lexer::Lexeme::Type::Divide:
-                        result = mContext.irBuilder( ).CreateCastelCall( "castel_divisionOperator", mClosureStack.top( )->environmentTable( ), leftOperand, rightOperand );
+                        result = mContext.irBuilder( ).CreateCastelCall( "castel_divisionOperator", leftOperand, rightOperand );
                     break;
 
                     case lexer::Lexeme::Type::Modulo:
-                        result = mContext.irBuilder( ).CreateCastelCall( "castel_moduloOperator", mClosureStack.top( )->environmentTable( ), leftOperand, rightOperand );
+                        result = mContext.irBuilder( ).CreateCastelCall( "castel_moduloOperator", leftOperand, rightOperand );
                     break;
 
                 }
