@@ -39,10 +39,11 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     mClosureStack.push( & closure );
 
     /* Declares each parameter into the closure */
-    auto llvmArgumentIterator = llvmFunction->arg_begin( );
-    llvm::Value * environment = llvmArgumentIterator ++;
+    unsigned int n = 0;
+    llvm::Function::ArgumentListType & argumentList = llvmFunction->getArgumentList( );
+    llvm::Value * argv = ++ ++ argumentList.begin( );
     for ( auto & parameter : astFunctionExpression.parameters( ) )
-        closure.declare( parameter.name( ), llvmArgumentIterator ++ );
+        closure.declare( parameter.name( ), mContext.irBuilder( ).CreateLoad( mContext.irBuilder( ).CreateConstGEP1_32( argv, n ++ ) ) );
 
     /* Constructs function body */
     astFunctionExpression.statements( )->accept( *this );
