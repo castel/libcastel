@@ -24,7 +24,7 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
         throw std::runtime_error( "Missing body" );
 
     /* Creates llvm function */
-    llvm::Function * llvmFunction = mContext.declareGlobalFunction< runtime::Box * ( unsigned int, runtime::Box ** ) >( "", llvm::Function::ExternalLinkage );
+    llvm::Function * llvmFunction = mContext.declareGlobalFunction< runtime::Box * ( runtime::Box ***, unsigned int, runtime::Box ** ) >( "", llvm::Function::ExternalLinkage );
 
     /* Gets the current insert point (we will need it later) */
     llvm::BasicBlock * llvmCurrentBasicBlock = mContext.irBuilder( ).GetInsertBlock( );
