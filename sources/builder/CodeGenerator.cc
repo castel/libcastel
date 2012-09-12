@@ -29,6 +29,10 @@ llvm::Function * CodeGenerator::codegen( ast::Statement & astStatement )
     astStatement.accept( * this );
     mValue.release( );
 
+    llvm::BasicBlock * llvmLastBasicBlock = mContext.irBuilder( ).GetInsertBlock( );
+    if ( llvmLastBasicBlock->empty( ) || ! llvmLastBasicBlock->back( ).isTerminator( ) )
+        mContext.irBuilder( ).CreateRet( mContext.irBuilder( ).CreateCastelCall( "castelUndefined_create" ) );
+
     mClosureStack.pop( );
     closure.finalize( );
 

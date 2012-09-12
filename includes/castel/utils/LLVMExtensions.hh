@@ -9,7 +9,9 @@
 #include "castel/runtime/Box.hh"
 #include "castel/runtime/Boolean.hh"
 #include "castel/runtime/Function.hh"
+#include "castel/runtime/Null.hh"
 #include "castel/runtime/Number.hh"
+#include "castel/runtime/Undefined.hh"
 
 namespace castel
 {
@@ -52,7 +54,15 @@ namespace llvm
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
+    struct TypeBuilder< castel::runtime::Null, XCompile >
+        : public castel::utils::BoxTypeBuilder { };
+
+    template < bool XCompile >
     struct TypeBuilder< castel::runtime::Number, XCompile >
+        : public castel::utils::BoxTypeBuilder { };
+
+    template < bool XCompile >
+    struct TypeBuilder< castel::runtime::Undefined, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
 }

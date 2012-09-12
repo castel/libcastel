@@ -12,7 +12,9 @@
 #include "castel/ast/expr/Binary.hh"
 #include "castel/ast/expr/Call.hh"
 #include "castel/ast/expr/Function.hh"
+#include "castel/ast/expr/Null.hh"
 #include "castel/ast/expr/Number.hh"
+#include "castel/ast/expr/Undefined.hh"
 #include "castel/ast/expr/Variable.hh"
 #include "castel/ast/stmt/decl/Variables.hh"
 #include "castel/ast/stmt/Expression.hh"
@@ -49,7 +51,9 @@ namespace castel
             virtual void visit( ast::expr::Binary          & );
             virtual void visit( ast::expr::Call            & );
             virtual void visit( ast::expr::Function        & );
+            virtual void visit( ast::expr::Null            & );
             virtual void visit( ast::expr::Number          & );
+            virtual void visit( ast::expr::Undefined       & );
             virtual void visit( ast::expr::Variable        & );
 
         public:

@@ -10,6 +10,6 @@ void CodeGenerator::visit( ast::stmt::Return & astReturnStatement )
         astReturnStatement.returnValue( )->accept( *this );
         mContext.irBuilder( ).CreateRet( mValue.release( ) );
     } else {
-        mContext.irBuilder( ).CreateRetVoid( );
+        mContext.irBuilder( ).CreateRet( mContext.irBuilder( ).CreateCastelCall( "castelUndefined_create" ) );
     }
 }

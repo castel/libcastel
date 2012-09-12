@@ -11,7 +11,9 @@
 #include "castel/builder/IRBuilder.hh"
 #include "castel/runtime/api/boolean.hh"
 #include "castel/runtime/api/function.hh"
+#include "castel/runtime/api/null.hh"
 #include "castel/runtime/api/number.hh"
+#include "castel/runtime/api/undefined.hh"
 #include "castel/runtime/api.hh"
 #include "castel/utils/LLVMExtensions.hh"
 
@@ -54,7 +56,9 @@ namespace castel
 
                 REGISTER_FUNCTION( castelBoolean_create );
                 REGISTER_FUNCTION( castelFunction_create );
+                REGISTER_FUNCTION( castelNull_create );
                 REGISTER_FUNCTION( castelNumber_create );
+                REGISTER_FUNCTION( castelUndefined_create );
 
                 #undef REGISTER_FUNCTION
                 #undef TO_STRING

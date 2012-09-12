@@ -12,7 +12,9 @@ namespace castel
             class Binary;
             class Call;
             class Function;
+            class Null;
             class Number;
+            class Undefined;
             class Variable;
         }
 
@@ -46,7 +48,9 @@ namespace castel
             virtual void visit( ast::expr::Binary          & ) = 0;
             virtual void visit( ast::expr::Call            & ) = 0;
             virtual void visit( ast::expr::Function        & ) = 0;
+            virtual void visit( ast::expr::Null            & ) = 0;
             virtual void visit( ast::expr::Number          & ) = 0;
+            virtual void visit( ast::expr::Undefined       & ) = 0;
             virtual void visit( ast::expr::Variable        & ) = 0;
 
         public:

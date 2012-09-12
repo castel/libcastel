@@ -19,7 +19,9 @@
     #include "castel/ast/expr/Binary.hh"
     #include "castel/ast/expr/Call.hh"
     #include "castel/ast/expr/Function.hh"
+    #include "castel/ast/expr/Null.hh"
     #include "castel/ast/expr/Number.hh"
+    #include "castel/ast/expr/Undefined.hh"
     #include "castel/ast/expr/Variable.hh"
     #include "castel/ast/stmt/decl/Variables.hh"
     #include "castel/ast/stmt/Expression.hh"
@@ -89,10 +91,12 @@ ifstatement(A) ::= If expression(U) Colon statementblock(V).                    
 expression(A) ::= booleanexpression(U).                                                             { A = U;            }
 expression(A) ::= binaryexpression(U).                                                              { A = U;            }
 expression(A) ::= callexpression(U).                                                                { A = U;            }
-expression(A) ::= numberexpression(U).                                                              { A = U;            }
 expression(A) ::= functionexpression(U).                                                            { A = U;            }
-expression(A) ::= variableexpression(U).                                                            { A = U;            }
+expression(A) ::= nullexpression(U).                                                                { A = U;            }
+expression(A) ::= numberexpression(U).                                                              { A = U;            }
 expression(A) ::= parenthesisexpression(U).                                                         { A = U;            }
+expression(A) ::= undefinedexpression(U).                                                           { A = U;            }
+expression(A) ::= variableexpression(U).                                                            { A = U;            }
 
 %type booleanexpression                                                                             { ast::expr::Boolean * }
 booleanexpression(A) ::= False.                                                                     { A = new ast::expr::Boolean( false ); }
@@ -117,17 +121,23 @@ arguments(A) ::= LParenthesis argumentlist(U) RParenthesis.                     
 argumentlist(A) ::= expression(U) Comma argumentlist(V).                                            { A = new ast::expr::Call::Argument( U ); A->next( V ); }
 argumentlist(A) ::= expression(U).                                                                  { A = new ast::expr::Call::Argument( U );               }
 
-%type numberexpression                                                                              { ast::expr::Number *              }
-numberexpression(A) ::= Number(U).                                                                  { A = new ast::expr::Number( *U ); }
-
-%type variableexpression                                                                            { ast::expr::Variable *              }
-variableexpression(A) ::= Identifier(U).                                                            { A = new ast::expr::Variable( *U ); }
-
 %type functionexpression                                                                            { ast::expr::Function *                }
 functionexpression(A) ::= LParenthesis Function parameters(U) Colon statementblock(V) RParenthesis. { A = new ast::expr::Function( U, V ); }
 
+%type nullexpression                                                                                { ast::expr::Null *           }
+nullexpression(A) ::= Null.                                                                         { A = new ast::expr::Null( ); }
+
+%type numberexpression                                                                              { ast::expr::Number *              }
+numberexpression(A) ::= Number(U).                                                                  { A = new ast::expr::Number( *U ); }
+
 %type parenthesisexpression                                                                         { ast::Expression * }
 parenthesisexpression(A) ::= LParenthesis expression(U) RParenthesis.                               { A = U;            }
+
+%type undefinedexpression                                                                           { ast::expr::Undefined *           }
+undefinedexpression(A) ::= Undefined.                                                               { A = new ast::expr::Undefined( ); }
+
+%type variableexpression                                                                            { ast::expr::Variable *              }
+variableexpression(A) ::= Identifier(U).                                                            { A = new ast::expr::Variable( *U ); }
 
 %type parameters                                                                                    { ast::expr::Function::Parameter * }
 parameters(A) ::= parameterlist(U).                                                                 { A = U;                           }

@@ -48,6 +48,11 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     /* Constructs function body */
     astFunctionExpression.statements( )->accept( *this );
 
+    /* If no value is returned, we return undefined */
+    llvm::BasicBlock * llvmLastBasicBlock = mContext.irBuilder( ).GetInsertBlock( );
+    if ( llvmLastBasicBlock->empty( ) || ! llvmLastBasicBlock->back( ).isTerminator( ) )
+        mContext.irBuilder( ).CreateRet( mContext.irBuilder( ).CreateCastelCall( "castelUndefined_create" ) );
+
     /* Clotures the closure */
     mClosureStack.pop( );
     closure.finalize( );

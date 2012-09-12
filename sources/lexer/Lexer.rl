@@ -135,6 +135,9 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
         False        = 'false';
         True         = 'true';
 
+        Null         = 'null';
+        Undefined    = 'undefined';
+
         Add          = '+';
         Substract    = '-';
         Multiply     = '*';
@@ -164,6 +167,9 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
             False        => { type = lexer::Lexeme::Type::False;        fbreak; };
             True         => { type = lexer::Lexeme::Type::True;         fbreak; };
+
+            Null         => { type = lexer::Lexeme::Type::Null;         fbreak; };
+            Undefined    => { type = lexer::Lexeme::Type::Undefined;    fbreak; };
 
             Add          => { type = lexer::Lexeme::Type::Add;          fbreak; };
             Substract    => { type = lexer::Lexeme::Type::Substract;    fbreak; };

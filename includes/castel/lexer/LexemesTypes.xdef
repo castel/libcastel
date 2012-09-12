@@ -10,6 +10,9 @@ DEMANGLE_LEXEME_TYPE ( Else         )
 DEMANGLE_LEXEME_TYPE ( False        )
 DEMANGLE_LEXEME_TYPE ( True         )
 
+DEMANGLE_LEXEME_TYPE ( Null         )
+DEMANGLE_LEXEME_TYPE ( Undefined    )
+
 DEMANGLE_LEXEME_TYPE ( Number       )
 DEMANGLE_LEXEME_TYPE ( Identifier   )
 
