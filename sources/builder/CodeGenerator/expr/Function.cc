@@ -39,11 +39,11 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     mClosureStack.push( & closure );
 
     /* Declares each parameter into the closure */
-    unsigned int n = 0;
-    llvm::Function::ArgumentListType & argumentList = llvmFunction->getArgumentList( );
-    llvm::Value * argv = ++ ++ argumentList.begin( );
-    for ( auto & parameter : astFunctionExpression.parameters( ) )
-        closure.declare( parameter.name( ), mContext.irBuilder( ).CreateLoad( mContext.irBuilder( ).CreateConstGEP1_32( argv, n ++ ) ) );
+    unsigned int arity = 0;
+    llvm::Value * deferredArgv = ++ ++ llvmFunction->getArgumentList( ).begin( );
+    for ( auto & astFunctionParameter : astFunctionExpression.parameters( ) )
+        closure.declare( astFunctionParameter.name( ), mContext.irBuilder( ).CreateLoad( mContext.irBuilder( ).CreateConstGEP1_32( deferredArgv, arity ++ ) ) );
+    llvm::Value * deferredArgc = llvm::ConstantInt::get( mContext.llvmContext( ), llvm::APInt( 32, arity ) );
 
     /* Constructs function body */
     astFunctionExpression.statements( )->accept( *this );
@@ -61,5 +61,5 @@ void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
     mContext.irBuilder( ).SetInsertPoint( llvmCurrentBasicBlock, llvmCurrentPoint );
 
     /* Pseudo-returns a box containing this function, linked with the current function environment table */
-    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castelFunction_create", llvmFunction, mClosureStack.top( )->environmentTable( ) ) );
+    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castelFunction_create", mClosureStack.top( )->environmentTable( ), llvmFunction, deferredArgc ) );
 }

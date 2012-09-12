@@ -34,7 +34,7 @@ void CodeGenerator::visit( ast::expr::Call & astCallExpression )
 
         item.value( )->accept( *this );
 
-        llvm::Value * argvTarget = mContext.irBuilder( ).CreateConstGEP1_64( argv, argumentIndex );
+        llvm::Value * argvTarget = mContext.irBuilder( ).CreateConstGEP1_64( argv, argumentIndex ++ );
         mContext.irBuilder( ).CreateStore( mValue.release( ), argvTarget );
 
     }

@@ -20,17 +20,18 @@ namespace castel
 
         public:
 
-            static Function * create( InternalFunction function, runtime::Box *** environmentTable )
+            static Function * create( runtime::Box *** environmentTable, InternalFunction function, unsigned int arity )
             {
                 void * memory = castel_allocate( 1, sizeof( Function ) );
-                return new ( memory ) Function( function, environmentTable );
+                return new ( memory ) Function( environmentTable, function, arity );
             }
 
         private:
 
-            Function            ( InternalFunction function, runtime::Box *** environmentTable )
-            : mFunction         ( function         )
-            , mEnvironmentTable ( environmentTable )
+            Function            ( runtime::Box *** environmentTable, InternalFunction function, unsigned int arity )
+            : mEnvironmentTable ( environmentTable )
+            , mFunction         ( function         )
+            , mArity            ( arity            )
             {
             }
 
@@ -52,8 +53,10 @@ namespace castel
 
         private:
 
-            InternalFunction mFunction;
             runtime::Box *** mEnvironmentTable;
+
+            InternalFunction mFunction;
+            unsigned int     mArity;
 
         };
 

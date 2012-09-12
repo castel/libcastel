@@ -1,53 +1,54 @@
 #include "castel/runtime/Box.hh"
-#include "castel/runtime/Undefined.hh"
+#include "castel/runtime/Function.hh"
 #include "castel/runtime/api.hh"
 
 using namespace castel;
-using runtime::Undefined;
+using runtime::Function;
 
-runtime::Box * Undefined::additionOperator( runtime::Box * )
+runtime::Box * Function::additionOperator( runtime::Box * )
 {
-    castel_crash( "Undefined values cannot be used as operands in arithmetic expressions" );
+    castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Undefined::substractionOperator( runtime::Box * )
+runtime::Box * Function::substractionOperator( runtime::Box * )
 {
-    castel_crash( "Undefined values cannot be used as operands in arithmetic expressions" );
+    castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Undefined::multiplicationOperator( runtime::Box * )
+runtime::Box * Function::multiplicationOperator( runtime::Box * )
 {
-    castel_crash( "Undefined values cannot be used as operands in arithmetic expressions" );
+    castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Undefined::divisionOperator( runtime::Box * )
+runtime::Box * Function::divisionOperator( runtime::Box * )
 {
-    castel_crash( "Undefined values cannot be used as operands in arithmetic expressions" );
+    castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Undefined::moduloOperator( runtime::Box * )
+runtime::Box * Function::moduloOperator( runtime::Box * )
 {
-    castel_crash( "Undefined values cannot be used as operands in arithmetic expressions" );
+    castel_crash( "Functions cannot be used as operands in arithmetic expressions" );
 
     return nullptr;
 }
 
-runtime::Box * Undefined::callOperator( unsigned int, runtime::Box ** )
+runtime::Box * Function::callOperator( unsigned int argc, runtime::Box ** argv )
 {
-    castel_crash( "Undefined values are not callables" );
+    if ( argc < mArity )
+        castel_crash( "Bad argument count in function call" );
 
-    return nullptr;
+    return mFunction( mEnvironmentTable, argc, argv );
 }
 
-bool Undefined::booleanOperator( void )
+bool Function::booleanOperator( void )
 {
-    return false;
+    return true;
 }
