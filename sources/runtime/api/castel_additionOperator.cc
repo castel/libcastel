@@ -5,5 +5,10 @@ using namespace castel;
 
 runtime::Box * castel_additionOperator( runtime::Box * leftOperand, runtime::Box * rightOperand )
 {
-    return leftOperand->additionOperator( rightOperand );
+    runtime::Box * result = leftOperand->additionOperator( rightOperand );
+
+    if ( ! result )
+        castel_binaryOperatorMissing( "addition", leftOperand, rightOperand );
+
+    return result;
 }

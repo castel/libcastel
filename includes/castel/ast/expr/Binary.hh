@@ -20,17 +20,10 @@ namespace castel
 
             public:
 
-                Binary   ( void )
-                : mType  ( lexer::Lexeme::Type::Invalid )
-                , mLeft  (                              )
-                , mRight (                              )
-                {
-                }
-
-                Binary   ( lexer::Lexeme::Type type, ast::Expression * left = nullptr, ast::Expression * right = nullptr )
-                : mType  ( type  )
-                , mLeft  ( left  )
-                , mRight ( right )
+                Binary          ( lexer::Lexeme::Type type = lexer::Lexeme::Type::Invalid, ast::Expression * leftOperand = nullptr, ast::Expression * rightOperand = nullptr )
+                : mType         ( type         )
+                , mLeftOperand  ( leftOperand  )
+                , mRightOperand ( rightOperand )
                 {
                 }
 
@@ -45,45 +38,45 @@ namespace castel
                 {
                     mType = type;
 
-                    return *this;
+                    return * this;
                 }
 
             public:
 
-                ast::Expression * left( void ) const
+                ast::Expression * leftOperand( void ) const
                 {
-                    return mLeft.get( );
+                    return mLeftOperand.get( );
                 }
 
-                Binary & left( ast::Expression * expression )
+                Binary & leftOperand( ast::Expression * expression )
                 {
-                    mLeft.reset( expression );
+                    mLeftOperand.reset( expression );
 
-                    return *this;
+                    return * this;
                 }
 
-                ast::Expression * takeLeft( void )
+                ast::Expression * takeLeftOperand( void )
                 {
-                    return mLeft.release( );
+                    return mLeftOperand.release( );
                 }
 
             public:
 
-                ast::Expression * right( void ) const
+                ast::Expression * rightOperand( void ) const
                 {
-                    return mRight.get( );
+                    return mRightOperand.get( );
                 }
 
-                Binary & right( ast::Expression * expression )
+                Binary & rightOperand( ast::Expression * expression )
                 {
-                    mRight.reset( expression );
+                    mRightOperand.reset( expression );
 
                     return *this;
                 }
 
-                ast::Expression * takeRight( void )
+                ast::Expression * takeRightOperand( void )
                 {
-                    return mRight.release( );
+                    return mRightOperand.release( );
                 }
 
             public:
@@ -97,8 +90,8 @@ namespace castel
 
                 lexer::Lexeme::Type mType;
 
-                std::unique_ptr< ast::Expression > mLeft;
-                std::unique_ptr< ast::Expression > mRight;
+                std::unique_ptr< ast::Expression > mLeftOperand;
+                std::unique_ptr< ast::Expression > mRightOperand;
 
             };
 

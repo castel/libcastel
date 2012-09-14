@@ -126,71 +126,107 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 {
     %%{
 
-        Function     = 'function';
-        Return       = 'return';
-        Var          = 'var';
-        If           = 'if';
-        Else         = 'else';
+        Function                 = 'function';
+        Return                   = 'return';
+        Var                      = 'var';
+        If                       = 'if';
+        Else                     = 'else';
 
-        False        = 'false';
-        True         = 'true';
+        False                    = 'false';
+        True                     = 'true';
 
-        Null         = 'null';
-        Undefined    = 'undefined';
+        Null                     = 'null';
+        Undefined                = 'undefined';
 
-        Add          = '+';
-        Substract    = '-';
-        Multiply     = '*';
-        Divide       = '/';
-        Modulo       = '%';
-        Assign       = '=';
+        And                      = 'and';
+        Or                       = 'or';
 
-        LParenthesis = '(';
-        RParenthesis = ')';
+        Incrementation           = '++';
+        Decrementation           = '--';
 
-        Colon        = ':';
-        Comma        = ',';
+        LesserOrEqual            = '<=';
+        GreaterOrEqual           = '>=';
+        Lesser                   = '<';
+        Greater                  = '>';
 
-        Number       = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+);
-        Identifier   = [a-zA-Z]+[0-9a-zA-Z_]*;
+        AdditionAssignment       = '+=';
+        SubstractionAssignment   = '-=';
+        MultiplicationAssignment = '*=';
+        DivisionAssignment       = '/=';
+        ModuloAssignment         = '%=';
 
-        Spaces       = [ ]+;
-        Newline      = ('\r''\n'|'\r'|'\n')('\t'*);
+        PositiveAddition         = '+';
+        NegativeSubstraction     = '-';
+        Multiplication           = '*';
+        Division                 = '/';
+        Modulo                   = '%';
+
+        Assignment               = '=';
+
+        LParenthesis             = '(';
+        RParenthesis             = ')';
+
+        Colon                    = ':';
+        Comma                    = ',';
+
+        Number                   = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+);
+        Identifier               = [a-zA-Z]+[0-9a-zA-Z_]*;
+
+        Spaces                   = [ ]+;
+        Newline                  = ('\r''\n'|'\r'|'\n')('\t'*);
 
         main := |*
 
-            Function     => { type = lexer::Lexeme::Type::Function;     fbreak; };
-            Return       => { type = lexer::Lexeme::Type::Return;       fbreak; };
-            Var          => { type = lexer::Lexeme::Type::Var;          fbreak; };
-            If           => { type = lexer::Lexeme::Type::If;           fbreak; };
-            Else         => { type = lexer::Lexeme::Type::Else;         fbreak; };
+            Function                 => { type = lexer::Lexeme::Type::Function;                 fbreak; };
+            Return                   => { type = lexer::Lexeme::Type::Return;                   fbreak; };
+            Var                      => { type = lexer::Lexeme::Type::Var;                      fbreak; };
+            If                       => { type = lexer::Lexeme::Type::If;                       fbreak; };
+            Else                     => { type = lexer::Lexeme::Type::Else;                     fbreak; };
 
-            False        => { type = lexer::Lexeme::Type::False;        fbreak; };
-            True         => { type = lexer::Lexeme::Type::True;         fbreak; };
+            False                    => { type = lexer::Lexeme::Type::False;                    fbreak; };
+            True                     => { type = lexer::Lexeme::Type::True;                     fbreak; };
 
-            Null         => { type = lexer::Lexeme::Type::Null;         fbreak; };
-            Undefined    => { type = lexer::Lexeme::Type::Undefined;    fbreak; };
+            Null                     => { type = lexer::Lexeme::Type::Null;                     fbreak; };
+            Undefined                => { type = lexer::Lexeme::Type::Undefined;                fbreak; };
 
-            Add          => { type = lexer::Lexeme::Type::Add;          fbreak; };
-            Substract    => { type = lexer::Lexeme::Type::Substract;    fbreak; };
-            Multiply     => { type = lexer::Lexeme::Type::Multiply;     fbreak; };
-            Divide       => { type = lexer::Lexeme::Type::Divide;       fbreak; };
-            Modulo       => { type = lexer::Lexeme::Type::Modulo;       fbreak; };
-            Assign       => { type = lexer::Lexeme::Type::Assign;       fbreak; };
+            And                      => { type = lexer::Lexeme::Type::And;                      fbreak; };
+            Or                       => { type = lexer::Lexeme::Type::Or;                       fbreak; };
 
-            LParenthesis => { type = lexer::Lexeme::Type::LParenthesis; fbreak; };
-            RParenthesis => { type = lexer::Lexeme::Type::RParenthesis; fbreak; };
+            Incrementation           => { type = lexer::Lexeme::Type::Incrementation;           fbreak; };
+            Decrementation           => { type = lexer::Lexeme::Type::Decrementation;           fbreak; };
 
-            Colon        => { type = lexer::Lexeme::Type::Colon;        fbreak; };
-            Comma        => { type = lexer::Lexeme::Type::Comma;        fbreak; };
+            LesserOrEqual            => { type = lexer::Lexeme::Type::LesserOrEqual;            fbreak; };
+            GreaterOrEqual           => { type = lexer::Lexeme::Type::GreaterOrEqual;           fbreak; };
+            Lesser                   => { type = lexer::Lexeme::Type::Lesser;                   fbreak; };
+            Greater                  => { type = lexer::Lexeme::Type::Greater;                  fbreak; };
 
-            Number       => { type = lexer::Lexeme::Type::Number;       fbreak; };
-            Identifier   => { type = lexer::Lexeme::Type::Identifier;   fbreak; };
+            AdditionAssignment       => { type = lexer::Lexeme::Type::AdditionAssignment;       fbreak; };
+            SubstractionAssignment   => { type = lexer::Lexeme::Type::SubstractionAssignment;   fbreak; };
+            MultiplicationAssignment => { type = lexer::Lexeme::Type::MultiplicationAssignment; fbreak; };
+            DivisionAssignment       => { type = lexer::Lexeme::Type::DivisionAssignment;       fbreak; };
+            ModuloAssignment         => { type = lexer::Lexeme::Type::ModuloAssignment;         fbreak; };
 
-            Spaces       => { type = lexer::Lexeme::Type::Spaces;       fbreak; };
-            Newline      => { type = lexer::Lexeme::Type::Newline;      fbreak; };
+            PositiveAddition         => { type = lexer::Lexeme::Type::PositiveAddition;         fbreak; };
+            NegativeSubstraction     => { type = lexer::Lexeme::Type::NegativeSubstraction;     fbreak; };
+            Multiplication           => { type = lexer::Lexeme::Type::Multiplication;           fbreak; };
+            Division                 => { type = lexer::Lexeme::Type::Division;                 fbreak; };
+            Modulo                   => { type = lexer::Lexeme::Type::Modulo;                   fbreak; };
 
-            any          => { fbreak; };
+            Assignment               => { type = lexer::Lexeme::Type::Assignment;               fbreak; };
+
+            LParenthesis             => { type = lexer::Lexeme::Type::LParenthesis;             fbreak; };
+            RParenthesis             => { type = lexer::Lexeme::Type::RParenthesis;             fbreak; };
+
+            Colon                    => { type = lexer::Lexeme::Type::Colon;                    fbreak; };
+            Comma                    => { type = lexer::Lexeme::Type::Comma;                    fbreak; };
+
+            Number                   => { type = lexer::Lexeme::Type::Number;                   fbreak; };
+            Identifier               => { type = lexer::Lexeme::Type::Identifier;               fbreak; };
+
+            Spaces                   => { type = lexer::Lexeme::Type::Spaces;                   fbreak; };
+            Newline                  => { type = lexer::Lexeme::Type::Newline;                  fbreak; };
+
+            any                      => {                                                       fbreak; };
 
         *|;
 

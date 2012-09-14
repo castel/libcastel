@@ -5,5 +5,10 @@ using namespace castel;
 
 runtime::Box * castel_moduloOperator( runtime::Box * leftOperand, runtime::Box * rightOperand )
 {
-    return leftOperand->moduloOperator( rightOperand );
+    runtime::Box * result = leftOperand->moduloOperator( rightOperand );
+
+    if ( ! result )
+        castel_binaryOperatorMissing( "modulo", leftOperand, rightOperand );
+
+    return result;
 }

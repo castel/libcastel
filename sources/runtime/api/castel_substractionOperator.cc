@@ -5,5 +5,10 @@ using namespace castel;
 
 runtime::Box * castel_substractionOperator( runtime::Box * leftOperand, runtime::Box * rightOperand )
 {
-    return leftOperand->substractionOperator( rightOperand );
+    runtime::Box * result = leftOperand->substractionOperator( rightOperand );
+
+    if ( ! result )
+        castel_binaryOperatorMissing( "substraction", leftOperand, rightOperand );
+
+    return result;
 }

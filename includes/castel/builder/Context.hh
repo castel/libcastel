@@ -43,11 +43,35 @@ namespace castel
 
                 REGISTER_FUNCTION( castel_crash );
 
+                REGISTER_FUNCTION( castel_unaryOperatorMissing );
+                REGISTER_FUNCTION( castel_binaryOperatorMissing );
+
+                REGISTER_FUNCTION( castel_positiveOperator );
+                REGISTER_FUNCTION( castel_negativeOperator );
+
+                REGISTER_FUNCTION( castel_preIncrementationOperator );
+                REGISTER_FUNCTION( castel_postIncrementationOperator );
+                REGISTER_FUNCTION( castel_preDecrementationOperator );
+                REGISTER_FUNCTION( castel_postDecrementationOperator );
+
                 REGISTER_FUNCTION( castel_additionOperator );
                 REGISTER_FUNCTION( castel_substractionOperator );
                 REGISTER_FUNCTION( castel_multiplicationOperator );
                 REGISTER_FUNCTION( castel_divisionOperator );
                 REGISTER_FUNCTION( castel_moduloOperator );
+
+                REGISTER_FUNCTION( castel_lesserOperator );
+                REGISTER_FUNCTION( castel_greaterOperator );
+                REGISTER_FUNCTION( castel_lesserOrEqualOperator );
+                REGISTER_FUNCTION( castel_greaterOrEqualOperator );
+                REGISTER_FUNCTION( castel_equalOperator );
+                REGISTER_FUNCTION( castel_notEqualOperator );
+
+                REGISTER_FUNCTION( castel_additionAssignmentOperator );
+                REGISTER_FUNCTION( castel_substractionAssignmentOperator );
+                REGISTER_FUNCTION( castel_multiplicationAssignmentOperator );
+                REGISTER_FUNCTION( castel_divisionAssignmentOperator );
+                REGISTER_FUNCTION( castel_moduloAssignmentOperator );
 
                 REGISTER_FUNCTION( castel_callOperator );
                 REGISTER_FUNCTION( castel_accessOperator );

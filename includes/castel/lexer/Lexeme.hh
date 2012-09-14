@@ -14,15 +14,43 @@ namespace castel
 
         class Lexeme {
 
+        private:
+
+            enum class AutoType {
+
+                #define DEFINE_LEXEME_TYPE( Name, Value )
+                #define DEMANGLE_LEXEME_TYPE( Name )
+                #define AUTO_LEXEME_TYPE( Name ) Name,
+
+                #include "castel/lexer/LexemesTypes.xdef"
+
+                #undef AUTO_LEXEME_TYPE
+                #undef DEMANGLE_LEXEME_TYPE
+                #undef DEFINE_LEXEME_TYPE
+
+            };
+
         public:
 
             enum class Type {
 
                 #define DEFINE_LEXEME_TYPE( Name, Value ) Name = Value,
                 #define DEMANGLE_LEXEME_TYPE( Name ) DEFINE_LEXEME_TYPE( Name, CASTEL_LEXER_MANGLEDLEXEMESTYPES_##Name )
+                #define AUTO_LEXEME_TYPE( Name )
 
                 #include "castel/lexer/LexemesTypes.xdef"
 
+                #undef AUTO_LEXEME_TYPE
+                #undef DEMANGLE_LEXEME_TYPE
+                #undef DEFINE_LEXEME_TYPE
+
+                #define DEFINE_LEXEME_TYPE( Name, Value )
+                #define DEMANGLE_LEXEME_TYPE( Name )
+                #define AUTO_LEXEME_TYPE( Name ) Name = - ( lexer::Lexeme::AutoType::Name + 1 ),
+
+                #include "castel/lexer/LexemesTypes.xdef"
+
+                #undef AUTO_LEXEME_TYPE
                 #undef DEMANGLE_LEXEME_TYPE
                 #undef DEFINE_LEXEME_TYPE
 
@@ -30,15 +58,21 @@ namespace castel
 
             static char const * constTypeString( lexer::Lexeme::Type type ) {
 
-                #define LEXEME_TYPE_IDENTIFIER_TO_CSTRING( Name ) #Name
-                #define DEMANGLE_LEXEME_TYPE( Name ) if ( type == lexer::Lexeme::Type::Name ) return LEXEME_TYPE_IDENTIFIER_TO_CSTRING( Name );
-                #define DEFINE_LEXEME_TYPE( Name, Value ) DEMANGLE_LEXEME_TYPE( Name )
+                switch ( type ) {
 
-                #include "castel/lexer/LexemesTypes.xdef"
+                    #define LEXEME_TYPE_IDENTIFIER_TO_CSTRING( Name ) #Name
+                    #define DEMANGLE_LEXEME_TYPE( Name ) case lexer::Lexeme::Type::Name: return LEXEME_TYPE_IDENTIFIER_TO_CSTRING( Name );
+                    #define DEFINE_LEXEME_TYPE( Name, Value ) DEMANGLE_LEXEME_TYPE( Name )
+                    #define AUTO_LEXEME_TYPE( Name ) DEMANGLE_LEXEME_TYPE( Name )
 
-                #undef DEFINE_LEXEME_TYPE
-                #undef DEMANGLE_LEXEME_TYPE
-                #undef LEXEME_TYPE_IDENTIFIER_TO_CSTRING
+                    #include "castel/lexer/LexemesTypes.xdef"
+
+                    #undef AUTO_LEXEME_TYPE
+                    #undef DEFINE_LEXEME_TYPE
+                    #undef DEMANGLE_LEXEME_TYPE
+                    #undef LEXEME_TYPE_IDENTIFIER_TO_CSTRING
+
+                };
 
                 return nullptr;
 

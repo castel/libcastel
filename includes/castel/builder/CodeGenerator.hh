@@ -10,10 +10,11 @@
 
 #include "castel/ast/expr/Boolean.hh"
 #include "castel/ast/expr/Binary.hh"
-#include "castel/ast/expr/Call.hh"
 #include "castel/ast/expr/Function.hh"
+#include "castel/ast/expr/Multary.hh"
 #include "castel/ast/expr/Null.hh"
 #include "castel/ast/expr/Number.hh"
+#include "castel/ast/expr/Unary.hh"
 #include "castel/ast/expr/Undefined.hh"
 #include "castel/ast/expr/Variable.hh"
 #include "castel/ast/stmt/decl/Variables.hh"
@@ -51,8 +52,10 @@ namespace castel
             virtual void visit( ast::expr::Binary          & );
             virtual void visit( ast::expr::Call            & );
             virtual void visit( ast::expr::Function        & );
+            virtual void visit( ast::expr::Multary         & );
             virtual void visit( ast::expr::Null            & );
             virtual void visit( ast::expr::Number          & );
+            virtual void visit( ast::expr::Unary           & );
             virtual void visit( ast::expr::Undefined       & );
             virtual void visit( ast::expr::Variable        & );
 

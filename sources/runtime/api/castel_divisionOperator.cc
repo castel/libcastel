@@ -5,5 +5,10 @@ using namespace castel;
 
 runtime::Box * castel_divisionOperator( runtime::Box * leftOperand, runtime::Box * rightOperand )
 {
-    return leftOperand->divisionOperator( rightOperand );
+    runtime::Box * result = leftOperand->divisionOperator( rightOperand );
+
+    if ( ! result )
+        castel_binaryOperatorMissing( "division", leftOperand, rightOperand );
+
+    return result;
 }
