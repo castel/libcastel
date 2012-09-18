@@ -130,7 +130,7 @@ runtime::Box * Boolean::callOperator( unsigned int, runtime::Box ** )
     return nullptr;
 }
 
-runtime::Box * Boolean::accessOperator( unsigned int, runtime::Box ** )
+runtime::Box * Boolean::subscriptOperator( unsigned int, runtime::Box ** )
 {
     return nullptr;
 }

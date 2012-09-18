@@ -124,6 +124,11 @@ runtime::Box * Function::callOperator( unsigned int argc, runtime::Box ** argv )
     return mFunction( mEnvironmentTable, argc, argv );
 }
 
+runtime::Box * Function::subscriptOperator( unsigned int, runtime::Box ** )
+{
+    return nullptr;
+}
+
 bool Function::booleanOperator( void )
 {
     return true;

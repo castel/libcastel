@@ -46,7 +46,7 @@ namespace castel
 
                 #define DEFINE_LEXEME_TYPE( Name, Value )
                 #define DEMANGLE_LEXEME_TYPE( Name )
-                #define AUTO_LEXEME_TYPE( Name ) Name = - ( lexer::Lexeme::AutoType::Name + 1 ),
+                #define AUTO_LEXEME_TYPE( Name ) Name = - ( static_cast< int >( lexer::Lexeme::AutoType::Name ) + 1 ),
 
                 #include "castel/lexer/LexemesTypes.xdef"
 

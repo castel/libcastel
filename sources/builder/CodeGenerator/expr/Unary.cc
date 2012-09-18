@@ -1,10 +1,9 @@
 #include <stdexcept>
 
-#include <llvm/Value.hh>
+#include <llvm/Value.h>
 
 #include "castel/ast/expr/Unary.hh"
 #include "castel/builder/CodeGenerator.hh"
-#include "castel/lexer/Lexeme.hh"
 
 using namespace castel;
 using builder::CodeGenerator;
@@ -19,28 +18,28 @@ void CodeGenerator::visit( ast::expr::Unary & astUnaryExpression )
 
     switch ( astUnaryExpression.type( ) ) {
 
-    case lexer::Lexeme::Type::Positive:
-        mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_positiveOperator", llvmOperand ) );
+        case ast::expr::Unary::Operator::Positive:
+           mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_positiveOperator", llvmOperand ) );
         break;
 
-    case lexer::Lexeme::Type::Negative:
-        mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_negativeOperator", llvmOperand ) );
+        case ast::expr::Unary::Operator::Negative:
+            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_negativeOperator", llvmOperand ) );
         break;
 
-    case lexer::Lexeme::Type::PreIncrementation:
-        mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_preIncrementationOperator", llvmOperand ) );
+        case ast::expr::Unary::Operator::PreIncrementation:
+            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_preIncrementationOperator", llvmOperand ) );
         break;
 
-    case lexer::Lexeme::Type::PostIncrementation:
-        mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_postIncrementationOperator", llvmOperand ) );
+        case ast::expr::Unary::Operator::PostIncrementation:
+            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_postIncrementationOperator", llvmOperand ) );
         break;
 
-    case lexer::Lexeme::Type::PreDecrementation:
-        mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_preDecrementationOperator", llvmOperand ) );
+        case ast::expr::Unary::Operator::PreDecrementation:
+            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_preDecrementationOperator", llvmOperand ) );
         break;
 
-    case lexer::Lexeme::Type::PostDecrementation:
-        mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_postDecrementationOperator", llvmOperand ) );
+        case ast::expr::Unary::Operator::PostDecrementation:
+            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_postDecrementationOperator", llvmOperand ) );
         break;
 
     }

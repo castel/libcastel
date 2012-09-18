@@ -20,11 +20,16 @@ namespace castel
 
             public:
 
-                class Operand;
+                enum class Operator {
+
+                    Call,
+                    Subscript,
+
+                };
 
             public:
 
-                Multary     ( lexer::Lexeme::Type type = lexer::Lexeme::Type::Invalid, ast::expr::Multary::Operand * operands = nullptr )
+                Multary     ( ast::expr::Multary::Operator type, ast::Expression * operands = nullptr )
                 : mType     ( type     )
                 , mOperands ( operands )
                 {
@@ -32,19 +37,33 @@ namespace castel
 
             public:
 
-                ast::expr::Multary::Operand * operands( void ) const
+                ast::expr::Multary::Operator type( void ) const
+                {
+                    return mType;
+                }
+
+                Multary & type( ast::expr::Multary::Operator type )
+                {
+                    mType = type;
+
+                    return * this;
+                }
+
+            public:
+
+                ast::Expression * operands( void ) const
                 {
                     return mOperands.get( );
                 }
 
-                Mutary & operands( ast::expr::Multary::Operand * operands )
+                Multary & operands( ast::Expression * operands )
                 {
                     mOperands.reset( operands );
 
                     return * this;
                 }
 
-                ast::expr::Multary::Operand * takeOperands( void )
+                ast::Expression * takeOperands( void )
                 {
                     return mOperands.release( );
                 }
@@ -58,8 +77,8 @@ namespace castel
 
             private:
 
-                lexer::Lexeme::Type mType;
-                std::unique_ptr< ast::expr::Multary::Operand > mOperands;
+                ast::expr::Multary::Operator mType;
+                std::unique_ptr< ast::Expression > mOperands;
 
             };
 
@@ -68,5 +87,3 @@ namespace castel
     }
 
 }
-
-#include "castel/ast/expr/Mutary/Operand.hh"

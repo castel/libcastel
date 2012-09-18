@@ -48,8 +48,8 @@ namespace castel
 
         public:
 
-            virtual runtime::Box * callOperator   ( unsigned int argc, runtime::Box ** argv ) = 0;
-            virtual runtime::Box * accessOperator ( unsigned int argc, runtime::Box ** argv ) = 0;
+            virtual runtime::Box * callOperator      ( unsigned int argc, runtime::Box ** argv ) = 0;
+            virtual runtime::Box * subscriptOperator ( unsigned int argc, runtime::Box ** argv ) = 0;
 
         public:
 

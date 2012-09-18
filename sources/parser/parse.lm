@@ -15,10 +15,11 @@
 
     #include "castel/ast/expr/Boolean.hh"
     #include "castel/ast/expr/Binary.hh"
-    #include "castel/ast/expr/Call.hh"
     #include "castel/ast/expr/Function.hh"
+    #include "castel/ast/expr/Multary.hh"
     #include "castel/ast/expr/Null.hh"
     #include "castel/ast/expr/Number.hh"
+    #include "castel/ast/expr/Unary.hh"
     #include "castel/ast/expr/Undefined.hh"
     #include "castel/ast/expr/Variable.hh"
     #include "castel/ast/stmt/decl/Variables.hh"
@@ -27,7 +28,6 @@
     #include "castel/ast/stmt/Return.hh"
     #include "castel/ast/Expression.hh"
     #include "castel/ast/Statement.hh"
-    #include "castel/lexer/Lexeme.hh"
 
     using namespace castel;
 
@@ -40,185 +40,178 @@
     castelparserIsValid = false;
 }
 
-%type program                                                                                       { ast::Statement *           }
-program ::= statements(U).                                                                          { castelparserRootStatement = U; }
+%type program { ast::Statement * }
+program ::= statementlist(U). { castelparserRootStatement = U; }
 
-%type statementlist                                                                                 { ast::Statement *     }
-statementlist(A) ::= emptystatementlist statement(U) statementlist(V).                              { A = U; U->next( V ); }
-statementlist(A) ::= emptystatementlist.                                                            { A = nullptr;         }
+    %type statementlist { ast::Statement * }
+    statementlist(A) ::= emptystatementlist statementlistiterator(U). { A = U; }
 
-%type statements                                                                                    { ast::Statement *     }
-statements(A) ::= emptystatementlist statement(U) statementlist(V).                                 { A = U; A->next( V ); }
+    %type statementblock { ast::Statement * }
+    statementblock(A) ::= Indent statementlist(U) Dedent. { A = U; }
 
-%type emptystatementlist                                                                            { void *          }
-emptystatementlist ::= Newline emptystatementlist.                                                  { /* no action */ }
-emptystatementlist ::= .                                                                            { /* no action */ }
+    %type statementlistiterator { ast::Statement * }
+    statementlistiterator(A) ::= . { A = nullptr; }
+    statementlistiterator(A) ::= statement(U) emptystatementlist statementlistiterator(V). { A = U; U->next( V ); }
 
-%type statementblock                                                                                { ast::Statement * }
-statementblock(A) ::= Indent statements(U) Dedent.                                                  { A = U;           }
+        emptystatementlist ::= Newline emptystatementlist.
+        emptystatementlist ::= .
 
-%type statement                                                                                     { ast::Statement * }
-statement(A) ::= expressionstatement(U).                                                            { A = U;           }
-statement(A) ::= returnstatement(U).                                                                { A = U;           }
-statement(A) ::= variabledeclarationstatement(U).                                                   { A = U;           }
-statement(A) ::= ifstatement(U).                                                                    { A = U;           }
+    %type statement { ast::Statement * }
+    statement(A) ::= expressionstatement(U). { A = U; }
+    statement(A) ::= returnstatement(U). { A = U; }
+    statement(A) ::= variabledeclarationstatement(U). { A = U; }
+    statement(A) ::= ifstatement(U). { A = U; }
 
-%type expressionstatement                                                                           { ast::stmt::Expression *             }
-expressionstatement(A) ::= expression(U) Newline.                                                   { A = new ast::stmt::Expression( U ); }
+        %type expressionstatement { ast::stmt::Expression * }
+        expressionstatement(A) ::= expression(U) Newline. { A = new ast::stmt::Expression( U ); }
 
-%type returnstatement                                                                               { ast::stmt::Return *             }
-returnstatement(A) ::= Return Newline.                                                              { A = new ast::stmt::Return( );   }
-returnstatement(A) ::= Return expression(U) Newline.                                                { A = new ast::stmt::Return( U ); }
+        %type ifstatement { ast::stmt::If * }
+        ifstatement(A) ::= If expression(U) Colon statement(V). { A = new ast::stmt::If( U, V ); }
+        ifstatement(A) ::= If expression(U) Colon statementblock(V) Else Colon statementblock(W). { A = new ast::stmt::If( U, V, W ); }
+        ifstatement(A) ::= If expression(U) Colon statementblock(V). { A = new ast::stmt::If( U, V );    }
 
-%type variabledeclarationstatement                                                                  { ast::stmt::decl::Variables *             }
-variabledeclarationstatement(A) ::= Var variabledeclarations(U) Newline.                            { A = new ast::stmt::decl::Variables( U ); }
+        %type returnstatement { ast::stmt::Return * }
+        returnstatement(A) ::= Return Newline. { A = new ast::stmt::Return( ); }
+        returnstatement(A) ::= Return expression(U) Newline. { A = new ast::stmt::Return( U ); }
 
-%type variabledeclarations                                                                          { ast::stmt::decl::Variables::Variable * }
-variabledeclarations(A) ::= variabledeclaration(U) Comma variabledeclarations(V).                   { A = U; U->next( V );                   }
-variabledeclarations(A) ::= variabledeclaration(U).                                                 { A = U;                                 }
+        %type variabledeclarationstatement { ast::stmt::decl::Variables * }
+        variabledeclarationstatement(A) ::= Var variabledeclarations(U) Newline. { A = new ast::stmt::decl::Variables( U ); }
 
-%type variabledeclaration                                                                           { ast::stmt::decl::Variables::Variable *                  }
-variabledeclaration(A) ::= Identifier(U).                                                           { A = new ast::stmt::decl::Variables::Variable( *U );     }
-variabledeclaration(A) ::= Identifier(U) Assign expression(V).                                      { A = new ast::stmt::decl::Variables::Variable( *U, V ); }
+        %type variabledeclarations { ast::stmt::decl::Variables::Variable * }
+        variabledeclarations(A) ::= variabledeclaration(U) Comma variabledeclarations(V). { A = U; U->next( V ); }
+        variabledeclarations(A) ::= variabledeclaration(U). { A = U; }
 
-%type ifstatement                                                                                   { ast::stmt::If *                   }
-ifstatement(A) ::= If expression(U) Colon statementblock(V) Else Colon statementblock(W).           { A = new ast::stmt::If( U, V, W ); }
-ifstatement(A) ::= If expression(U) Colon statementblock(V).                                        { A = new ast::stmt::If( U, V );    }
+        %type variabledeclaration { ast::stmt::decl::Variables::Variable * }
+        variabledeclaration(A) ::= Identifier(U). { A = new ast::stmt::decl::Variables::Variable( * U ); }
+        variabledeclaration(A) ::= Identifier(U) Assignment expression(V). { A = new ast::stmt::decl::Variables::Variable( * U, V ); }
 
-expression ::= assignmentexpression.
+%type expression { ast::Expression * }
+expression(A) ::= assignmentexpression(U). { A = U; }
 
-    assignmentexpression ::= conditionalexpression.
-    assignmentexpression ::= conditionalexpression assignmentoperator assignmentexpression.
+    %type assignmentexpression { ast::Expression * }
+    assignmentexpression(A) ::= conditionalexpression(U). { A = U; }
+    assignmentexpression(A) ::= assignmentexpression(U) assignmentoperator(V) conditionalexpression(W). { A = new ast::expr::Binary( V, U, W ); }
 
-        assignmentoperator ::= Assignment.
-        assignmentoperator ::= AdditionOperator.
-        assignmentoperator ::= SubstractionOperator.
-        assignmentoperator ::= MultiplicationOperator.
-        assignmentoperator ::= DivisionOperator.
-        assignmentoperator ::= ModuloOperator.
+        %type assignmentoperator { ast::expr::Binary::Operator }
+        assignmentoperator(A) ::= Assignment. { A = ast::expr::Binary::Operator::Assignment; }
+        assignmentoperator(A) ::= AdditionAssignment. { A = ast::expr::Binary::Operator::AdditionAssignment; }
+        assignmentoperator(A) ::= SubstractionAssignment. { A = ast::expr::Binary::Operator::SubstractionAssignment; }
+        assignmentoperator(A) ::= MultiplicationAssignment. { A = ast::expr::Binary::Operator::MultiplicationAssignment; }
+        assignmentoperator(A) ::= DivisionAssignment. { A = ast::expr::Binary::Operator::DivisionAssignment; }
+        assignmentoperator(A) ::= ModuloAssignment. { A = ast::expr::Binary::Operator::ModuloAssignment; }
 
+        %type conditionalexpression { ast::Expression * }
+        conditionalexpression(A) ::= binaryexpression(U). { A = U; }
+        conditionalexpression(A) ::= conditionalexpression(U) conditionaloperator(V) binaryexpression(W). { A = new ast::expr::Binary( V, U, W ); }
 
+            %type conditionaloperator { ast::expr::Binary::Operator }
+            conditionaloperator(A) ::= And. { A = ast::expr::Binary::Operator::And; }
+            conditionaloperator(A) ::= Or. { A = ast::expr::Binary::Operator::Or; }
 
-%type primaryexpression { ast::Expression * }
-primaryexpression(A) ::= Identifier(U).
-primaryexpression(A) ::= literal(U). { A = U; }
-primaryexpression(A) ::= LParenthesis expression(U) RParenthesis. { A = U; }
+            %type binaryexpression { ast::Expression * }
+            binaryexpression(A) ::= comparisonexpression(U). { A = U; }
 
-%type literal { ast::Expression * }
-literal(A) ::= nullliteral(U). { A = U; }
-literal(A) ::= undefinedliteral(U). { A = U; }
-literal(A) ::= booleanliteral(U). { A = U; }
-literal(A) ::= numberliteral(U). { A = U; }
-literal(A) ::= functionliteral(U). { A = U; }
+                %type comparisonexpression { ast::Expression * }
+                comparisonexpression(A) ::= shiftexpression(U). { A = U; }
+                comparisonexpression(A) ::= comparisonexpression(U) comparisonoperator(V) shiftexpression(W). { A = new ast::expr::Binary( V, U, W ); }
 
-    %type nullliteral { ast::expr::Null * }
-    nullliteral(A) ::= Null. { A = new ast::expr::Null( ); }
+                    %type comparisonoperator { ast::expr::Binary::Operator }
+                    comparisonoperator(A) ::= Lesser. { A = ast::expr::Binary::Operator::Lesser; }
+                    comparisonoperator(A) ::= Greater. { A = ast::expr::Binary::Operator::Greater; }
+                    comparisonoperator(A) ::= LesserOrEqual. { A = ast::expr::Binary::Operator::LesserOrEqual; }
+                    comparisonoperator(A) ::= GreaterOrEqual. { A = ast::expr::Binary::Operator::GreaterOrEqual; }
+                    comparisonoperator(A) ::= Equal. { A = ast::expr::Binary::Operator::Equal; }
+                    comparisonoperator(A) ::= NotEqual. { A = ast::expr::Binary::Operator::NotEqual; }
 
-    %type undefinedliteral { ast::expr::Undefined * }
-    undefinedliteral(A) ::= Undefined. { A = new ast::expr::Undefined( ); }
+                    %type shiftexpression { ast::Expression * }
+                    shiftexpression(A) ::= additiveexpression(U). { A = U; }
 
-    %type booleanliteral { ast::expr::Boolean * }
-    booleanliteral(A) ::= True. { A = new ast::expr::Boolean( true ); }
-    booleanliteral(A) ::= False. { A = new ast::expr::Boolean( false );
+                        %type additiveexpression { ast::Expression * }
+                        additiveexpression(A) ::= multiplicativeexpression(U). { A = U; }
+                        additiveexpression(A) ::= additiveexpression(U) additiveoperator(V) multiplicativeexpression(W). { A = new ast::expr::Binary( V, U, W ); }
 
-    %type numberliteral { ast::expr::Number * }
-    numberliteral(A) ::= Number(U). { A = new ast::expr::Number( * U ); }
+                            %type additiveoperator { ast::expr::Binary::Operator }
+                            additiveoperator(A) ::= PositiveAddition. { A = ast::expr::Binary::Operator::Addition; }
+                            additiveoperator(A) ::= NegativeSubstraction. { A = ast::expr::Binary::Operator::Substraction; }
 
-    %type functionliteral { ast::expr::Function * }
-    functionliteral(A) ::= LParenthesis Function functionliteralparameters(U) Colon statementblock(V) RParenthesis. { A = new ast::expr::Function( U, V ); }
+                            %type multiplicativeexpression { ast::Expression * }
+                            multiplicativeexpression(A) ::= prefixexpression(U). { A = U; }
+                            multiplicativeexpression(A) ::= multiplicativeexpression(U) multiplicativeoperator(V) prefixexpression(W). { A = new ast::expr::Binary( V, U, W ); }
 
-        %type functionliteralparameters { ast::expr::Function::Parameter * }
-        functionliteralparameters(A) ::= functionliteralparameterslist(U). { A = U; }
-        functionliteralparameters(A) ::= . { A = nullptr; }
+                                %type multiplicativeoperator { ast::expr::Binary::Operator }
+                                multiplicativeoperator(A) ::= Multiplication. { A = ast::expr::Binary::Operator::Multiplication; }
+                                multiplicativeoperator(A) ::= Division. { A = ast::expr::Binary::Operator::Division; }
+                                multiplicativeoperator(A) ::= Modulo. { A = ast::expr::Binary::Operator::Modulo; }
 
-            %type functionliteralparameterslist { ast::expr::Function::Parameter * }
-            functionliteralparameterslist(A) ::= functionliteralparameter(U) Comma functionliteralparameterslist(V). { A = U; A->next( V ); }
-            functionliteralparameterslist(A) ::= functionliteralparameter(U). { A = U; }
+                                    %type prefixexpression { ast::Expression * }
+                                    prefixexpression(A) ::= postfixexpression(U). { A = U; }
+                                    prefixexpression(A) ::= prefixoperator(U) prefixexpression(V). { A = new ast::expr::Unary( U, V ); }
 
-                %type functionliteralparameter { ast::expr::Function::Parameter * }
-                functionliteralparameter(A) ::= Identifier(U). { A = new ast::expr::Function::Parameter( U ); }
+                                        %type prefixoperator { ast::expr::Unary::Operator }
+                                        prefixoperator(A) ::= PositiveAddition. { A = ast::expr::Unary::Operator::Positive; }
+                                        prefixoperator(A) ::= NegativeSubstraction. { A = ast::expr::Unary::Operator::Negative; }
+                                        prefixoperator(A) ::= Incrementation. { A = ast::expr::Unary::Operator::PreIncrementation; }
+                                        prefixoperator(A) ::= Decrementation. { A = ast::expr::Unary::Operator::PreDecrementation; }
 
+                                        %type postfixexpression { ast::Expression * }
+                                        postfixexpression(A) ::= primaryexpression(U). { A = U; }
+                                        postfixexpression(A) ::= postfixexpression(U) postfixoperator(V). { A = new ast::expr::Unary( V, U ); }
+                                        postfixexpression(A) ::= postfixexpression(U) callexpression(V). { A = new ast::expr::Multary( ast::expr::Multary::Operator::Call, U ); U->next( V ); }
+                                        postfixexpression(A) ::= postfixexpression(U) subscriptexpression(V). { A = new ast::expr::Multary( ast::expr::Multary::Operator::Subscript, U ); U->next( V ); }
 
+                                            %type postfixoperator { ast::expr::Unary::Operator }
+                                            postfixoperator(A) ::= Incrementation. { A = ast::expr::Unary::Operator::PostIncrementation; }
+                                            postfixoperator(A) ::= Decrementation. { A = ast::expr::Unary::Operator::PostDecrementation; }
 
+                                            %type callexpression { ast::Expression * }
+                                            callexpression(A) ::= LParenthesis expressionlist(U) RParenthesis. { A = U; }
 
-%type expression                                                                                    { ast::Expression * }
-expression(A) ::= unaryexpression(U).                                                               { A = U;            }
+                                            %type subscriptexpression { ast::Expression * }
+                                            subscriptexpression(A) ::= LBracket expressionlist(U) RBracket. { A = U; }
 
-expression(A) ::= binaryexpression(U).                                                              { A = U;            }
-expression(A) ::= multaryexpression(U).                                                             { A = U;            }
+                                                %type expressionlist { ast::Expression * }
+                                                expressionlist(A) ::= . { A = nullptr; }
+                                                expressionlist(A) ::= expressioniterator(U). { A = U; }
 
-expression(A) ::= booleanexpression(U).                                                             { A = U;            }
-expression(A) ::= functionexpression(U).                                                            { A = U;            }
-expression(A) ::= nullexpression(U).                                                                { A = U;            }
-expression(A) ::= numberexpression(U).                                                              { A = U;            }
-expression(A) ::= undefinedexpression(U).                                                           { A = U;            }
+                                                    %type expressioniterator { ast::Expression * }
+                                                    expressioniterator(A) ::= expression(U). { A = U; }
+                                                    expressioniterator(A) ::= expression(U) Comma expressioniterator(V). { A = U; A->next( V ); }
 
-expression(A) ::= variableexpression(U).                                                            { A = U;            }
+                                            %type primaryexpression { ast::Expression * }
+                                            primaryexpression(A) ::= Identifier(U). { A = new ast::expr::Variable( * U ); }
+                                            primaryexpression(A) ::= literal(U). { A = U; }
+                                            primaryexpression(A) ::= LParenthesis expression(U) RParenthesis. { A = U; }
 
-expression(A) ::= parenthesisexpression(U).                                                         { A = U;            }
+                                                %type literal { ast::Expression * }
+                                                literal(A) ::= nullliteral(U). { A = U; }
+                                                literal(A) ::= undefinedliteral(U). { A = U; }
+                                                literal(A) ::= booleanliteral(U). { A = U; }
+                                                literal(A) ::= numberliteral(U). { A = U; }
+                                                literal(A) ::= functionliteral(U). { A = U; }
 
-%type unaryexpression                                                                               { ast::expr::Unary * }
-unaryexpression(A) ::= PositiveAddition expression(U).                                              { A = new ast::expr::Unary( lexer::Lexeme::Type::Positive, U );           }
-unaryexpression(A) ::= NegativeSubstraction expression(U).                                          { A = new ast::expr::Unary( lexer::Lexeme::Type::Negative, U );           }
+                                                    %type nullliteral { ast::expr::Null * }
+                                                    nullliteral(A) ::= Null. { A = new ast::expr::Null( ); }
 
-unaryexpression(A) ::= Incrementation expression(U).                                                { A = new ast::expr::Unary( lexer::Lexeme::Type::PreIncrementation, U );  }
-unaryexpression(A) ::= expression(U) Incrementation.                                                { A = new ast::expr::Unary( lexer::Lexeme::Type::PostIncrementation, U ); }
-unaryexpression(A) ::= Decrementation expression(U).                                                { A = new ast::expr::Unary( lexer::Lexeme::Type::PreDecrementation, U );  }
-unaryexpression(A) ::= expression(U) Decrementation.                                                { A = new ast::expr::Unary( lexer::Lexeme::Type::PostIncrementation, U ); }
+                                                    %type undefinedliteral { ast::expr::Undefined * }
+                                                    undefinedliteral(A) ::= Undefined. { A = new ast::expr::Undefined( ); }
 
-%type binaryexpression                                                                              { ast::expr::Binary *                                                                }
-binaryexpression(A) ::= expression(U) PositiveAddition expression(V).                               { A = new ast::expr::Binary( lexer::Lexeme::Type::Addition,                  U, V ); }
-binaryexpression(A) ::= expression(U) NegativeSubstraction expression(V).                           { A = new ast::expr::Binary( lexer::Lexeme::Type::Substraction,              U, V ); }
-binaryexpression(A) ::= expression(U) Multiplication expression(V).                                 { A = new ast::expr::Binary( lexer::Lexeme::Type::Multiplication,            U, V ); }
-binaryexpression(A) ::= expression(U) Division expression(V).                                       { A = new ast::expr::Binary( lexer::Lexeme::Type::Division,                  U, V ); }
-binaryexpression(A) ::= expression(U) Modulo expression(V).                                         { A = new ast::expr::Binary( lexer::Lexeme::Type::Modulo,                    U, V ); }
+                                                    %type booleanliteral { ast::expr::Boolean * }
+                                                    booleanliteral(A) ::= True. { A = new ast::expr::Boolean( true ); }
+                                                    booleanliteral(A) ::= False. { A = new ast::expr::Boolean( false ); }
 
-binaryexpression(A) ::= expression(U) AdditionAssignment expression(V).                             { A = new ast::expr::Binary( lexer::Lexeme::Type::AdditionAssignment,        U, V ); }
-binaryexpression(A) ::= expression(U) SubstractionAssignment expression(V).                         { A = new ast::expr::Binary( lexer::Lexeme::Type::SubstractionAssignment,    U, V ); }
-binaryexpression(A) ::= expression(U) MultiplicationAssignment expression(V).                       { A = new ast::expr::Binary( lexer::Lexeme::Type::MultiplicationAssignment,  U, V ); }
-binaryexpression(A) ::= expression(U) DivisionAssignment expression(V).                             { A = new ast::expr::Binary( lexer::Lexeme::Type::DivisionAssignment,        U, V ); }
-binaryexpression(A) ::= expression(U) ModuloAssignment expression(V).                               { A = new ast::expr::Binary( lexer::Lexeme::Type::ModuloAssignment,          U, V ); }
+                                                    %type numberliteral { ast::expr::Number * }
+                                                    numberliteral(A) ::= Number(U). { A = new ast::expr::Number( * U ); }
 
-binaryexpression(A) ::= expression(U) Assignment expression(V).                                     { A = new ast::expr::Binary( lexer::Lexeme::Type::Assignment,                U, V ); }
+                                                    %type functionliteral { ast::expr::Function * }
+                                                    functionliteral(A) ::= LParenthesis Function parameterlist(U) Colon statementblock(V) RParenthesis. { A = new ast::expr::Function( U, V ); }
 
-%type multaryexpression                                                                             { ast::expr::Multary *                                             }
-multaryexpression(A) ::= expression(U) LParenthesis multaryoperands(V) RParenthesis.                { A = new ast::expr::Multary( lexer::Lexeme::Type::Call,   U, V ); }
-multaryexpression(A) ::= expression(U) LBracket multaryoperands(V) RBracket.                        { A = new ast::expr::Multary( lexer::Lexeme::Type::Access, U, V ); }
+                                                        %type parameterlist { ast::expr::Function::Parameter * }
+                                                        parameterlist(A) ::= . { A = nullptr; }
+                                                        parameterlist(A) ::= parameterlistiterator(U). { A = U; }
 
-%type multaryoperands                                                                               { ast::expr::Multary::Operand * }
-multaryoperands(A) ::= multaryoperandslist(U).                                                      { A = U;                        }
-multaryoperands(A) ::= .                                                                            { A = nullptr;                  }
+                                                            %type parameterlistiterator { ast::expr::Function::Parameter * }
+                                                            parameterlistiterator(A) ::= parameter(U). { A = U; }
+                                                            parameterlistiterator(A) ::= parameter(U) Comma parameterlistiterator(V). { A = U; A->next( V ); }
 
-%type multaryoperandslist                                                                           { ast::expr::Multary::Operand *                           }
-multaryoperandslist(A) ::= expression(U) Comma multaryoperandslist(V).                              { A = new ast::expr::Multary::Operand( U ); A->next( V ); }
-multaryoperandslist(A) ::= expression(U).                                                           { A = new ast::expr::Multary::Operand( U );               }
-
-%type booleanexpression                                                                             { ast::expr::Boolean *                 }
-booleanexpression(A) ::= False.                                                                     { A = new ast::expr::Boolean( false ); }
-booleanexpression(A) ::= True.                                                                      { A = new ast::expr::Boolean( true );  }
-
-%type functionexpression                                                                            { ast::expr::Function *                }
-functionexpression(A) ::= LParenthesis Function parameters(U) Colon statementblock(V) RParenthesis. { A = new ast::expr::Function( U, V ); }
-
-%type nullexpression                                                                                { ast::expr::Null *           }
-nullexpression(A) ::= Null.                                                                         { A = new ast::expr::Null( ); }
-
-%type numberexpression                                                                              { ast::expr::Number *              }
-numberexpression(A) ::= Number(U).                                                                  { A = new ast::expr::Number( *U ); }
-
-%type undefinedexpression                                                                           { ast::expr::Undefined *           }
-undefinedexpression(A) ::= Undefined.                                                               { A = new ast::expr::Undefined( ); }
-
-%type variableexpression                                                                            { ast::expr::Variable *              }
-variableexpression(A) ::= Identifier(U).                                                            { A = new ast::expr::Variable( *U ); }
-
-%type parenthesisexpression                                                                         { ast::Expression * }
-parenthesisexpression(A) ::= LParenthesis expression(U) RParenthesis.                               { A = U;            }
-
-%type parameters                                                                                    { ast::expr::Function::Parameter * }
-parameters(A) ::= parameterlist(U).                                                                 { A = U;                           }
-parameters(A) ::= .                                                                                 { A = nullptr;                     }
-
-%type parameterlist                                                                                 { ast::expr::Function::Parameter *                            }
-parameterlist(A) ::= Identifier(U) Comma parameterlist(V).                                          { A = new ast::expr::Function::Parameter( *U ); A->next( V ); }
-parameterlist(A) ::= Identifier(U).                                                                 { A = new ast::expr::Function::Parameter( *U );               }
+                                                                %type parameter { ast::expr::Function::Parameter * }
+                                                                parameter(A) ::= Identifier(U). { A = new ast::expr::Function::Parameter( * U ); }

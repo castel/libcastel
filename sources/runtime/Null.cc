@@ -121,6 +121,11 @@ runtime::Box * Null::callOperator( unsigned int, runtime::Box ** )
     return nullptr;
 }
 
+runtime::Box * Null::subscriptOperator( unsigned int, runtime::Box ** )
+{
+    return nullptr;
+}
+
 bool Null::booleanOperator( void )
 {
     return false;

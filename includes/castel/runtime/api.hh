@@ -39,8 +39,8 @@ extern "C"
     castel::runtime::Box * castel_divisionAssignmentOperator       ( castel::runtime::Box * leftOperand, castel::runtime::Box * rightOperand );
     castel::runtime::Box * castel_moduloAssignmentOperator         ( castel::runtime::Box * leftOperand, castel::runtime::Box * rightOperand );
 
-    castel::runtime::Box * castel_callOperator   ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv );
-    castel::runtime::Box * castel_accessOperator ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv );
+    castel::runtime::Box * castel_callOperator      ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv );
+    castel::runtime::Box * castel_subscriptOperator ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv );
 
     bool castel_booleanOperator ( castel::runtime::Box * operand );
 

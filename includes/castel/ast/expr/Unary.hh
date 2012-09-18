@@ -20,10 +20,39 @@ namespace castel
 
             public:
 
-                Unary      ( lexer::Lexeme::Type type = lexer::Lexeme::Type::Invalid, ast::Expression * operand )
+                enum class Operator {
+
+                    Positive,
+                    Negative,
+
+                    PreIncrementation,
+                    PostIncrementation,
+
+                    PreDecrementation,
+                    PostDecrementation,
+
+                };
+
+            public:
+
+                Unary      ( ast::expr::Unary::Operator type, ast::Expression * operand )
                 : mType    ( type    )
                 , mOperand ( operand )
                 {
+                }
+
+            public:
+
+                ast::expr::Unary::Operator type( void ) const
+                {
+                    return mType;
+                }
+
+                Unary & type( ast::expr::Unary::Operator type )
+                {
+                    mType = type;
+
+                    return * this;
                 }
 
             public:
@@ -54,7 +83,7 @@ namespace castel
 
             private:
 
-                lexer::Lexeme::Type mType;
+                ast::expr::Unary::Operator mType;
                 std::unique_ptr< ast::Expression > mOperand;
 
             };

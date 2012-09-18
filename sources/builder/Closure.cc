@@ -148,7 +148,7 @@ builder::Closure::Descriptor * Closure::createDescriptor( std::string const & na
 builder::Closure::Descriptor * Closure::recurseDescriptorCreation( std::string const & name, int depth )
 {
     if ( mParentClosure == nullptr )
-        throw std::runtime_error( "Variable undeclared" );
+        throw std::runtime_error( "Variable undeclared (" + name + ")" );
 
     return mParentClosure->createDescriptor( name, depth + 1 );
 }

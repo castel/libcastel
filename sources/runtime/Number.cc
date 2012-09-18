@@ -224,7 +224,7 @@ runtime::Box * Number::callOperator( unsigned int, runtime::Box ** )
     return nullptr;
 }
 
-runtime::Box * Number::accessOperator( unsigned int, runtime::Box ** )
+runtime::Box * Number::subscriptOperator( unsigned int, runtime::Box ** )
 {
     return nullptr;
 }

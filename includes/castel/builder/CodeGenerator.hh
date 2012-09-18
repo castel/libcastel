@@ -50,7 +50,6 @@ namespace castel
 
             virtual void visit( ast::expr::Boolean         & );
             virtual void visit( ast::expr::Binary          & );
-            virtual void visit( ast::expr::Call            & );
             virtual void visit( ast::expr::Function        & );
             virtual void visit( ast::expr::Multary         & );
             virtual void visit( ast::expr::Null            & );

@@ -8,8 +8,9 @@ void CodeGenerator::visit( ast::stmt::decl::Variables & astVariablesDeclarationS
 {
     for ( auto & variable : astVariablesDeclarationStatement.variables( ) ) {
         if ( variable.initializer( ) ) {
+            mClosureStack.top( )->declare( variable.name( ) );
             variable.initializer( )->accept( * this );
-            mClosureStack.top( )->declare( variable.name( ), mValue.release( ) );
+            mClosureStack.top( )->set( variable.name( ), mValue.release( ) );
         } else {
             mClosureStack.top( )->declare( variable.name( ) );
         }

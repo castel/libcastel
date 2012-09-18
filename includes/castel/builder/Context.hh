@@ -74,7 +74,7 @@ namespace castel
                 REGISTER_FUNCTION( castel_moduloAssignmentOperator );
 
                 REGISTER_FUNCTION( castel_callOperator );
-                REGISTER_FUNCTION( castel_accessOperator );
+                REGISTER_FUNCTION( castel_subscriptOperator );
 
                 REGISTER_FUNCTION( castel_booleanOperator );
 

@@ -20,7 +20,36 @@ namespace castel
 
             public:
 
-                Binary          ( lexer::Lexeme::Type type = lexer::Lexeme::Type::Invalid, ast::Expression * leftOperand = nullptr, ast::Expression * rightOperand = nullptr )
+                enum class Operator {
+
+                    Assignment,
+                    AdditionAssignment,
+                    SubstractionAssignment,
+                    MultiplicationAssignment,
+                    DivisionAssignment,
+                    ModuloAssignment,
+
+                    Addition,
+                    Substraction,
+                    Multiplication,
+                    Division,
+                    Modulo,
+
+                    Lesser,
+                    Greater,
+                    LesserOrEqual,
+                    GreaterOrEqual,
+                    Equal,
+                    NotEqual,
+
+                    And,
+                    Or,
+
+                };
+
+            public:
+
+                Binary          ( ast::expr::Binary::Operator type, ast::Expression * leftOperand = nullptr, ast::Expression * rightOperand = nullptr )
                 : mType         ( type         )
                 , mLeftOperand  ( leftOperand  )
                 , mRightOperand ( rightOperand )
@@ -29,12 +58,12 @@ namespace castel
 
             public:
 
-                lexer::Lexeme::Type type( void ) const
+                ast::expr::Binary::Operator type( void ) const
                 {
                     return mType;
                 }
 
-                Binary & type( lexer::Lexeme::Type type )
+                Binary & type( ast::expr::Binary::Operator type )
                 {
                     mType = type;
 
@@ -88,7 +117,7 @@ namespace castel
 
             private:
 
-                lexer::Lexeme::Type mType;
+                ast::expr::Binary::Operator mType;
 
                 std::unique_ptr< ast::Expression > mLeftOperand;
                 std::unique_ptr< ast::Expression > mRightOperand;
