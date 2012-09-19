@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cstring>
 #include <new>
-#include <string>
 
 #include "castel/runtime/Box.hh"
 #include "castel/runtime/api.hh"
@@ -13,47 +11,36 @@ namespace castel
     namespace runtime
     {
 
-        class String : public runtime::Box
+        class BooleanBox : public runtime::Box
         {
 
         public:
 
-            static String * create( std::string const & string )
+            static BooleanBox * create( bool value = false )
             {
-                void * memory = castel_allocate( 1, sizeof( String ) );
-                return new ( memory ) String( string );
-            }
-
-            static String * create( char const * string, int length = -1, bool copy = true )
-            {
-                void * memory = castel_allocate( 1, sizeof( String ) );
-                return new ( memory ) String( string, length, copy );
+                void * memory = castel_allocate( 1, sizeof( BooleanBox ) );
+                return new ( memory ) BooleanBox( value );
             }
 
         private:
 
-            String ( std::string const & string )
+            BooleanBox ( bool value )
+            : mValue   ( value )
             {
-                this->string( string );
-            }
-
-            String ( char const * string, int length = -1, bool copy = true )
-            {
-                this->string( string, length, copy );
             }
 
         public:
 
-            String & string( std::string const & string )
+            bool value( void ) const
             {
-                this->string( string.c_str( ), string.length( ) );
+                return mValue;
             }
 
-            String & string( char const * string, int length = -1, bool copy = true );
-
-            std::string string( void ) const
+            BooleanBox & value( bool value )
             {
-                return std::string( mString );
+                mValue = value;
+
+                return * this;
             }
 
         public:
@@ -104,8 +91,7 @@ namespace castel
 
         private:
 
-            char const * mString;
-            unsigned int mLength;
+            bool mValue;
 
         };
 

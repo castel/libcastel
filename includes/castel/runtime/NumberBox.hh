@@ -12,43 +12,39 @@ namespace castel
     namespace runtime
     {
 
-        class Number : public runtime::Box
+        class NumberBox : public runtime::Box
         {
 
         public:
 
-            typedef double InternalNumber;
-
-        public:
-
-            static Number * create( void )
+            static NumberBox * create( void )
             {
-                return runtime::Number::create( std::numeric_limits< InternalNumber >::quiet_NaN( ) );
+                return runtime::NumberBox::create( std::numeric_limits< double >::quiet_NaN( ) );
             }
 
-            static Number * create( InternalNumber number )
+            static NumberBox * create( double value )
             {
-                void * memory = castel_allocate( 1, sizeof( Number ) );
-                return new ( memory ) Number( number );
+                void * memory = castel_allocate( 1, sizeof( NumberBox ) );
+                return new ( memory ) NumberBox( value );
             }
 
         private:
 
-            Number    ( InternalNumber number )
-            : mNumber ( number )
+            NumberBox ( double value )
+            : mValue  ( value )
             {
             }
 
         public:
 
-            InternalNumber number( void ) const
+            double value( void ) const
             {
-                return mNumber;
+                return mValue;
             }
 
-            Number & number( InternalNumber number )
+            NumberBox & value( double value )
             {
-                mNumber = number;
+                mValue = value;
 
                 return * this;
             }
@@ -101,7 +97,7 @@ namespace castel
 
         private:
 
-            InternalNumber mNumber;
+            double mValue;
 
         };
 

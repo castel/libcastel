@@ -1,7 +1,7 @@
-#include "castel/runtime/Boolean.hh"
+#include "castel/runtime/BooleanBox.hh"
 #include "castel/runtime/api/boolean.hh"
 
-castel::runtime::Boolean * castelBoolean_create( castel::runtime::Boolean::InternalBoolean boolean )
+castel::runtime::BooleanBox * castelBoolean_create( bool boolean )
 {
-    return castel::runtime::Boolean::create( boolean );
+    return castel::runtime::BooleanBox::create( boolean );
 }

@@ -1,7 +1,7 @@
-#include "castel/runtime/Dict.hh"
+#include "castel/runtime/DictBox.hh"
 #include "castel/runtime/api/dict.hh"
 
-castel::runtime::Dict * castelDict_create( void )
+castel::runtime::DictBox * castelDict_create( void )
 {
-    return castel::runtime::Dict::create( );
+    return castel::runtime::DictBox::create( );
 }

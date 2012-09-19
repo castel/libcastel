@@ -1,8 +1,8 @@
 #pragma once
 
-#include "castel/runtime/Null.hh"
+#include "castel/runtime/NullBox.hh"
 
 extern "C"
 {
-    castel::runtime::Null * castelNull_create( void );
+    castel::runtime::NullBox * castelNull_create( void );
 }

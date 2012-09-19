@@ -1,8 +1,6 @@
 #pragma once
 
-#include <map>
 #include <new>
-#include <string>
 
 #include "castel/runtime/Box.hh"
 #include "castel/runtime/api.hh"
@@ -13,47 +11,21 @@ namespace castel
     namespace runtime
     {
 
-        class Dict : public runtime::Box
+        class NullBox : public runtime::Box
         {
 
         public:
 
-            static Dict * create( void )
+            static NullBox * create( void )
             {
-                void * memory = castel_allocate( 1, sizeof( Dict ) );
-                return new ( memory ) Dict( );
+                void * memory = castel_allocate( 1, sizeof( NullBox ) );
+                return new ( memory ) NullBox( );
             }
 
         private:
 
-            Dict ( void )
+            NullBox ( void )
             {
-            }
-
-        public:
-
-            runtime::Box * get( std::string const & string ) const
-            {
-                auto it = mDict.find( string );
-
-                return it != mDict.end( ) ? it->second : nullptr;
-            }
-
-            Dict & set( std::string const & string, runtime::Box * box )
-            {
-                if ( ! box )
-                    this->unset( string );
-
-                mDict[ string ] = box;
-
-                return * this;
-            }
-
-            Dict & unset( std::string const & string )
-            {
-                mDict.erase( string );
-
-                return * this;
             }
 
         public:
@@ -101,10 +73,6 @@ namespace castel
         public:
 
             virtual bool booleanOperator ( void );
-
-        private:
-
-            std::map< std::string, runtime::Box * > mDict;
 
         };
 

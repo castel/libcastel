@@ -1,8 +1,8 @@
 #pragma once
 
-#include "castel/runtime/List.hh"
+#include "castel/runtime/ListBox.hh"
 
 extern "C"
 {
-    castel::runtime::List * castelList_create( void );
+    castel::runtime::ListBox * castelList_create( void );
 }

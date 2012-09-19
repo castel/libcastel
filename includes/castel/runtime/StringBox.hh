@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstring>
 #include <new>
+#include <string>
 
 #include "castel/runtime/Box.hh"
 #include "castel/runtime/api.hh"
@@ -11,29 +13,48 @@ namespace castel
     namespace runtime
     {
 
-        class Function : public runtime::Box
+        class StringBox : public runtime::Box
         {
 
         public:
 
-            typedef runtime::Box * ( * InternalFunction )( runtime::Box *** environmentTable, unsigned int argc, runtime::Box ** argv );
-
-        public:
-
-            static Function * create( runtime::Box *** environmentTable, InternalFunction function, unsigned int arity )
+            static StringBox * create( std::string const & value )
             {
-                void * memory = castel_allocate( 1, sizeof( Function ) );
-                return new ( memory ) Function( environmentTable, function, arity );
+                void * memory = castel_allocate( 1, sizeof( StringBox ) );
+                return new ( memory ) StringBox( value );
+            }
+
+            static StringBox * create( char const * value, int length = -1, bool copy = true )
+            {
+                void * memory = castel_allocate( 1, sizeof( StringBox ) );
+                return new ( memory ) StringBox( value, length, copy );
             }
 
         private:
 
-            Function            ( runtime::Box *** environmentTable, InternalFunction function, unsigned int arity )
-            : mEnvironmentTable ( environmentTable )
-            , mFunction         ( function         )
-            , mArity            ( arity            )
+            StringBox ( std::string const & value )
             {
+                this->value( value );
             }
+
+            StringBox ( char const * value, int length = -1, bool copy = true )
+            {
+                this->value( value, length, copy );
+            }
+
+        public:
+
+            char const * value( void ) const
+            {
+                return mValue;
+            }
+
+            StringBox & value( std::string const & value )
+            {
+                this->value( value.c_str( ), value.length( ) );
+            }
+
+            StringBox & value( char const * value, int length = -1, bool copy = true );
 
         public:
 
@@ -79,14 +100,12 @@ namespace castel
 
         public:
 
-            virtual bool booleanOperator( void );
+            virtual bool booleanOperator ( void );
 
         private:
 
-            runtime::Box *** mEnvironmentTable;
-
-            InternalFunction mFunction;
-            unsigned int     mArity;
+            char const * mValue;
+            unsigned int mLength;
 
         };
 

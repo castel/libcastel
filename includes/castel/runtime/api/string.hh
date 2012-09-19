@@ -1,8 +1,8 @@
 #pragma once
 
-#include "castel/runtime/String.hh"
+#include "castel/runtime/StringBox.hh"
 
 extern "C"
 {
-    castel::runtime::String * castelString_create( char const * string );
+    castel::runtime::StringBox * castelString_create( char const * value );
 }

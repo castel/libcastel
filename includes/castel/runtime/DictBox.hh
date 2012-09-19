@@ -11,40 +11,21 @@ namespace castel
     namespace runtime
     {
 
-        class Boolean : public runtime::Box
+        class DictBox : public runtime::Box
         {
 
         public:
 
-            typedef bool InternalBoolean;
-
-        public:
-
-            static Boolean * create( InternalBoolean boolean )
+            static DictBox * create( void )
             {
-                void * memory = castel_allocate( 1, sizeof( Boolean ) );
-                return new ( memory ) Boolean( boolean );
+                void * memory = castel_allocate( 1, sizeof( DictBox ) );
+                return new ( memory ) DictBox( );
             }
 
         private:
 
-            Boolean    ( InternalBoolean boolean )
-            : mBoolean ( boolean )
+            DictBox ( void )
             {
-            }
-
-        public:
-
-            InternalBoolean boolean( void ) const
-            {
-                return mBoolean;
-            }
-
-            Boolean & boolean( InternalBoolean boolean )
-            {
-                mBoolean = boolean;
-
-                return * this;
             }
 
         public:
@@ -92,10 +73,6 @@ namespace castel
         public:
 
             virtual bool booleanOperator ( void );
-
-        private:
-
-            InternalBoolean mBoolean;
 
         };
 

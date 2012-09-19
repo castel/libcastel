@@ -1,7 +1,7 @@
-#include "castel/runtime/Null.hh"
+#include "castel/runtime/NullBox.hh"
 #include "castel/runtime/api/null.hh"
 
-castel::runtime::Null * castelNull_create( void )
+castel::runtime::NullBox * castelNull_create( void )
 {
-    return castel::runtime::Null::create( );
+    return castel::runtime::NullBox::create( );
 }

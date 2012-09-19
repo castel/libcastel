@@ -2,7 +2,6 @@
 
 #include <new>
 
-#include "castel/runtime/api/undefined.hh"
 #include "castel/runtime/Box.hh"
 #include "castel/runtime/api.hh"
 
@@ -12,20 +11,20 @@ namespace castel
     namespace runtime
     {
 
-        class List : public runtime::Box
+        class ListBox : public runtime::Box
         {
 
         public:
 
-            static List * create( void )
+            static ListBox * create( void )
             {
-                void * memory = castel_allocate( 1, sizeof( List ) );
-                return new ( memory ) List( );
+                void * memory = castel_allocate( 1, sizeof( ListBox ) );
+                return new ( memory ) ListBox( );
             }
 
         private:
 
-            List ( void )
+            ListBox ( void )
             {
             }
 

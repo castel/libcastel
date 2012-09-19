@@ -1,8 +1,8 @@
 #pragma once
 
-#include "castel/runtime/Number.hh"
+#include "castel/runtime/NumberBox.hh"
 
 extern "C"
 {
-    castel::runtime::Number * castelNumber_create( castel::runtime::Number::InternalNumber number );
+    castel::runtime::NumberBox * castelNumber_create( double value );
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "castel/runtime/Dict.hh"
+#include "castel/runtime/DictBox.hh"
 
 extern "C"
 {
-    castel::runtime::Dict * castelDict_create( void );
+    castel::runtime::DictBox * castelDict_create( void );
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "castel/runtime/Undefined.hh"
+#include "castel/runtime/UndefinedBox.hh"
 
 extern "C"
 {
-    castel::runtime::Undefined * castelUndefined_create( void );
+    castel::runtime::UndefinedBox * castelUndefined_create( void );
 }

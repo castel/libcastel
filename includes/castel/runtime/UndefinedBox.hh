@@ -11,20 +11,20 @@ namespace castel
     namespace runtime
     {
 
-        class Undefined : public runtime::Box
+        class UndefinedBox : public runtime::Box
         {
 
         public:
 
-            static Undefined * create( void )
+            static UndefinedBox * create( void )
             {
-                void * memory = castel_allocate( 1, sizeof( Undefined ) );
-                return new ( memory ) Undefined( );
+                void * memory = castel_allocate( 1, sizeof( UndefinedBox ) );
+                return new ( memory ) UndefinedBox( );
             }
 
         private:
 
-            Undefined ( void )
+            UndefinedBox ( void )
             {
             }
 

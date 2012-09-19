@@ -11,20 +11,27 @@ namespace castel
     namespace runtime
     {
 
-        class Null : public runtime::Box
+        class FunctionBox : public runtime::Box
         {
 
         public:
 
-            static Null * create( void )
+            typedef runtime::Box * ( * Callable )( runtime::Box *** environmentTable, unsigned int argc, runtime::Box ** argv );
+
+        public:
+
+            static FunctionBox * create( runtime::FunctionBox::Callable callable, unsigned int arity, runtime::Box *** environmentTable )
             {
-                void * memory = castel_allocate( 1, sizeof( Null ) );
-                return new ( memory ) Null( );
+                void * memory = castel_allocate( 1, sizeof( FunctionBox ) );
+                return new ( memory ) FunctionBox( callable, arity, environmentTable );
             }
 
         private:
 
-            Null ( void )
+            FunctionBox         ( runtime::FunctionBox::Callable callable, unsigned int arity, runtime::Box *** environmentTable )
+            : mCallable         ( callable         )
+            , mArity            ( arity            )
+            , mEnvironmentTable ( environmentTable )
             {
             }
 
@@ -72,7 +79,14 @@ namespace castel
 
         public:
 
-            virtual bool booleanOperator ( void );
+            virtual bool booleanOperator( void );
+
+        private:
+
+            runtime::FunctionBox::Callable mCallable;
+            unsigned int                   mArity;
+
+            runtime::Box *** mEnvironmentTable;
 
         };
 

@@ -1,7 +1,7 @@
-#include "castel/runtime/Number.hh"
+#include "castel/runtime/NumberBox.hh"
 #include "castel/runtime/api/number.hh"
 
-castel::runtime::Number * castelNumber_create( castel::runtime::Number::InternalNumber number )
+castel::runtime::NumberBox * castelNumber_create( double number )
 {
-    return castel::runtime::Number::create( number );
+    return castel::runtime::NumberBox::create( number );
 }
