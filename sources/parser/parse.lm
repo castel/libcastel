@@ -15,10 +15,13 @@
 
     #include "castel/ast/expr/Boolean.hh"
     #include "castel/ast/expr/Binary.hh"
+    #include "castel/ast/expr/Dict.hh"
     #include "castel/ast/expr/Function.hh"
+    #include "castel/ast/expr/List.hh"
     #include "castel/ast/expr/Multary.hh"
     #include "castel/ast/expr/Null.hh"
     #include "castel/ast/expr/Number.hh"
+    #include "castel/ast/expr/String.hh"
     #include "castel/ast/expr/Unary.hh"
     #include "castel/ast/expr/Undefined.hh"
     #include "castel/ast/expr/Variable.hh"
@@ -132,7 +135,7 @@ expression(A) ::= assignmentexpression(U). { A = U; }
 
                             %type additiveoperator { ast::expr::Binary::Operator }
                             additiveoperator(A) ::= PositiveAddition. { A = ast::expr::Binary::Operator::Addition; }
-                            additiveoperator(A) ::= NegativeSubstraction. { A = ast::expr::Binary::Operator::Substraction; }
+                            additiveoperator(A) ::= NegativeSubstractionHyphen. { A = ast::expr::Binary::Operator::Substraction; }
 
                             %type multiplicativeexpression { ast::Expression * }
                             multiplicativeexpression(A) ::= prefixexpression(U). { A = U; }
@@ -149,7 +152,7 @@ expression(A) ::= assignmentexpression(U). { A = U; }
 
                                         %type prefixoperator { ast::expr::Unary::Operator }
                                         prefixoperator(A) ::= PositiveAddition. { A = ast::expr::Unary::Operator::Positive; }
-                                        prefixoperator(A) ::= NegativeSubstraction. { A = ast::expr::Unary::Operator::Negative; }
+                                        prefixoperator(A) ::= NegativeSubstractionHyphen. { A = ast::expr::Unary::Operator::Negative; }
                                         prefixoperator(A) ::= Incrementation. { A = ast::expr::Unary::Operator::PreIncrementation; }
                                         prefixoperator(A) ::= Decrementation. { A = ast::expr::Unary::Operator::PreDecrementation; }
 
@@ -188,6 +191,9 @@ expression(A) ::= assignmentexpression(U). { A = U; }
                                                 literal(A) ::= booleanliteral(U). { A = U; }
                                                 literal(A) ::= numberliteral(U). { A = U; }
                                                 literal(A) ::= functionliteral(U). { A = U; }
+                                                literal(A) ::= stringliteral(U). { A = U; }
+                                                literal(A) ::= dictliteral(U). { A = U; }
+                                                literal(A) ::= listliteral(U). { A = U; }
 
                                                     %type nullliteral { ast::expr::Null * }
                                                     nullliteral(A) ::= Null. { A = new ast::expr::Null( ); }
@@ -201,6 +207,37 @@ expression(A) ::= assignmentexpression(U). { A = U; }
 
                                                     %type numberliteral { ast::expr::Number * }
                                                     numberliteral(A) ::= Number(U). { A = new ast::expr::Number( * U ); }
+
+                                                    %type stringliteral { ast::expr::String * }
+                                                    stringliteral(A) ::= String(U). { A = new ast::expr::String( * U ); }
+
+                                                    %type dictliteral { ast::expr::Dict * }
+                                                    dictliteral(A) ::= LParenthesis Dict RParenthesis. { A = new ast::expr::Dict( ); }
+                                                    dictliteral(A) ::= LParenthesis Dict Colon dictblock(U) RParenthesis. { A = new ast::expr::Dict( U ); }
+
+                                                        %type dictitem { ast::expr::Dict::Item * }
+                                                        dictitem(A) ::= Identifier(U) Colon expression(V). { A = new ast::expr::Dict::Item( * U, V ); }
+
+                                                        %type dictblock { ast::expr::Dict::Item * }
+                                                        dictblock(A) ::= Indent dictblockiterator(U) Dedent. { A = U; }
+
+                                                            %type dictblockiterator { ast::expr::Dict::Item * }
+                                                            dictblockiterator(A) ::= dictitem(U). { A = U; }
+                                                            dictblockiterator(A) ::= dictitem(U) Newline dictblockiterator(V). { A = U; A->next( V ); }
+
+                                                    %type listliteral { ast::expr::List * }
+                                                    listliteral(A) ::= LParenthesis List RParenthesis. { A = new ast::expr::List( ); }
+                                                    listliteral(A) ::= LParenthesis List Colon listblock(U) RParenthesis. { A = new ast::expr::List( U ); }
+
+                                                        %type listitem { ast::expr::List::Item * }
+                                                        listitem(A) ::= NegativeSubstractionHyphen expression(U). { A = new ast::expr::List::Item( U ); }
+
+                                                        %type listblock { ast::expr::List::Item * }
+                                                        listblock(A) ::= Indent listblockiterator(U) Dedent. { A = U; }
+
+                                                            %type listblockiterator { ast::expr::List::Item * }
+                                                            listblockiterator(A) ::= listitem(U). { A = U; }
+                                                            listblockiterator(A) ::= listitem(U) Newline listblockiterator(V). { A = U; A->next( V ); }
 
                                                     %type functionliteral { ast::expr::Function * }
                                                     functionliteral(A) ::= LParenthesis Function parameterlist(U) Colon statementblock(V) RParenthesis. { A = new ast::expr::Function( U, V ); }

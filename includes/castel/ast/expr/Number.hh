@@ -48,14 +48,14 @@ namespace castel
                 {
                     mValue = value;
 
-                    return *this;
+                    return * this;
                 }
 
             public:
 
                 virtual void accept( utils::Visitor & visitor )
                 {
-                    visitor.visit( *this );
+                    visitor.visit( * this );
                 }
 
             private:

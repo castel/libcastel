@@ -11,6 +11,7 @@
 #include "castel/ast/expr/Boolean.hh"
 #include "castel/ast/expr/Binary.hh"
 #include "castel/ast/expr/Function.hh"
+#include "castel/ast/expr/List.hh"
 #include "castel/ast/expr/Multary.hh"
 #include "castel/ast/expr/Null.hh"
 #include "castel/ast/expr/Number.hh"
@@ -50,10 +51,13 @@ namespace castel
 
             virtual void visit( ast::expr::Boolean         & );
             virtual void visit( ast::expr::Binary          & );
+            virtual void visit( ast::expr::Dict            & );
             virtual void visit( ast::expr::Function        & );
+            virtual void visit( ast::expr::List            & );
             virtual void visit( ast::expr::Multary         & );
             virtual void visit( ast::expr::Null            & );
             virtual void visit( ast::expr::Number          & );
+            virtual void visit( ast::expr::String          & );
             virtual void visit( ast::expr::Unary           & );
             virtual void visit( ast::expr::Undefined       & );
             virtual void visit( ast::expr::Variable        & );
