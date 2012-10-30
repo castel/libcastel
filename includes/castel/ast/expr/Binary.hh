@@ -23,27 +23,42 @@ namespace castel
                 enum class Operator {
 
                     Assignment,
-                    AdditionAssignment,
-                    SubstractionAssignment,
-                    MultiplicationAssignment,
-                    DivisionAssignment,
-                    ModuloAssignment,
 
-                    Addition,
-                    Substraction,
-                    Multiplication,
-                    Division,
-                    Modulo,
+                    NumericAddition,
+                    NumericSubstraction,
+                    NumericMultiplication,
+                    NumericDivision,
+                    NumericModulo,
 
-                    Lesser,
-                    Greater,
-                    LesserOrEqual,
-                    GreaterOrEqual,
-                    Equal,
-                    NotEqual,
+                    NumericAssignmentAddition,
+                    NumericAssignmentSubstraction,
+                    NumericAssignmentMultiplication,
+                    NumericAssignmentDivision,
+                    NumericAssignmentModulo,
 
-                    And,
-                    Or,
+                    BinaryAnd,
+                    BinaryOr,
+                    BinaryXOr,
+                    BinaryLShift,
+                    BinaryRShift,
+
+                    BinaryAssignmentAnd,
+                    BinaryAssignmentOr,
+                    BinaryAssignmentXOr,
+                    BinaryAssignmentLShift,
+                    BinaryAssignmentRShift,
+
+                    ComparisonLesser,
+                    ComparisonGreater,
+                    ComparisonLesserOrEqual,
+                    ComparisonGreaterOrEqual,
+                    ComparisonEqual,
+                    ComparisonNotEqual,
+
+                    LogicAnd,
+                    LogicOr,
+
+                    Member,
 
                 };
 

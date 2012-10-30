@@ -10,6 +10,7 @@ namespace castel
         {
             class Boolean;
             class Binary;
+            class Class;
             class Dict;
             class Function;
             class List;
@@ -50,6 +51,7 @@ namespace castel
 
             virtual void visit( ast::expr::Boolean         & ) = 0;
             virtual void visit( ast::expr::Binary          & ) = 0;
+            virtual void visit( ast::expr::Class           & ) = 0;
             virtual void visit( ast::expr::Dict            & ) = 0;
             virtual void visit( ast::expr::Function        & ) = 0;
             virtual void visit( ast::expr::List            & ) = 0;

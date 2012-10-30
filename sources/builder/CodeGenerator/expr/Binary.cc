@@ -9,6 +9,41 @@
 using namespace castel;
 using builder::CodeGenerator;
 
+static std::map< ast::expr::Binary::Operator, char const * > const operatorsTable {
+
+    std::make_pair( ast::expr::Binary::Operator::NumericAddition, "castel_operatorNumericAddition" ),
+    std::make_pair( ast::expr::Binary::Operator::NumericSubstraction, "castel_operatorNumericSubstraction" ),
+    std::make_pair( ast::expr::Binary::Operator::NumericMultiplication, "castel_operatorNumericMultiplication" ),
+    std::make_pair( ast::expr::Binary::Operator::NumericDivision, "castel_operatorNumericDivision" ),
+    std::make_pair( ast::expr::Binary::Operator::NumericModulo, "castel_operatorNumericModulo" ),
+
+    std::make_pair( ast::expr::Binary::Operator::NumericAssignmentAddition, "castel_operatorNumericAssignmentAddition" ),
+    std::make_pair( ast::expr::Binary::Operator::NumericAssignmentSubstraction, "castel_operatorNumericAssignmentSubstraction" ),
+    std::make_pair( ast::expr::Binary::Operator::NumericAssignmentMultiplication, "castel_operatorNumericAssignmentMultiplication" ),
+    std::make_pair( ast::expr::Binary::Operator::NumericAssignmentDivision, "castel_operatorNumericAssignmentDivision" ),
+    std::make_pair( ast::expr::Binary::Operator::NumericAssignmentModulo, "castel_operatorNumericAssignmentModulo" ),
+
+    std::make_pair( ast::expr::Binary::Operator::BinaryAnd, "castel_operatorBinaryAnd" ),
+    std::make_pair( ast::expr::Binary::Operator::BinaryOr, "castel_operatorBinaryOr" ),
+    std::make_pair( ast::expr::Binary::Operator::BinaryXOr, "castel_operatorBinaryXOr" ),
+    std::make_pair( ast::expr::Binary::Operator::BinaryLShift, "castel_operatorBinaryLShift" ),
+    std::make_pair( ast::expr::Binary::Operator::BinaryRShift, "castel_operatorBinaryRShift" ),
+
+    std::make_pair( ast::expr::Binary::Operator::BinaryAssignmentAnd, "castel_operatorBinaryAssignmentAnd" ),
+    std::make_pair( ast::expr::Binary::Operator::BinaryAssignmentOr, "castel_operatorBinaryAssignmentOr" ),
+    std::make_pair( ast::expr::Binary::Operator::BinaryAssignmentXOr, "castel_operatorBinaryAssignmentXOr" ),
+    std::make_pair( ast::expr::Binary::Operator::BinaryAssignmentLShift, "castel_operatorBinaryAssignmentLShift" ),
+    std::make_pair( ast::expr::Binary::Operator::BinaryAssignmentRShift, "castel_operatorBinaryAssignmentRShift" ),
+
+    std::make_pair( ast::expr::Binary::Operator::ComparisonLesser, "castel_operatorComparisonLesser" ),
+    std::make_pair( ast::expr::Binary::Operator::ComparisonGreater, "castel_operatorComparisonGreater" ),
+    std::make_pair( ast::expr::Binary::Operator::ComparisonLesserOrEqual, "castel_operatorComparisonLesserOrEqual" ),
+    std::make_pair( ast::expr::Binary::Operator::ComparisonGreaterOrEqual, "castel_operatorComparisonGreaterOrEqual" ),
+    std::make_pair( ast::expr::Binary::Operator::ComparisonEqual, "castel_operatorComparisonEqual" ),
+    std::make_pair( ast::expr::Binary::Operator::ComparisonNotEqual, "castel_operatorComparisonNotEqual" ),
+
+};
+
 void CodeGenerator::visit( ast::expr::Binary & astBinaryExpression )
 {
     if ( ! astBinaryExpression.leftOperand( ) )
@@ -25,7 +60,7 @@ void CodeGenerator::visit( ast::expr::Binary & astBinaryExpression )
             throw std::runtime_error( "Invalid lvalue" );
 
         astBinaryExpression.rightOperand( )->accept( *this );
-        mClosureStack.top( )->set( astVariable->name( ), mValue.get( ) );
+        mScope.set( astVariable->name( ), mValue.get( ) );
 
     } else {
 
@@ -35,73 +70,7 @@ void CodeGenerator::visit( ast::expr::Binary & astBinaryExpression )
         astBinaryExpression.rightOperand( )->accept( * this );
         llvm::Value * llvmRightOperand = mValue.release( );
 
-        switch ( astBinaryExpression.type( ) ) {
-
-            case ast::expr::Binary::Operator::Addition:
-                mValue.reset( mContext.irBuilder().CreateCastelCall( "castel_additionOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::Substraction:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_substractionOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::Multiplication:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_multiplicationOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::Division:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_divisionOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::Modulo:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_moduloOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::Lesser:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_lesserOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::Greater:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_greaterOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::LesserOrEqual:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_lesserOrEqualOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::GreaterOrEqual:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_greaterOrEqualOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::Equal:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_equalOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::NotEqual:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_notEqualOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::AdditionAssignment:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_additionAssignmentOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::SubstractionAssignment:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_substractionAssignmentOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::MultiplicationAssignment:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_multiplicationAssignmentOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::DivisionAssignment:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_divisionAssignmentOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-            case ast::expr::Binary::Operator::ModuloAssignment:
-                mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_moduloAssignmentOperator", llvmLeftOperand, llvmRightOperand ) );
-            break;
-
-        }
+        mValue.reset( mContext.irBuilder().CreateCastelCall( operatorsTable.at( astBinaryExpression.type( ) ), llvmLeftOperand, llvmRightOperand ) );
 
     }
 

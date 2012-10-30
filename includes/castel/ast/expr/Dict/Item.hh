@@ -44,6 +44,8 @@ namespace castel
                 Item & name( std::string const & name )
                 {
                     mName = name;
+
+                    return * this;
                 }
 
             public:

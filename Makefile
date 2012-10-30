@@ -2,7 +2,7 @@ LIBRARY_PARSE    = libCastelParse.a
 LIBRARY_BUILD    = libCastelBuild.a
 LIBRARY_RUNTIME  = libCastelRuntime.a
 
-CXX              = g++
+CXX              = clang++
 AR               = ar
 RANLIB           = ranlib
 RAGEL            = ragel
@@ -49,16 +49,19 @@ $(LIBRARY_RUNTIME): build/$(LIBRARY_RUNTIME)
 
 build/$(LIBRARY_PARSE): $(OBJS_PARSE) includes/castel/lexer/MangledLexemesTypes.hh
 	@test -t && printf "%s# Merging object files for $(LIBRARY_PARSE).%s\n" "$(PURPLE)" "$(EOS)"
+	@$(RM) -f build/$(LIBRARY_PARSE)
 	@$(AR) rcs build/$(LIBRARY_PARSE) $(OBJS_PARSE)
 	@$(RANLIB) build/$(LIBRARY_PARSE)
 
 build/$(LIBRARY_BUILD): $(OBJS_BUILD)
 	@test -t && printf "%s# Merging object files for $(LIBRARY_BUILD).%s\n" "$(PURPLE)" "$(EOS)"
+	@$(RM) -f build/$(LIBRARY_BUILD)
 	@$(AR) rcs build/$(LIBRARY_BUILD) $(OBJS_BUILD)
 	@$(RANLIB) build/$(LIBRARY_BUILD)
 
 build/$(LIBRARY_RUNTIME): $(OBJS_RUNTIME)
 	@test -t && printf "%s# Merging object files for $(LIBRARY_RUNTIME).%s\n" "$(PURPLE)" "$(EOS)"
+	@$(RM) -f build/$(LIBRARY_RUNTIME)
 	@$(AR) rcs build/$(LIBRARY_RUNTIME) $(OBJS_RUNTIME)
 	@$(RANLIB) build/$(LIBRARY_RUNTIME)
 

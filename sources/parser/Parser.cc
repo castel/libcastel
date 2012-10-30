@@ -6,7 +6,7 @@
 #include "castel/lexer/Lexer.hh"
 #include "castel/parser/Exception.hh"
 #include "castel/parser/Parser.hh"
-
+#include <iostream>
 using namespace castel;
 using namespace castel::parser;
 
@@ -30,6 +30,7 @@ ast::Statement * Parser::exec( void )
         goto loop;
 
     castelparserIsValid = true;
+    std::cout << lexer::Lexeme::constTypeString( * lexeme ) << std::endl;
     Parse( lemonParser, static_cast< int >( lexeme->type( ) ), lexeme.get( ) );
 
     if ( ! castelparserIsValid )

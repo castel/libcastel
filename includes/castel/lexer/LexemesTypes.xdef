@@ -4,6 +4,11 @@ AUTO_LEXEME_TYPE     ( Invalid                    )
 DEMANGLE_LEXEME_TYPE ( Function                   )
 DEMANGLE_LEXEME_TYPE ( Dict                       )
 DEMANGLE_LEXEME_TYPE ( List                       )
+DEMANGLE_LEXEME_TYPE ( Class                      )
+
+DEMANGLE_LEXEME_TYPE ( Public                     )
+DEMANGLE_LEXEME_TYPE ( Protected                  )
+DEMANGLE_LEXEME_TYPE ( Private                    )
 
 DEMANGLE_LEXEME_TYPE ( Return                     )
 DEMANGLE_LEXEME_TYPE ( Var                        )
@@ -18,6 +23,10 @@ DEMANGLE_LEXEME_TYPE ( Undefined                  )
 
 DEMANGLE_LEXEME_TYPE ( And                        )
 DEMANGLE_LEXEME_TYPE ( Or                         )
+
+DEMANGLE_LEXEME_TYPE ( Operator                   )
+
+DEMANGLE_LEXEME_TYPE ( New                        )
 
 DEMANGLE_LEXEME_TYPE ( Incrementation             )
 DEMANGLE_LEXEME_TYPE ( Decrementation             )
@@ -48,6 +57,7 @@ DEMANGLE_LEXEME_TYPE ( RBracket                   )
 
 DEMANGLE_LEXEME_TYPE ( Colon                      )
 DEMANGLE_LEXEME_TYPE ( Comma                      )
+DEMANGLE_LEXEME_TYPE ( Dot                        )
 
 DEMANGLE_LEXEME_TYPE ( String                     )
 DEMANGLE_LEXEME_TYPE ( Number                     )

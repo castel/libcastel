@@ -1,20 +1,23 @@
 #pragma once
 
+#include <climits>
+
 #include <llvm/Support/TypeBuilder.h>
 #include <llvm/DerivedTypes.h>
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 #include <llvm/Type.h>
 
+#include "castel/runtime/boxes/Bool.hh"
+#include "castel/runtime/boxes/Class.hh"
+#include "castel/runtime/boxes/Dict.hh"
+#include "castel/runtime/boxes/Function.hh"
+#include "castel/runtime/boxes/List.hh"
+#include "castel/runtime/boxes/Null.hh"
+#include "castel/runtime/boxes/Number.hh"
+#include "castel/runtime/boxes/String.hh"
+#include "castel/runtime/boxes/Undefined.hh"
 #include "castel/runtime/Box.hh"
-#include "castel/runtime/BooleanBox.hh"
-#include "castel/runtime/DictBox.hh"
-#include "castel/runtime/FunctionBox.hh"
-#include "castel/runtime/ListBox.hh"
-#include "castel/runtime/NullBox.hh"
-#include "castel/runtime/NumberBox.hh"
-#include "castel/runtime/StringBox.hh"
-#include "castel/runtime/UndefinedBox.hh"
 
 namespace castel
 {
@@ -49,35 +52,39 @@ namespace llvm
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::BooleanBox, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::Bool, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::DictBox, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::Class, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::FunctionBox, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::Dict, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::ListBox, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::Function, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::NullBox, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::List, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::NumberBox, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::Null, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::StringBox, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::Number, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::UndefinedBox, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::String, XCompile >
+        : public castel::utils::BoxTypeBuilder { };
+
+    template < bool XCompile >
+    struct TypeBuilder< castel::runtime::boxes::Undefined, XCompile >
         : public castel::utils::BoxTypeBuilder { };
 
 }

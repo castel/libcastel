@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "castel/ast/Expression.hh"
+#include "castel/ast/Parameter.hh"
 #include "castel/ast/Statement.hh"
 #include "castel/utils/Visitor.hh"
 
@@ -15,69 +16,93 @@ namespace castel
         namespace expr
         {
 
+            /**
+             * Represents a function literal in the AST.
+             */
+
             class Function : public ast::Expression
             {
 
             public:
 
-                class Parameter;
+                /**
+                 * Constructs a Function instance.
+                 *
+                 * It will take ownership of the Parameter and Statement pointers (they will be
+                 * destroyed when the Function instance will be destroyed).
+                 */
+
+                inline Function( ast::Parameter * parameters = nullptr, ast::Statement * statements = nullptr );
 
             public:
 
-                Function( ast::expr::Function::Parameter * parameters = nullptr, ast::Statement * statements = nullptr )
-                : mParameters( parameters )
-                , mStatements( statements )
-                {
-                }
+                /**
+                 * @return Function parameter list
+                 *
+                 * Please note that calling this function will not release parameters from Function
+                 * ownership. You should not delete the returned pointer.
+                 */
+
+                inline ast::Parameter * parameters( void ) const;
+
+                /**
+                 * @param parameters Function parameter list
+                 *
+                 * Please note that the Function instance will take ownership of the parameters.
+                 * If existing, the previous parameters will be destroyed.
+                 */
+
+                inline Function & parameters( ast::Parameter * parameters );
+
+                /**
+                 * @return Function parameter list
+                 *
+                 * The pointer will be released from the Function instance. You will be responsible
+                 * to release it after usage.
+                 */
+
+                inline ast::Parameter * takeParameters( void );
 
             public:
 
-                ast::expr::Function::Parameter * parameters( void ) const
-                {
-                    return mParameters.get( );
-                }
+                /**
+                 * @return Function statement list
+                 *
+                 * Please note that calling this function will not release statements from Function
+                 * ownership. You should not delete the returned pointer.
+                 */
 
-                Function & parameters( ast::expr::Function::Parameter * parameters )
-                {
-                    mParameters.reset( parameters );
+                inline ast::Statement * statements( void ) const;
 
-                    return *this;
-                }
+                /**
+                 * @param statements Function statement list
+                 *
+                 * Please note that the Function instance will take ownership of the statements.
+                 * If existing, the previous statements will be destroyed.
+                 */
 
-                ast::expr::Function::Parameter * takeParameters( void )
-                {
-                    return mParameters.release( );
-                }
+                inline Function & statements( ast::Statement * statements );
 
-            public:
+                /**
+                 * @return Function statement list
+                 *
+                 * The pointer will be released from the Function instance. You will be responsible
+                 * to release it after usage.
+                 */
 
-                ast::Statement * statements( void ) const
-                {
-                    return mStatements.get( );
-                }
-
-                Function & statements( ast::Statement * statements )
-                {
-                    mStatements.reset( statements );
-
-                    return *this;
-                }
-
-                ast::Statement * takeStatements( void )
-                {
-                    return mStatements.release( );
-                }
+                inline ast::Statement * takeStatements( void );
 
             public:
 
-                virtual void accept( utils::Visitor & visitor )
-                {
-                    visitor.visit( *this );
-                }
+                /**
+                 * Calls the ast::expr::Function version of the ASTVisitor's visit method.
+                 */
 
-                private:
+                inline virtual void accept( utils::Visitor & visitor );
 
-                std::unique_ptr< ast::expr::Function::Parameter > mParameters;
+            private:
+
+                std::unique_ptr< ast::Parameter > mParameters;
                 std::unique_ptr< ast::Statement > mStatements;
 
             };
@@ -88,4 +113,62 @@ namespace castel
 
 }
 
-#include "castel/ast/expr/Function/Parameter.hh"
+namespace castel
+{
+
+    namespace ast
+    {
+
+        namespace expr
+        {
+
+            Function::Function( ast::Parameter * parameters, ast::Statement * statements )
+                : mParameters( parameters )
+                , mStatements( statements )
+            {
+            }
+
+            ast::Parameter * Function::parameters( void ) const
+            {
+                return mParameters.get( );
+            }
+
+            Function & Function::parameters( ast::Parameter * parameters )
+            {
+                mParameters.reset( parameters );
+
+                return * this;
+            }
+
+            ast::Parameter * Function::takeParameters( void )
+            {
+                return mParameters.release( );
+            }
+
+            ast::Statement * Function::statements( void ) const
+            {
+                return mStatements.get( );
+            }
+
+            Function & Function::statements( ast::Statement * statements )
+            {
+                mStatements.reset( statements );
+
+                return * this;
+            }
+
+            ast::Statement * Function::takeStatements( void )
+            {
+                return mStatements.release( );
+            }
+
+            void Function::accept( utils::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
+
+        }
+
+    }
+
+}

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdexcept>
+#include <vector>
+
 #include <llvm/Support/IRBuilder.h>
 #include <llvm/Support/TypeBuilder.h>
 #include <llvm/Constants.h>
@@ -40,7 +43,7 @@ namespace castel
                 if ( stackAllocation ) {
                     return this->CreateAlloca( type, count );
                 } else {
-                    llvm::Value * raw = this->CreateCastelCall( "castel_allocate", count, this->CreateCastelSizeOf( type ) );
+                    llvm::Value * raw = this->CreateCastelCall( "castel_malloc", count, this->CreateCastelSizeOf( type ) );
                     return this->CreateBitCast( raw, llvm::PointerType::getUnqual( type ) );
                 }
             }
@@ -63,9 +66,23 @@ namespace castel
             }
 
             template < typename... Types >
+            llvm::Value * CreateCastelCall( llvm::Function * llvmFunction, Types... args )
+            {
+                if ( llvmFunction == nullptr )
+                    throw std::runtime_error( "Null function pointer" );
+
+                return this->CreateCall( llvmFunction, std::vector< llvm::Value * >( { args... } ) );
+            }
+
+            template < typename... Types >
             llvm::Value * CreateCastelCall( std::string const & name, Types... args )
             {
-                return this->CreateCall( Module.getFunction( name ), std::vector< llvm::Value * >( { args... } ) );
+                llvm::Function * llvmFunction = Module.getFunction( name );
+
+                if ( llvmFunction == nullptr )
+                    throw std::runtime_error( "Unavailable function '" + name + "'" );
+
+                return this->CreateCastelCall( llvmFunction, args... );
             }
 
         protected:

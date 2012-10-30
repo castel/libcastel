@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "castel/ast/Expression.hh"
 #include "castel/lexer/Lexeme.hh"
 #include "castel/utils/Visitor.hh"
@@ -21,6 +23,12 @@ namespace castel
                 String     ( void )
                 : mContent ( "" )
                 {
+                }
+
+                String     ( std::string const & content )
+                : mContent ( "" )
+                {
+                    this->parse( content );
                 }
 
                 String     ( lexer::Lexeme const & lexeme )

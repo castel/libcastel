@@ -9,6 +9,13 @@
 using namespace castel;
 using builder::CodeGenerator;
 
+static std::map< ast::expr::Multary::Operator, char const * > const operatorsTable {
+
+    std::make_pair( ast::expr::Multary::Operator::Call, "castel_operatorCall" ),
+    std::make_pair( ast::expr::Multary::Operator::Subscript, "castel_operatorSubscript" ),
+
+};
+
 void CodeGenerator::visit( ast::expr::Multary & astMultaryExpression )
 {
     if ( ! astMultaryExpression.operands( ) )
@@ -33,15 +40,5 @@ void CodeGenerator::visit( ast::expr::Multary & astMultaryExpression )
 
     }
 
-    switch ( astMultaryExpression.type( ) ) {
-
-        case ast::expr::Multary::Operator::Call:
-            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_callOperator", llvmLeftMostOperand, llvmArgCount, llvmArguments ) );
-        break;
-
-        case ast::expr::Multary::Operator::Subscript:
-            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_subscriptOperator", llvmLeftMostOperand, llvmArgCount, llvmArguments ) );
-        break;
-
-    }
+    mValue.reset( mContext.irBuilder( ).CreateCastelCall( operatorsTable.at( astMultaryExpression.type( ) ), llvmLeftMostOperand, llvmArgCount, llvmArguments ) );
 }

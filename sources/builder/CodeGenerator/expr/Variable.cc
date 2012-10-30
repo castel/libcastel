@@ -8,5 +8,5 @@ using builder::CodeGenerator;
 
 void CodeGenerator::visit( ast::expr::Variable & astVariableExpression )
 {
-    mValue.reset( mClosureStack.top( )->get( astVariableExpression.name( ) ) );
+    mValue.reset( mScope.get( astVariableExpression.name( ) ) );
 }

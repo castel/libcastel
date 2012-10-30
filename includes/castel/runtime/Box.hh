@@ -1,61 +1,194 @@
 #pragma once
 
+#include <map>
+#include <string>
+#include <utility>
+
 namespace castel
 {
 
     namespace runtime
     {
 
+        namespace boxes
+        {
+
+            class Class;
+
+        }
+
+        class Attribute;
+
         class Box
         {
 
         public:
 
-            virtual runtime::Box * positiveOperator ( void ) = 0;
-            virtual runtime::Box * negativeOperator ( void ) = 0;
+            enum class PropertyNS {
+                Standards,
+                Operators,
+            };
 
         public:
 
-            virtual runtime::Box * preIncrementationOperator  ( void ) = 0;
-            virtual runtime::Box * postIncrementationOperator ( void ) = 0;
-            virtual runtime::Box * preDecrementationOperator  ( void ) = 0;
-            virtual runtime::Box * postDecrementationOperator ( void ) = 0;
+            inline Box( runtime::boxes::Class * type = nullptr );
 
         public:
 
-            virtual runtime::Box * additionOperator       ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * substractionOperator   ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * multiplicationOperator ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * divisionOperator       ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * moduloOperator         ( runtime::Box * operand ) = 0;
+            inline runtime::boxes::Class * type( void ) const;
+
+            inline Box & type( runtime::boxes::Class * schema );
 
         public:
 
-            virtual runtime::Box * lesserOperator         ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * greaterOperator        ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * lesserOrEqualOperator  ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * greaterOrEqualOperator ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * equalOperator          ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * notEqualOperator       ( runtime::Box * operand ) = 0;
+            inline runtime::Attribute * attribute( std::string const & name, runtime::Box::PropertyNS ns = runtime::Box::PropertyNS::Standards ) const;
+
+            inline runtime::Attribute * & attribute( std::string const & name, runtime::Box::PropertyNS ns = runtime::Box::PropertyNS::Standards );
 
         public:
 
-            virtual runtime::Box * additionAssignmentOperator       ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * substractionAssignmentOperator   ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * multiplicationAssignmentOperator ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * divisionAssignmentOperator       ( runtime::Box * operand ) = 0;
-            virtual runtime::Box * moduloAssignmentOperator         ( runtime::Box * operand ) = 0;
+            bool instanceOf( runtime::boxes::Class * type = nullptr );
 
         public:
 
-            virtual runtime::Box * callOperator      ( unsigned int argc, runtime::Box ** argv ) = 0;
-            virtual runtime::Box * subscriptOperator ( unsigned int argc, runtime::Box ** argv ) = 0;
+            virtual bool operatorBool( void );
 
         public:
 
-            virtual bool booleanOperator ( void ) = 0;
+            virtual runtime::Box * operatorNumericPreIncrementation( void );
+
+            virtual runtime::Box * operatorNumericPreDecrementation( void );
+
+            virtual runtime::Box * operatorNumericPostIncrementation( void );
+
+            virtual runtime::Box * operatorNumericPostDecrementation( void );
+
+        public:
+
+            virtual runtime::Box * operatorNumericPlus( void );
+
+            virtual runtime::Box * operatorNumericMinus( void );
+
+            virtual runtime::Box * operatorNumericAddition( runtime::Box * operand );
+
+            virtual runtime::Box * operatorNumericSubstraction( runtime::Box * operand );
+
+            virtual runtime::Box * operatorNumericMultiplication( runtime::Box * operand );
+
+            virtual runtime::Box * operatorNumericDivision( runtime::Box * operand );
+
+            virtual runtime::Box * operatorNumericModulo( runtime::Box * operand );
+
+        public:
+
+            virtual runtime::Box * operatorNumericAssignmentAddition( runtime::Box * operand );
+
+            virtual runtime::Box * operatorNumericAssignmentSubstraction( runtime::Box * operand );
+
+            virtual runtime::Box * operatorNumericAssignmentMultiplication( runtime::Box * operand );
+
+            virtual runtime::Box * operatorNumericAssignmentDivision( runtime::Box * operand );
+
+            virtual runtime::Box * operatorNumericAssignmentModulo( runtime::Box * operand );
+
+        public:
+
+            virtual runtime::Box * operatorBinaryNot( void );
+
+            virtual runtime::Box * operatorBinaryAnd( runtime::Box * operand );
+
+            virtual runtime::Box * operatorBinaryOr( runtime::Box * operand );
+
+            virtual runtime::Box * operatorBinaryXOr( runtime::Box * operand );
+
+            virtual runtime::Box * operatorBinaryLShift( runtime::Box * operand );
+
+            virtual runtime::Box * operatorBinaryRShift( runtime::Box * operand );
+
+        public:
+
+            virtual runtime::Box * operatorBinaryAssignmentAnd( runtime::Box * operand );
+
+            virtual runtime::Box * operatorBinaryAssignmentOr( runtime::Box * operand );
+
+            virtual runtime::Box * operatorBinaryAssignmentXOr( runtime::Box * operand );
+
+            virtual runtime::Box * operatorBinaryAssignmentLShift( runtime::Box * operand );
+
+            virtual runtime::Box * operatorBinaryAssignmentRShift( runtime::Box * operand );
+
+        public:
+
+            virtual runtime::Box * operatorComparisonLesser( runtime::Box * operand );
+
+            virtual runtime::Box * operatorComparisonGreater( runtime::Box * operand );
+
+            virtual runtime::Box * operatorComparisonLesserOrEqual( runtime::Box * operand );
+
+            virtual runtime::Box * operatorComparisonGreaterOrEqual( runtime::Box * operand );
+
+            virtual runtime::Box * operatorComparisonEqual( runtime::Box * operand );
+
+            virtual runtime::Box * operatorComparisonNotEqual( runtime::Box * operand );
+
+        public:
+
+            virtual runtime::Box * operatorCall( unsigned int argc, runtime::Box ** argv );
+
+            virtual runtime::Box * operatorSubscript( unsigned int argc, runtime::Box ** argv );
+
+        public:
+
+            runtime::boxes::Class * mType;
+
+            std::map< std::pair< runtime::Box::PropertyNS, std::string >, runtime::Attribute * > mAttributes;
 
         };
+
+    }
+
+}
+
+#include <string>
+#include <utility>
+
+#include "castel/runtime/boxes/Class.hh"
+#include "castel/runtime/Attribute.hh"
+
+namespace castel
+{
+
+    namespace runtime
+    {
+
+        Box::Box( runtime::boxes::Class * type )
+            : mType( type )
+        {
+        }
+
+        runtime::boxes::Class * Box::type( void ) const
+        {
+            return mType;
+        }
+
+        Box & Box::type( runtime::boxes::Class * type )
+        {
+            mType = type;
+
+            return * this;
+        }
+
+        runtime::Attribute * Box::attribute( std::string const & name, runtime::Box::PropertyNS ns ) const
+        {
+            auto attributeIterator = mAttributes.find( std::make_pair( ns, name ) );
+
+            return attributeIterator != mAttributes.end( ) ? attributeIterator->second : nullptr;
+        }
+
+        runtime::Attribute * & Box::attribute( std::string const & name, runtime::Box::PropertyNS ns )
+        {
+            return mAttributes[ std::make_pair( ns, name ) ];
+        }
 
     }
 

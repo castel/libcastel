@@ -22,14 +22,16 @@ namespace castel
 
                 enum class Operator {
 
-                    Positive,
-                    Negative,
+                    NumericPreIncrementation,
+                    NumericPostIncrementation,
 
-                    PreIncrementation,
-                    PostIncrementation,
+                    NumericPreDecrementation,
+                    NumericPostDecrementation,
 
-                    PreDecrementation,
-                    PostDecrementation,
+                    NumericPlus,
+                    NumericMinus,
+
+                    BinaryNot,
 
                 };
 

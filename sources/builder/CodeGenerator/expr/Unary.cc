@@ -8,6 +8,21 @@
 using namespace castel;
 using builder::CodeGenerator;
 
+static std::map< ast::expr::Unary::Operator, char const * > const operatorsTable {
+
+    std::make_pair( ast::expr::Unary::Operator::NumericPreIncrementation, "castel_operatorNumericPreIncrementation" ),
+    std::make_pair( ast::expr::Unary::Operator::NumericPreDecrementation, "castel_operatorNumericPreDecrementation" ),
+
+    std::make_pair( ast::expr::Unary::Operator::NumericPostIncrementation, "castel_operatorNumericPostIncrementation" ),
+    std::make_pair( ast::expr::Unary::Operator::NumericPostDecrementation, "castel_operatorNumericPostDecrementation" ),
+
+    std::make_pair( ast::expr::Unary::Operator::NumericPlus, "castel_operatorNumericPlus" ),
+    std::make_pair( ast::expr::Unary::Operator::NumericMinus, "castel_operatorNumericMinus" ),
+
+    std::make_pair( ast::expr::Unary::Operator::BinaryNot, "castel_operatorBinaryNot" ),
+
+};
+
 void CodeGenerator::visit( ast::expr::Unary & astUnaryExpression )
 {
     if ( ! astUnaryExpression.operand( ) )
@@ -16,31 +31,5 @@ void CodeGenerator::visit( ast::expr::Unary & astUnaryExpression )
     astUnaryExpression.operand( )->accept( * this );
     llvm::Value * llvmOperand = mValue.release( );
 
-    switch ( astUnaryExpression.type( ) ) {
-
-        case ast::expr::Unary::Operator::Positive:
-           mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_positiveOperator", llvmOperand ) );
-        break;
-
-        case ast::expr::Unary::Operator::Negative:
-            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_negativeOperator", llvmOperand ) );
-        break;
-
-        case ast::expr::Unary::Operator::PreIncrementation:
-            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_preIncrementationOperator", llvmOperand ) );
-        break;
-
-        case ast::expr::Unary::Operator::PostIncrementation:
-            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_postIncrementationOperator", llvmOperand ) );
-        break;
-
-        case ast::expr::Unary::Operator::PreDecrementation:
-            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_preDecrementationOperator", llvmOperand ) );
-        break;
-
-        case ast::expr::Unary::Operator::PostDecrementation:
-            mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castel_postDecrementationOperator", llvmOperand ) );
-        break;
-
-    }
+    mValue.reset( mContext.irBuilder( ).CreateCastelCall( operatorsTable.at( astUnaryExpression.type( ) ), llvmOperand ) );
 }

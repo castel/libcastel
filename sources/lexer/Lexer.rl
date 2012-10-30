@@ -129,6 +129,13 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
         Function                   = 'function';
         Dict                       = 'dict';
         List                       = 'list';
+        Class                      = 'class';
+
+        Public                     = 'public';
+        Protected                  = 'protected';
+        Private                    = 'private';
+
+        Operator                   = 'operator';
 
         Return                     = 'return';
         Var                        = 'var';
@@ -143,6 +150,8 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
         And                        = 'and';
         Or                         = 'or';
+
+        New                        = 'new';
 
         Incrementation             = '++';
         Decrementation             = '--';
@@ -171,6 +180,7 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
         Colon                      = ':';
         Comma                      = ',';
+        Dot                        = '.';
 
         String                     = '"'([^\"]|'\\' any)*'"';
         Number                     = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+);
@@ -184,6 +194,13 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
             Function                   => { type = lexer::Lexeme::Type::Function;                   fbreak; };
             Dict                       => { type = lexer::Lexeme::Type::Dict;                       fbreak; };
             List                       => { type = lexer::Lexeme::Type::List;                       fbreak; };
+            Class                      => { type = lexer::Lexeme::Type::Class;                      fbreak; };
+
+            Public                     => { type = lexer::Lexeme::Type::Public;                     fbreak; };
+            Protected                  => { type = lexer::Lexeme::Type::Protected;                  fbreak; };
+            Private                    => { type = lexer::Lexeme::Type::Private;                    fbreak; };
+
+            Operator                   => { type = lexer::Lexeme::Type::Operator;                   fbreak; };
 
             Return                     => { type = lexer::Lexeme::Type::Return;                     fbreak; };
             Var                        => { type = lexer::Lexeme::Type::Var;                        fbreak; };
@@ -198,6 +215,8 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
             And                        => { type = lexer::Lexeme::Type::And;                        fbreak; };
             Or                         => { type = lexer::Lexeme::Type::Or;                         fbreak; };
+
+            New                        => { type = lexer::Lexeme::Type::New;                        fbreak; };
 
             Incrementation             => { type = lexer::Lexeme::Type::Incrementation;             fbreak; };
             Decrementation             => { type = lexer::Lexeme::Type::Decrementation;             fbreak; };
@@ -226,6 +245,7 @@ lexer::Lexeme * Lexer::fetchNextLexeme( void )
 
             Colon                      => { type = lexer::Lexeme::Type::Colon;                      fbreak; };
             Comma                      => { type = lexer::Lexeme::Type::Comma;                      fbreak; };
+            Dot                        => { type = lexer::Lexeme::Type::Dot;                        fbreak; };
 
             String                     => { type = lexer::Lexeme::Type::String;                     fbreak; };
             Number                     => { type = lexer::Lexeme::Type::Number;                     fbreak; };

@@ -22,6 +22,7 @@ namespace castel
 
                 enum class Operator {
 
+                    New,
                     Call,
                     Subscript,
 
