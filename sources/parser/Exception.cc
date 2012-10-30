@@ -1,3 +1,4 @@
+#include <list>
 #include <sstream>
 #include <string>
 
@@ -9,9 +10,9 @@
 using namespace castel;
 using namespace castel::parser;
 
-Exception::Exception ( std::string const & message, lexer::Lexeme * lexeme )
-: mMessage           ( message )
-, mLexeme            ( lexeme  )
+Exception::Exception( std::string const & message, lexer::Lexeme * lexeme, std::list< std::string > const & expectedTokens )
+    : mMessage( message )
+    , mLexeme( lexeme  )
 {
     if ( lexeme ) {
 
@@ -19,6 +20,28 @@ Exception::Exception ( std::string const & message, lexer::Lexeme * lexeme )
 
         std::ostringstream stringstream;
         stringstream << message << " " << lexer::Lexeme::constTypeString( lexeme->type( ) ) << " at " << position.toString( );
+
+        if ( ! expectedTokens.empty( ) ) {
+            auto lastExpectation = ( ++ expectedTokens.rbegin( ) ).base( );
+
+            stringstream << " (expected ";
+
+            for ( auto it = expectedTokens.begin( ); it != expectedTokens.end( ); ++ it ) {
+
+                if ( it != expectedTokens.begin( ) ) {
+                    if ( it != lastExpectation ) {
+                        stringstream << ", ";
+                    } else if ( it == lastExpectation ) {
+                        stringstream << " or ";
+                    }
+                }
+
+                stringstream << * it;
+            }
+
+            stringstream << ")";
+        }
+
         mWhat = stringstream.str( );
 
     } else {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <exception>
+#include <list>
 #include <string>
 
 #include "castel/lexer/Lexeme.hh"
@@ -16,7 +17,7 @@ namespace castel
 
         public:
 
-            Exception( std::string const & message, lexer::Lexeme * lexeme );
+            Exception( std::string const & message, lexer::Lexeme * lexeme, std::list< std::string > const & expectedTokens );
             virtual ~Exception( void ) throw ( ) {}
 
         public:
@@ -31,6 +32,11 @@ namespace castel
                 return mLexeme;
             }
 
+            virtual std::list< std::string > const & expectedTokens( void ) const throw ( )
+            {
+                return mExpectedTokens;
+            }
+
             virtual char const * what( void ) const throw ( )
             {
                 return mWhat.c_str( );
@@ -41,6 +47,8 @@ namespace castel
             std::string mMessage;
 
             lexer::Lexeme * mLexeme;
+
+            std::list< std::string > mExpectedTokens;
 
             std::string mWhat;
 
