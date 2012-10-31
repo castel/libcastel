@@ -15,12 +15,16 @@ namespace castel
     namespace builder
     {
 
+        class ClassBuilder;
+
         /**
          * An helper class building a runtime function box from an AST.
          */
 
         class FunctionBuilder
         {
+
+            friend builder::ClassBuilder;
 
         public:
 
@@ -39,6 +43,20 @@ namespace castel
              */
 
             inline FunctionBuilder & name( std::string const & name );
+
+        public:
+
+            /**
+             * @return "Use This" flag
+             */
+
+            inline bool useThis( void ) const;
+
+            /**
+             * @param useThis "Use This" flag
+             */
+
+            inline FunctionBuilder & useThis( bool useThis );
 
         public:
 
@@ -111,6 +129,7 @@ namespace castel
         private:
 
             std::string mName;
+            bool mUseThis;
             ast::Parameter * mParameters;
             ast::Statement * mStatements;
 
@@ -137,6 +156,7 @@ namespace castel
 
         FunctionBuilder::FunctionBuilder( std::string const & name, ast::Parameter * parameters, ast::Statement * statements )
             : mName( name )
+            , mUseThis( false )
             , mParameters( parameters )
             , mStatements( statements )
         {
@@ -150,6 +170,18 @@ namespace castel
         FunctionBuilder & FunctionBuilder::name( std::string const & name )
         {
             mName = name;
+
+            return * this;
+        }
+
+        bool FunctionBuilder::useThis( void ) const
+        {
+            return mUseThis;
+        }
+
+        FunctionBuilder & FunctionBuilder::useThis( bool useThis )
+        {
+            mUseThis = useThis;
 
             return * this;
         }

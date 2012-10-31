@@ -11,6 +11,8 @@ using builder::CodeGenerator;
 
 static std::map< ast::expr::Multary::Operator, char const * > const operatorsTable {
 
+    std::make_pair( ast::expr::Multary::Operator::New, "castel_new" ),
+
     std::make_pair( ast::expr::Multary::Operator::Call, "castel_operatorCall" ),
     std::make_pair( ast::expr::Multary::Operator::Subscript, "castel_operatorSubscript" ),
 

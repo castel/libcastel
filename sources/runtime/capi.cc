@@ -2,7 +2,13 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <utility>
 
+#include "castel/runtime/attributes/Member.hh"
+#include "castel/runtime/attributes/Method.hh"
+#include "castel/runtime/boxes/Function.hh"
+#include "castel/runtime/boxes/String.hh"
+#include "castel/runtime/Box.hh"
 #include "castel/runtime/capi.hh"
 
 void * castel_malloc( std::size_t size, unsigned int count )
@@ -28,6 +34,60 @@ void castel_binaryOperatorMissing( char const * name, castel::runtime::Box * ope
     std::ostringstream stream;
     stream << "Binary operator '" << name << "' is invalid with data types '" << "UNDEFINED" << "' and '" << "UNDEFINED" << "'";
     ::castel_fatal( stream.str( ).c_str( ) );
+}
+
+void castel_addMember( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value )
+{
+    instance->attribute( std::make_pair( castel::runtime::Box::PropertyNS::Standards, name ), new castel::runtime::attributes::Member( value ) );
+}
+
+void castel_addMethod( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function )
+{
+    instance->attribute( std::make_pair( castel::runtime::Box::PropertyNS::Standards, name ), new castel::runtime::attributes::Method( function ) );
+}
+
+castel::runtime::Attribute * castel_getAttribute( castel::runtime::Box * instance, castel::runtime::Box * operand )
+{
+    auto stringOperand = dynamic_cast< castel::runtime::boxes::String * >( operand );
+
+    if ( stringOperand == nullptr )
+        ::castel_fatal( "Invalid operand to getMember()" );
+
+    castel::runtime::Box * container = instance;
+    castel::runtime::Attribute * attribute = nullptr;
+
+    auto key = std::make_pair( castel::runtime::Box::PropertyNS::Standards, std::string( stringOperand->value( ) ) );
+
+    while ( container != nullptr && attribute == nullptr )
+        attribute = container->attribute( key ),
+            container = container->type( );
+
+    if ( ! attribute )
+        ::castel_fatal( "Property not found" );
+
+    return attribute;
+}
+
+castel::runtime::Box * castel_getProperty( castel::runtime::Box * instance, castel::runtime::Box * operand )
+{
+    return ::castel_getAttribute( instance, operand )->get( instance );
+}
+
+castel::runtime::Box * castel_setProperty( castel::runtime::Box * instance, castel::runtime::Box * operand, castel::runtime::Box * value )
+{
+    ::castel_getAttribute( instance, operand )->set( instance, value );
+
+    return value;
+}
+
+castel::runtime::Box * castel_new( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv )
+{
+    auto classOperand = dynamic_cast< castel::runtime::boxes::Class * >( operand );
+
+    if ( classOperand == nullptr )
+        ::castel_fatal( "Trying to instanciate non-class object" );
+
+    return classOperand->instanciate( argc, argv );
 }
 
 bool castel_operatorBool( castel::runtime::Box * operand )

@@ -10,15 +10,22 @@ namespace castel
 
         class Box;
 
+        namespace boxes
+        {
+
+            class Function;
+
+        }
+
         namespace attributes
         {
 
-            class Member : public runtime::Attribute
+            class Method : public runtime::Attribute
             {
 
             public:
 
-                inline Member( runtime::Box * value );
+                inline Method( runtime::boxes::Function * function );
 
             public:
 
@@ -28,7 +35,7 @@ namespace castel
 
             public:
 
-                runtime::Box * mValue;
+                runtime::boxes::Function * mFunction;
 
             };
 
@@ -37,6 +44,9 @@ namespace castel
     }
 
 }
+
+#include "castel/runtime/boxes/Function.hh"
+#include "castel/runtime/Box.hh"
 
 namespace castel
 {
@@ -47,8 +57,8 @@ namespace castel
         namespace attributes
         {
 
-            Member::Member( runtime::Box * value )
-                : mValue( value )
+            Method::Method( runtime::boxes::Function * function )
+                : mFunction( function )
             {
             }
 

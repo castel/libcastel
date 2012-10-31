@@ -11,6 +11,8 @@ using builder::CodeGenerator;
 
 static std::map< ast::expr::Binary::Operator, char const * > const operatorsTable {
 
+    std::make_pair( ast::expr::Binary::Operator::Member, "castel_getProperty" ),
+
     std::make_pair( ast::expr::Binary::Operator::NumericAddition, "castel_operatorNumericAddition" ),
     std::make_pair( ast::expr::Binary::Operator::NumericSubstraction, "castel_operatorNumericSubstraction" ),
     std::make_pair( ast::expr::Binary::Operator::NumericMultiplication, "castel_operatorNumericMultiplication" ),

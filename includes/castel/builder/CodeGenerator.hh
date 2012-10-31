@@ -1,11 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <stack>
 
-#include <llvm/Support/IRBuilder.h>
-#include <llvm/Function.h>
-#include <llvm/LLVMContext.h>
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/Boolean.hh"

@@ -27,7 +27,7 @@ namespace castel
 
         public:
 
-            inline ClassBuilder( std::string const & name = "", ast::expr::Class::Member * members = nullptr );
+            inline ClassBuilder( std::string const & name = "", llvm::Value * parent = nullptr, ast::expr::Class::Member * members = nullptr );
 
         public:
 
@@ -42,6 +42,20 @@ namespace castel
              */
 
             inline ClassBuilder & name( std::string const & name );
+
+        public:
+
+            /**
+             * @return LLVM value of the parent class
+             */
+
+            inline llvm::Value * parent( void ) const;
+
+            /**
+             * @param name LLVM value of the parent class
+             */
+
+            inline ClassBuilder & parent( llvm::Value * parent );
 
         public:
 
@@ -106,6 +120,7 @@ namespace castel
         private:
 
             std::string mName;
+            llvm::Value * mParent;
             ast::expr::Class::Member * mMembers;
 
         };
@@ -157,8 +172,9 @@ namespace castel
         {
         }
 
-        ClassBuilder::ClassBuilder( std::string const & name, ast::expr::Class::Member * members )
+        ClassBuilder::ClassBuilder( std::string const & name, llvm::Value * parent, ast::expr::Class::Member * members )
             : mName( name )
+            , mParent( parent )
             , mMembers( members )
         {
         }
@@ -171,6 +187,18 @@ namespace castel
         ClassBuilder & ClassBuilder::name( std::string const & name )
         {
             mName = name;
+
+            return * this;
+        }
+
+        llvm::Value * ClassBuilder::parent( void ) const
+        {
+            return mParent;
+        }
+
+        ClassBuilder & ClassBuilder::parent( llvm::Value * parent )
+        {
+            mParent = parent;
 
             return * this;
         }

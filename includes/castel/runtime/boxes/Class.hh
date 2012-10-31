@@ -20,11 +20,11 @@ namespace castel
 
             public:
 
-                static inline Class * create( runtime::boxes::Class * parent = nullptr );
+                static inline Class * create( runtime::boxes::Class * parent, runtime::boxes::Class::InitializerSignature * initializer, runtime::Box *** environment );
 
             private:
 
-                inline Class( runtime::boxes::Class * parent );
+                inline Class( runtime::boxes::Class * parent, runtime::boxes::Class::InitializerSignature * initializer, runtime::Box *** environment );
 
             public:
 
@@ -36,11 +36,22 @@ namespace castel
 
                 inline bool is( runtime::boxes::Class * schema );
 
+            public:
+
+                runtime::Box * instanciate( unsigned int argc, runtime::Box ** argv );
+
+            public:
+
+                virtual bool operatorBool( void );
+
             private:
 
                 runtime::boxes::Class * mParent;
+                runtime::boxes::Class::InitializerSignature * mInitializer;
+                runtime::Box *** mEnvironment;
 
             };
+
 
         }
 
@@ -59,14 +70,16 @@ namespace castel
         namespace boxes
         {
 
-            Class * Class::create( runtime::boxes::Class * parent )
+            Class * Class::create( runtime::boxes::Class * parent, runtime::boxes::Class::InitializerSignature * initializer, runtime::Box *** environment )
             {
                 void * data = ::castel_malloc( sizeof( Class ), 1 );
-                return new ( data ) Class( parent );
+                return new ( data ) Class( parent, initializer, environment );
             }
 
-            Class::Class( runtime::boxes::Class * parent )
+            Class::Class( runtime::boxes::Class * parent, runtime::boxes::Class::InitializerSignature * initializer, runtime::Box *** environment )
                 : mParent( parent )
+                , mInitializer( initializer )
+                , mEnvironment( environment )
             {
             }
 

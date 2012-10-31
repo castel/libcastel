@@ -1,6 +1,23 @@
 #include <cstddef>
 
-#include "castel/runtime/Box.hh"
+namespace castel
+{
+
+    namespace runtime
+    {
+
+        class Box;
+
+        namespace boxes
+        {
+
+            class Function;
+
+        }
+
+    }
+
+}
 
 extern "C" {
 
@@ -11,6 +28,16 @@ extern "C" {
     void castel_unaryOperatorMissing( char const * name, castel::runtime::Box * operand );
 
     void castel_binaryOperatorMissing( char const * name, castel::runtime::Box * operandA, castel::runtime::Box * operandB );
+
+    void castel_addMember( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value );
+
+    void castel_addMethod( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function );
+
+    castel::runtime::Box * castel_getProperty( castel::runtime::Box * instance, castel::runtime::Box * name );
+
+    castel::runtime::Box * castel_setProperty( castel::runtime::Box * instance, castel::runtime::Box * name, castel::runtime::Box * value );
+
+    castel::runtime::Box * castel_new( castel::runtime::Box * instance, unsigned int argc, castel::runtime::Box ** argv );
 
     bool castel_operatorBool( castel::runtime::Box * operand );
 
@@ -65,3 +92,6 @@ extern "C" {
     castel::runtime::Box * castel_operatorSubscript( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv );
 
 }
+
+#include "castel/runtime/boxes/Function.hh"
+#include "castel/runtime/Box.hh"

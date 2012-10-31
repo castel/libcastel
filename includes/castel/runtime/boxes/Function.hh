@@ -11,7 +11,7 @@ namespace castel
         namespace boxes
         {
 
-            class Function : runtime::Box
+            class Function : public runtime::Box
             {
 
             public:
@@ -22,7 +22,7 @@ namespace castel
 
                 static inline Function * create( runtime::boxes::Function::Signature * functionPtr, unsigned int argumentCount, runtime::Box *** environment );
 
-            public:
+            protected:
 
                 inline Function( runtime::boxes::Function::Signature * functionPtr, unsigned int argc, runtime::Box *** environment );
 
@@ -47,6 +47,8 @@ namespace castel
     }
 
 }
+
+#include "castel/runtime/capi.hh"
 
 namespace castel
 {

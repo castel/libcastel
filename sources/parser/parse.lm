@@ -281,11 +281,16 @@ expression(A) ::= assignmentexpression(U). { A = U; }
                                                                 classblockiterator(A) ::= member(U) classblockiterator(V). { A = U; A->next( V ); }
 
                                                                     %type member { ast::expr::Class::Member * }
-                                                                    member(A) ::= visibility(U) Var Identifier(V). { A = new ast::expr::Class::Attribute( U, V->as< std::string >( ) ); }
-                                                                    member(A) ::= visibility(U) Function Identifier(V) parameterlist(W) Colon statementblock(X). { A = new ast::expr::Class::Method( U, V->as< std::string >( ), new ast::expr::Function( W, X ) ); }
-                                                                    member(A) ::= visibility Function Operator Identifier parameterlist Colon statementblock. { A = nullptr; /* not implemented */ }
+                                                                    member(A) ::= membervisibility(U) membertype(V) Var Identifier(W) Assignment expression(X) Newline. { A = new ast::expr::Class::Attribute( U, V, W->as< std::string >( ), X ); }
+                                                                    member(A) ::= membervisibility(U) membertype(V) Var Identifier(W) Newline. { A = new ast::expr::Class::Attribute( U, V, W->as< std::string >( ) ); }
+                                                                    member(A) ::= membervisibility(U) membertype(V) Function Identifier(W) parameterlist(X) Colon statementblock(Y). { A = new ast::expr::Class::Method( U, V, W->as< std::string >( ), new ast::expr::Function( X, Y ) ); }
+                                                                    member(A) ::= membervisibility membertype Function Operator Identifier parameterlist Colon statementblock. { A = nullptr; /* not implemented */ }
 
-                                                                        %type visibility { ast::expr::Class::Member::Visibility }
-                                                                        visibility(A) ::= Public. { A = ast::expr::Class::Member::Visibility::Public; }
-                                                                        visibility(A) ::= Protected. { A = ast::expr::Class::Member::Visibility::Protected; }
-                                                                        visibility(A) ::= Private. { A = ast::expr::Class::Member::Visibility::Private; }
+                                                                        %type membertype { ast::expr::Class::Member::Type }
+                                                                        membertype(A) ::= Static. { A = ast::expr::Class::Member::Type::Static; }
+                                                                        membertype(A) ::= . { A = ast::expr::Class::Member::Type::Binded; }
+
+                                                                        %type membervisibility { ast::expr::Class::Member::Visibility }
+                                                                        membervisibility(A) ::= Public. { A = ast::expr::Class::Member::Visibility::Public; }
+                                                                        membervisibility(A) ::= Protected. { A = ast::expr::Class::Member::Visibility::Protected; }
+                                                                        membervisibility(A) ::= Private. { A = ast::expr::Class::Member::Visibility::Private; }

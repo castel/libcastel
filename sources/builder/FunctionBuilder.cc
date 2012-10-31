@@ -16,7 +16,7 @@ llvm::Value * FunctionBuilder::create( builder::Context & context, builder::Scop
     llvm::BasicBlock::iterator llvmCurrentPoint = context.irBuilder( ).GetInsertPoint( );
 
     llvm::Function * llvmFunction = context.declareGlobalFunction< runtime::boxes::Function::Signature >( mName, llvm::Function::ExternalLinkage );
-    llvm::Value * llvmArgumentCount = llvm::ConstantInt::get( context.llvmContext( ), llvm::APInt( 32, std::distance( utils::begin( mParameters ), utils::end( mParameters ) ) ) );
+    llvm::Value * llvmArgumentCount = llvm::ConstantInt::get( context.llvmContext( ), llvm::APInt( 32, std::distance( utils::begin( mParameters ), utils::end( mParameters ) ) + ( mUseThis ? 1 : 0 ) ) );
     llvm::Value * llvmFunctionBox = context.irBuilder( ).CreateCastelCall( "castelFunction_create", llvmFunction, llvmArgumentCount, parentScope ? parentScope->environmentTable( ) : llvm::ConstantPointerNull::get( llvm::TypeBuilder< runtime::Box ***, false >::get( context.llvmContext( ) ) ) );
 
     llvm::BasicBlock * llvmBootstrapBlock = llvm::BasicBlock::Create( context.llvmContext( ), "bootstrap" );
@@ -40,6 +40,8 @@ llvm::Value * FunctionBuilder::create( builder::Context & context, builder::Scop
         scope.parentEnvironmentTable( runtimeArguments_parentEnvironmentTable );
 
         unsigned int parameterCount = 0;
+        if ( mUseThis )
+            scope.declare( "this", context.irBuilder( ).CreateLoad( context.irBuilder( ).CreateConstGEP1_32( runtimeArguments_argumentsArray, parameterCount ++ ) ) );
         for ( auto & astParameter : mParameters )
             scope.declare( astParameter.name( ), context.irBuilder( ).CreateLoad( context.irBuilder( ).CreateConstGEP1_32( runtimeArguments_argumentsArray, parameterCount ++ ) ) );
 
@@ -49,7 +51,7 @@ llvm::Value * FunctionBuilder::create( builder::Context & context, builder::Scop
         llvm::BasicBlock * llvmLastBasicBlock = & llvmFunction->getBasicBlockList( ).back( );
         if ( llvmLastBasicBlock->empty( ) || ! llvmLastBasicBlock->back( ).isTerminator( ) ) {
             context.irBuilder( ).SetInsertPoint( llvmLastBasicBlock, llvmLastBasicBlock->end( ) );
-            context.irBuilder( ).CreateRet( context.irBuilder( ).CreateCastelCall( "castelUndefined_instance" ) );
+            context.irBuilder( ).CreateRet( context.irBuilder( ).CreateCastelCall( "castelUndefined_create" ) );
         }
     }}
 

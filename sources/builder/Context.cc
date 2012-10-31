@@ -17,6 +17,14 @@ void Context::registerFunctions( void )
         REGISTER_FUNCTION( castel_unaryOperatorMissing );
         REGISTER_FUNCTION( castel_binaryOperatorMissing );
 
+        REGISTER_FUNCTION( castel_addMember );
+        REGISTER_FUNCTION( castel_addMethod );
+
+        REGISTER_FUNCTION( castel_getProperty );
+        REGISTER_FUNCTION( castel_setProperty );
+
+        REGISTER_FUNCTION( castel_new );
+
         REGISTER_FUNCTION( castel_operatorNumericPlus );
         REGISTER_FUNCTION( castel_operatorNumericMinus );
 

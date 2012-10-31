@@ -3,6 +3,7 @@
 #include <string>
 
 #include <llvm/ADT/APInt.h>
+#include <llvm/Support/TypeBuilder.h>
 #include <llvm/BasicBlock.h>
 #include <llvm/Constants.h>
 #include <llvm/Type.h>
@@ -27,12 +28,15 @@ Scope::~Scope( void )
 
     for ( auto & variableIterator : mVariables ) {
         switch ( variableIterator.second->status( ) ) {
+
             case builder::Scope::Variable::Status::Local:
                 localVariables.push_back( variableIterator.second.get( ) );
             break;
+
             case builder::Scope::Variable::Status::Escaping:
                 escapingVariables.push_back( variableIterator.second.get( ) );
             break;
+
         }
     }
 
@@ -61,6 +65,10 @@ Scope::~Scope( void )
             mContext.irBuilder( ).CreateStore( parentEnvironmentEntry, environmentEntryPointer );
 
         }
+
+    } else {
+
+        mEnvironmentTable->replaceAllUsesWith( llvm::ConstantPointerNull::get( llvm::TypeBuilder< runtime::Box ***, false >::get( mContext.llvmContext( ) ) ) );
 
     }
 

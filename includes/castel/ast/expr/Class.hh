@@ -68,7 +68,7 @@ namespace castel
 
             protected:
 
-                inline Member( ast::expr::Class::Member::Visibility visibility, std::string const & name );
+                inline Member( ast::expr::Class::Member::Visibility visibility, ast::expr::Class::Member::Type type, std::string const & name );
 
             public:
 
@@ -76,11 +76,11 @@ namespace castel
 
             public:
 
-                inline ast::expr::Class::Member::Type type( void ) const;
-                inline Member & type( ast::expr::Class::Member::Type type );
-
                 inline ast::expr::Class::Member::Visibility visibility( void ) const;
                 inline Member & visibility( ast::expr::Class::Member::Visibility visibility );
+
+                inline ast::expr::Class::Member::Type type( void ) const;
+                inline Member & type( ast::expr::Class::Member::Type type );
 
                 inline std::string const & name( void ) const;
                 inline Member & name( std::string const & );
@@ -112,7 +112,7 @@ namespace castel
 
             public:
 
-                inline Attribute( ast::expr::Class::Member::Visibility visibility, std::string const & name, ast::Expression * initializer = nullptr );
+                inline Attribute( ast::expr::Class::Member::Visibility visibility, ast::expr::Class::Member::Type type, std::string const & name, ast::Expression * initializer = nullptr );
 
             public:
 
@@ -135,7 +135,7 @@ namespace castel
 
             public:
 
-                inline Method( ast::expr::Class::Member::Visibility visibility, std::string const & name, ast::expr::Function * function );
+                inline Method( ast::expr::Class::Member::Visibility visibility, ast::expr::Class::Member::Type type, std::string const & name, ast::expr::Function * function );
 
             public:
 
@@ -175,8 +175,9 @@ namespace castel
         namespace expr
         {
 
-            Class::Member::Member( ast::expr::Class::Member::Visibility visibility, std::string const & name )
+            Class::Member::Member( ast::expr::Class::Member::Visibility visibility, ast::expr::Class::Member::Type type, std::string const & name )
                 : mVisibility( visibility )
+                , mType( type )
                 , mName( name )
             {
             }
@@ -217,8 +218,8 @@ namespace castel
                 return * this;
             }
 
-            Class::Attribute::Attribute( ast::expr::Class::Member::Visibility visibility, std::string const & name, ast::Expression * initializer )
-                : Member( visibility, name )
+            Class::Attribute::Attribute( ast::expr::Class::Member::Visibility visibility, ast::expr::Class::Member::Type type, std::string const & name, ast::Expression * initializer )
+                : Member( visibility, type, name )
                 , mInitializer( initializer )
             {
             }
@@ -245,8 +246,8 @@ namespace castel
                 visitor.visit( * this );
             }
 
-            Class::Method::Method( ast::expr::Class::Member::Visibility visibility, std::string const & name, ast::expr::Function * function )
-                : Member( visibility, name )
+            Class::Method::Method( ast::expr::Class::Member::Visibility visibility, ast::expr::Class::Member::Type type, std::string const & name, ast::expr::Function * function )
+                : Member( visibility, type, name )
                 , mFunction( function )
             {
             }

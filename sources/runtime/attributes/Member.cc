@@ -2,13 +2,16 @@
 
 using namespace castel;
 using runtime::attributes::Member;
+using runtime::Attribute;
 
 runtime::Box * Member::get( runtime::Box * ) const
 {
     return mValue;
 }
 
-void Member::set( runtime::Box * instance, runtime::Box * value )
+Attribute & Member::set( runtime::Box * instance, runtime::Box * value )
 {
     mValue = value;
+
+    return * this;
 }

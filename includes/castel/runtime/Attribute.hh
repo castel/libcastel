@@ -17,9 +17,9 @@ namespace castel
 
         public:
 
-            virtual Attribute & set( runtime::Box * box ) = 0;
+            virtual runtime::Box * get( runtime::Box * instance ) const = 0;
 
-            virtual runtime::Box * get( void ) const = 0;
+            virtual Attribute & set( runtime::Box * instance, runtime::Box * box ) = 0;
 
         };
 

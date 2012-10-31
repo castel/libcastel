@@ -37,13 +37,13 @@ namespace castel
 
             inline runtime::boxes::Class * type( void ) const;
 
-            inline Box & type( runtime::boxes::Class * schema );
+            inline Box & type( runtime::boxes::Class * type );
 
         public:
 
-            inline runtime::Attribute * attribute( std::string const & name, runtime::Box::PropertyNS ns = runtime::Box::PropertyNS::Standards ) const;
+            inline runtime::Attribute * attribute( std::pair< runtime::Box::PropertyNS, std::string > key ) const;
 
-            inline runtime::Attribute * & attribute( std::string const & name, runtime::Box::PropertyNS ns = runtime::Box::PropertyNS::Standards );
+            inline Box & attribute( std::pair< runtime::Box::PropertyNS, std::string > key, runtime::Attribute * value );
 
         public:
 
@@ -178,16 +178,18 @@ namespace castel
             return * this;
         }
 
-        runtime::Attribute * Box::attribute( std::string const & name, runtime::Box::PropertyNS ns ) const
+        runtime::Attribute * Box::attribute( std::pair< runtime::Box::PropertyNS, std::string > key ) const
         {
-            auto attributeIterator = mAttributes.find( std::make_pair( ns, name ) );
+            auto attributeIterator = mAttributes.find( key );
 
             return attributeIterator != mAttributes.end( ) ? attributeIterator->second : nullptr;
         }
 
-        runtime::Attribute * & Box::attribute( std::string const & name, runtime::Box::PropertyNS ns )
+        Box & Box::attribute( std::pair< runtime::Box::PropertyNS, std::string > key, runtime::Attribute * attribute )
         {
-            return mAttributes[ std::make_pair( ns, name ) ];
+            mAttributes[ key ] = attribute;
+
+            return * this;
         }
 
     }
