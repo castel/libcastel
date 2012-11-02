@@ -6,9 +6,8 @@ using builder::CodeGenerator;
 
 void CodeGenerator::visit( ast::stmt::Return & astReturnStatement )
 {
-    if ( astReturnStatement.returnValue( ) ) {
-        astReturnStatement.returnValue( )->accept( *this );
-        mContext.irBuilder( ).CreateRet( mValue.release( ) );
+    if ( astReturnStatement.expression( ) ) {
+        mContext.irBuilder( ).CreateRet( builder::CodeGenerator( mContext, mScope ).expression( * ( astReturnStatement.expression( ) ) ) );
     } else {
         mContext.irBuilder( ).CreateRet( mContext.irBuilder( ).CreateCastelCall( "castelUndefined_create" ) );
     }

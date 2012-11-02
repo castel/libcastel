@@ -1,11 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "castel/ast/Expression.hh"
-#include "castel/ast/Parameter.hh"
-#include "castel/ast/Statement.hh"
-#include "castel/utils/Visitor.hh"
 
 namespace castel
 {
@@ -13,8 +11,17 @@ namespace castel
     namespace ast
     {
 
+        class Statement;
+
         namespace expr
         {
+
+            namespace tools
+            {
+
+                class Visitor;
+
+            }
 
             /**
              * Represents a function literal in the AST.
@@ -25,6 +32,10 @@ namespace castel
 
             public:
 
+                class Parameter;
+
+            public:
+
                 /**
                  * Constructs a Function instance.
                  *
@@ -32,7 +43,7 @@ namespace castel
                  * destroyed when the Function instance will be destroyed).
                  */
 
-                inline Function( ast::Parameter * parameters = nullptr, ast::Statement * statements = nullptr );
+                inline Function( ast::expr::Function::Parameter * parameters, ast::Statement * statements );
 
             public:
 
@@ -43,7 +54,7 @@ namespace castel
                  * ownership. You should not delete the returned pointer.
                  */
 
-                inline ast::Parameter * parameters( void ) const;
+                inline ast::expr::Function::Parameter * parameters( void ) const;
 
                 /**
                  * @param parameters Function parameter list
@@ -52,7 +63,7 @@ namespace castel
                  * If existing, the previous parameters will be destroyed.
                  */
 
-                inline Function & parameters( ast::Parameter * parameters );
+                inline Function & parameters( ast::expr::Function::Parameter * parameters );
 
                 /**
                  * @return Function parameter list
@@ -61,7 +72,7 @@ namespace castel
                  * to release it after usage.
                  */
 
-                inline ast::Parameter * takeParameters( void );
+                inline ast::expr::Function::Parameter * takeParameters( void );
 
             public:
 
@@ -98,12 +109,54 @@ namespace castel
                  * Calls the ast::expr::Function version of the ASTVisitor's visit method.
                  */
 
-                inline virtual void accept( utils::Visitor & visitor );
+                inline virtual void accept( ast::tools::Visitor & visitor );
 
             private:
 
-                std::unique_ptr< ast::Parameter > mParameters;
+                std::unique_ptr< ast::expr::Function::Parameter > mParameters;
                 std::unique_ptr< ast::Statement > mStatements;
+
+            };
+
+            /**
+             * Represents a function parameter in the AST.
+             *
+             * For example :
+             *     (function a, b, c: [...]
+             *               ^  ^  ^
+             *               \__\__\__ a, b and c are a list of Parameters
+             *
+             * This node cannot be traversed by the ASTVisitor.
+             */
+
+            class Function::Parameter : public utils::Linked< Function::Parameter >
+            {
+
+            public:
+
+                /**
+                 * Constructs a Parameter instance.
+                 */
+
+                inline Parameter( std::string const & name = "" );
+
+            public:
+
+                /**
+                 * @return Parameter name
+                 */
+
+                inline std::string const & name( void ) const;
+
+                /**
+                 * @param name Parameter name
+                 */
+
+                inline Parameter & name( std::string const & name );
+
+            private:
+
+                std::string mName;
 
             };
 
@@ -112,6 +165,8 @@ namespace castel
     }
 
 }
+
+#include "castel/ast/tools/Visitor.hh"
 
 namespace castel
 {
@@ -122,25 +177,42 @@ namespace castel
         namespace expr
         {
 
-            Function::Function( ast::Parameter * parameters, ast::Statement * statements )
+            Function::Parameter::Parameter( std::string const & name )
+                : mName( name )
+            {
+            }
+
+            std::string const & Function::Parameter::name( void ) const
+            {
+                return mName;
+            }
+
+            Function::Parameter & Function::Parameter::name( std::string const & name )
+            {
+                mName = name;
+
+                return * this;
+            }
+
+            Function::Function( ast::expr::Function::Parameter * parameters, ast::Statement * statements )
                 : mParameters( parameters )
                 , mStatements( statements )
             {
             }
 
-            ast::Parameter * Function::parameters( void ) const
+            ast::expr::Function::Parameter * Function::parameters( void ) const
             {
                 return mParameters.get( );
             }
 
-            Function & Function::parameters( ast::Parameter * parameters )
+            Function & Function::parameters( ast::expr::Function::Parameter * parameters )
             {
                 mParameters.reset( parameters );
 
                 return * this;
             }
 
-            ast::Parameter * Function::takeParameters( void )
+            ast::expr::Function::Parameter * Function::takeParameters( void )
             {
                 return mParameters.release( );
             }
@@ -162,7 +234,7 @@ namespace castel
                 return mStatements.release( );
             }
 
-            void Function::accept( utils::Visitor & visitor )
+            void Function::accept( ast::tools::Visitor & visitor )
             {
                 visitor.visit( * this );
             }

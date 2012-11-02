@@ -3,8 +3,6 @@
 #include <string>
 
 #include "castel/ast/Expression.hh"
-#include "castel/lexer/Lexeme.hh"
-#include "castel/utils/Visitor.hh"
 
 namespace castel
 {
@@ -18,75 +16,154 @@ namespace castel
             class String : public ast::Expression
             {
 
-            public:
+            private:
 
-                String     ( void )
-                : mContent ( "" )
-                {
-                }
+                static inline std::string rawToLiteral( std::string const & rawValue );
 
-                String     ( std::string const & content )
-                : mContent ( "" )
-                {
-                    this->parse( content );
-                }
-
-                String     ( lexer::Lexeme const & lexeme )
-                : mContent ( "" )
-                {
-                    std::string str = lexeme.as< std::string >( );
-                    this->parse( str.substr( 1, str.length( ) - 2 ) );
-                }
+                static inline std::string literalToRaw( std::string const & literalValue );
 
             public:
 
-                String & parse( std::string const & string )
-                {
-                    mContent = "";
+                static inline String * createFromRaw( std::string const & rawValue );
 
-                    std::string::const_iterator it;
-                    for ( it = string.begin( ); it != string.end( ); ++ it ) {
-                        if ( * it == '\\' ) {
-                            char c = * ++it;
-                            switch ( c ) {
-                                case 't': mContent += '\t'; break;
-                                case 'n': mContent += '\n'; break;
-                                default:  mContent += c;    break;
-                            }
-                        } else {
-                            mContent += * it;
-                        }
-                    }
-
-                    return * this;
-                }
+                static inline String * createFromLiteral( std::string const & literalValue );
 
             public:
 
-                std::string const & content( void ) const
-                {
-                    return mContent;
-                }
-
-                String & value( std::string const & content )
-                {
-                    mContent = content;
-
-                    return * this;
-                }
+                inline String( void );
 
             public:
 
-                virtual void accept( utils::Visitor & visitor )
-                {
-                    visitor.visit( * this );
-                }
+                inline std::string const & rawValue( void ) const;
+
+                inline String & rawValue( std::string const & rawValue );
+
+            public:
+
+                inline std::string const & literalValue( void ) const;
+
+                inline String & literalValue( std::string const & literalValue );
+
+            public:
+
+                virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
-                std::string mContent;
+                std::string mRawValue;
+
+                std::string mLiteralValue;
 
             };
+
+        }
+
+    }
+
+}
+
+#include "castel/ast/tools/Visitor.hh"
+
+namespace castel
+{
+
+    namespace ast
+    {
+
+        namespace expr
+        {
+
+            std::string String::rawToLiteral( std::string const & rawValue )
+            {
+                std::string result;
+
+                std::string::const_iterator it;
+                for ( it = rawValue.begin( ); it != rawValue.end( ); ++ it ) {
+                    char c = * it;
+                    if ( c < ' ' || c > '~' ) {
+                        switch ( c ) {
+                        case '\r': result += "\\r"; break;
+                        case '\n': result += "\\n"; break;
+                        case '\t': result += "\\t"; break;
+                        default:   result += '?';
+                        }
+                    } else {
+                        result += c;
+                    }
+                }
+
+                return result;
+            }
+
+            std::string String::literalToRaw( std::string const & literalValue )
+            {
+                std::string result;
+
+                std::string::const_iterator it;
+                for ( it = literalValue.begin( ); it != literalValue.end( ); ++ it ) {
+                    if ( * it == '\\' ) {
+                        char c = * ++it;
+                        switch ( c ) {
+                        case 't': result += '\t'; break;
+                        case 'n': result += '\n'; break;
+                        default:  result += c;    break;
+                        }
+                    } else {
+                        result += * it;
+                    }
+                }
+
+                return result;
+            }
+
+            String * String::createFromRaw( std::string const & rawValue )
+            {
+                String * instance = new String( );
+                instance->rawValue( rawValue );
+                return instance;
+            }
+
+            String * String::createFromLiteral( std::string const & literalValue )
+            {
+                String * instance = new String( );
+                instance->literalValue( literalValue );
+                return instance;
+            }
+
+            String::String( void )
+            {
+            }
+
+            std::string const & String::rawValue( void ) const
+            {
+                return mRawValue;
+            }
+
+            String & String::rawValue( std::string const & rawValue )
+            {
+                mRawValue = rawValue;
+                mLiteralValue = ast::expr::String::rawToLiteral( rawValue );
+
+                return * this;
+            }
+
+            std::string const & String::literalValue( void ) const
+            {
+                return mLiteralValue;
+            }
+
+            String & String::literalValue( std::string const & literalValue )
+            {
+                mRawValue = ast::expr::String::literalToRaw( literalValue );
+                mLiteralValue = literalValue;
+
+                return * this;
+            }
+
+            void String::accept( ast::tools::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
 
         }
 

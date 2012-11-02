@@ -4,18 +4,24 @@
 
 #include <llvm/Function.h>
 
-#include "castel/ast/Parameter.hh"
-#include "castel/ast/Statement.hh"
-#include "castel/builder/Context.hh"
-#include "castel/builder/Scope.hh"
+#include "castel/ast/expr/Function.hh"
 
 namespace castel
 {
+
+    namespace ast
+    {
+
+        class Statement;
+
+    }
 
     namespace builder
     {
 
         class ClassBuilder;
+        class Context;
+        class Scope;
 
         /**
          * An helper class building a runtime function box from an AST.
@@ -28,7 +34,7 @@ namespace castel
 
         public:
 
-            inline FunctionBuilder( std::string const & name = "", ast::Parameter * parameters = nullptr, ast::Statement * statements = nullptr );
+            inline FunctionBuilder( std::string const & name = "", ast::expr::Function::Parameter * parameters = nullptr, ast::Statement * statements = nullptr );
 
         public:
 
@@ -64,7 +70,7 @@ namespace castel
              * @return Parameter list
              */
 
-            inline ast::Parameter * parameters( void ) const;
+            inline ast::expr::Function::Parameter * parameters( void ) const;
 
             /**
              * @param parameters Parameter list
@@ -74,7 +80,7 @@ namespace castel
              * parameter list, such as an AST node).
              */
 
-            inline FunctionBuilder & parameters( ast::Parameter * parameters );
+            inline FunctionBuilder & parameters( ast::expr::Function::Parameter * parameters );
 
         public:
 
@@ -130,7 +136,7 @@ namespace castel
 
             std::string mName;
             bool mUseThis;
-            ast::Parameter * mParameters;
+            ast::expr::Function::Parameter * mParameters;
             ast::Statement * mStatements;
 
         };
@@ -139,13 +145,6 @@ namespace castel
 
 }
 
-#include <string>
-
-#include <llvm/Value.h>
-
-#include "castel/ast/Parameter.hh"
-#include "castel/ast/Statement.hh"
-#include "castel/builder/Context.hh"
 #include "castel/builder/Scope.hh"
 
 namespace castel
@@ -154,7 +153,7 @@ namespace castel
     namespace builder
     {
 
-        FunctionBuilder::FunctionBuilder( std::string const & name, ast::Parameter * parameters, ast::Statement * statements )
+        FunctionBuilder::FunctionBuilder( std::string const & name, ast::expr::Function::Parameter * parameters, ast::Statement * statements )
             : mName( name )
             , mUseThis( false )
             , mParameters( parameters )
@@ -186,12 +185,12 @@ namespace castel
             return * this;
         }
 
-        ast::Parameter * FunctionBuilder::parameters( void ) const
+        ast::expr::Function::Parameter * FunctionBuilder::parameters( void ) const
         {
             return mParameters;
         }
 
-        FunctionBuilder & FunctionBuilder::parameters( ast::Parameter * parameters )
+        FunctionBuilder & FunctionBuilder::parameters( ast::expr::Function::Parameter * parameters )
         {
             mParameters = parameters;
 

@@ -26,8 +26,7 @@ void CodeGenerator::visit( ast::expr::Multary & astMultaryExpression )
     ast::Expression * leftMostOperand = astMultaryExpression.operands( );
     ast::Expression * arguments = leftMostOperand->next( );
 
-    leftMostOperand->accept( * this );
-    llvm::Value * llvmLeftMostOperand = mValue.release( );
+    llvm::Value * llvmLeftMostOperand = builder::CodeGenerator( mContext, mScope ).expression( * leftMostOperand );
 
     llvm::Value * llvmArgCount = llvm::ConstantInt::get( mContext.llvmContext( ), llvm::APInt( 32, std::distance( utils::begin( arguments ), utils::end( arguments ) ) ) );
     llvm::Value * llvmArguments = mContext.irBuilder( ).CreateCastelAllocate< runtime::Box * >( llvmArgCount );
@@ -35,10 +34,10 @@ void CodeGenerator::visit( ast::expr::Multary & astMultaryExpression )
     int argumentIndex = 0;
     for ( auto & argument : arguments ) {
 
-        argument.accept( * this );
-
         llvm::Value * llvmArgTarget = mContext.irBuilder( ).CreateConstGEP1_64( llvmArguments, argumentIndex ++ );
-        mContext.irBuilder( ).CreateStore( mValue.release( ), llvmArgTarget );
+        llvm::Value * llvmArgument = builder::CodeGenerator( mContext, mScope ).expression( argument );
+
+        mContext.irBuilder( ).CreateStore( llvmArgument, llvmArgTarget );
 
     }
 

@@ -1,12 +1,17 @@
 #pragma once
 
-#include "castel/utils/Visitor.hh"
-
 namespace castel
 {
 
     namespace ast
     {
+
+        namespace tools
+        {
+
+            class Visitor;
+
+        }
 
         class Token
         {
@@ -17,7 +22,7 @@ namespace castel
 
         public:
 
-            virtual void accept( utils::Visitor & visitor ) = 0;
+            virtual void accept( ast::tools::Visitor & visitor ) = 0;
 
         };
 

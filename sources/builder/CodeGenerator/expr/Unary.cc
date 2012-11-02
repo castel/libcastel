@@ -25,11 +25,11 @@ static std::map< ast::expr::Unary::Operator, char const * > const operatorsTable
 
 void CodeGenerator::visit( ast::expr::Unary & astUnaryExpression )
 {
-    if ( ! astUnaryExpression.operand( ) )
+    ast::Expression * astOperand = astUnaryExpression.operand( );
+
+    if ( astOperand == nullptr )
         throw std::runtime_error( "Missing operand" );
 
-    astUnaryExpression.operand( )->accept( * this );
-    llvm::Value * llvmOperand = mValue.release( );
-
+    llvm::Value * llvmOperand = builder::CodeGenerator( mContext, mScope ).expression( * astOperand );
     mValue.reset( mContext.irBuilder( ).CreateCastelCall( operatorsTable.at( astUnaryExpression.type( ) ), llvmOperand ) );
 }

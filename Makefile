@@ -2,7 +2,7 @@ LIBRARY_PARSE    = libCastelParse.a
 LIBRARY_BUILD    = libCastelBuild.a
 LIBRARY_RUNTIME  = libCastelRuntime.a
 
-CXX              = clang++
+CXX              = clang++ -Xclang -fcolor-diagnostics
 AR               = ar
 RANLIB           = ranlib
 RAGEL            = ragel

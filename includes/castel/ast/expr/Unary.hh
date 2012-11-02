@@ -3,8 +3,6 @@
 #include <memory>
 
 #include "castel/ast/Expression.hh"
-#include "castel/lexer/Lexeme.hh"
-#include "castel/utils/Visitor.hh"
 
 namespace castel
 {
@@ -37,51 +35,25 @@ namespace castel
 
             public:
 
-                Unary      ( ast::expr::Unary::Operator type, ast::Expression * operand )
-                : mType    ( type    )
-                , mOperand ( operand )
-                {
-                }
+                inline Unary( ast::expr::Unary::Operator type, ast::Expression * operand );
 
             public:
 
-                ast::expr::Unary::Operator type( void ) const
-                {
-                    return mType;
-                }
+                inline ast::expr::Unary::Operator type( void ) const;
 
-                Unary & type( ast::expr::Unary::Operator type )
-                {
-                    mType = type;
-
-                    return * this;
-                }
+                inline Unary & type( ast::expr::Unary::Operator type );
 
             public:
 
-                ast::Expression * operand( void ) const
-                {
-                    return mOperand.get( );
-                }
+                inline ast::Expression * operand( void ) const;
 
-                Unary & operand( ast::Expression * operand )
-                {
-                    mOperand.reset( operand );
+                inline Unary & operand( ast::Expression * operand );
 
-                    return * this;
-                }
-
-                ast::Expression * takeOperand( void )
-                {
-                    return mOperand.release( );
-                }
+                inline ast::Expression * takeOperand( void );
 
             public:
 
-                virtual void accept( utils::Visitor & visitor )
-                {
-                    visitor.visit( * this );
-                }
+                virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
@@ -89,6 +61,63 @@ namespace castel
                 std::unique_ptr< ast::Expression > mOperand;
 
             };
+
+        }
+
+    }
+
+}
+
+#include "castel/ast/tools/Visitor.hh"
+
+namespace castel
+{
+
+    namespace ast
+    {
+
+        namespace expr
+        {
+
+            Unary::Unary( ast::expr::Unary::Operator type, ast::Expression * operand )
+                : mType( type )
+                , mOperand( operand )
+            {
+            }
+
+            ast::expr::Unary::Operator Unary::type( void ) const
+            {
+                return mType;
+            }
+
+            Unary & Unary::type( ast::expr::Unary::Operator type )
+            {
+                mType = type;
+
+                return * this;
+            }
+
+            ast::Expression * Unary::operand( void ) const
+            {
+                return mOperand.get( );
+            }
+
+            Unary & Unary::operand( ast::Expression * operand )
+            {
+                mOperand.reset( operand );
+
+                return * this;
+            }
+
+            ast::Expression * Unary::takeOperand( void )
+            {
+                return mOperand.release( );
+            }
+
+            void Unary::accept( ast::tools::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
 
         }
 

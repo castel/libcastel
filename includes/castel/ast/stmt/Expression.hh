@@ -2,9 +2,58 @@
 
 #include <memory>
 
-#include "castel/ast/Expression.hh"
 #include "castel/ast/Statement.hh"
-#include "castel/utils/Visitor.hh"
+
+namespace castel
+{
+
+    namespace ast
+    {
+
+        namespace tools
+        {
+
+            class Visitor;
+
+        }
+
+        class Expression;
+
+        namespace stmt
+        {
+
+            class Expression : public ast::Statement
+            {
+
+            public:
+
+                inline Expression( ast::Expression * expression = nullptr );
+
+            public:
+
+                inline ast::Expression * expression( void ) const;
+
+                inline Expression & expression( ast::Expression * expression );
+
+                inline ast::Expression * takeExpression( void );
+
+            public:
+
+                virtual inline void accept( ast::tools::Visitor & visitor );
+
+            private:
+
+                std::unique_ptr< ast::Expression > mExpression;
+
+            };
+
+        }
+
+    }
+
+}
+
+#include "castel/ast/tools/Visitor.hh"
 
 namespace castel
 {
@@ -15,47 +64,32 @@ namespace castel
         namespace stmt
         {
 
-            class Expression : public ast::Statement
+            Expression::Expression( ast::Expression * expression )
+                : mExpression( expression )
             {
+            }
 
-            public:
+            ast::Expression * Expression::expression( void ) const
+            {
+                return mExpression.get( );
+            }
 
-                Expression    ( ast::Expression * expression = nullptr )
-                : mExpression ( expression )
-                {
-                }
+            Expression & Expression::expression( ast::Expression * expression )
+            {
+                mExpression.reset( expression );
 
-            public:
+                return * this;
+            }
 
-                ast::Expression * expression( void ) const
-                {
-                    return mExpression.get( );
-                }
+            ast::Expression * Expression::takeExpression( void )
+            {
+                return mExpression.release( );
+            }
 
-                Expression & expression( ast::Expression * expression )
-                {
-                    mExpression.reset( expression );
-
-                    return *this;
-                }
-
-                ast::Expression * takeExpression( void )
-                {
-                    return mExpression.release( );
-                }
-
-            public:
-
-                virtual void accept( utils::Visitor & visitor )
-                {
-                    visitor.visit( *this );
-                }
-
-            private:
-
-                std::unique_ptr< ast::Expression > mExpression;
-
-            };
+            void Expression::accept( ast::tools::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
 
         }
 

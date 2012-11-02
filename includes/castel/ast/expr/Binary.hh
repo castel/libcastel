@@ -3,8 +3,6 @@
 #include <memory>
 
 #include "castel/ast/Expression.hh"
-#include "castel/lexer/Lexeme.hh"
-#include "castel/utils/Visitor.hh"
 
 namespace castel
 {
@@ -64,71 +62,33 @@ namespace castel
 
             public:
 
-                Binary          ( ast::expr::Binary::Operator type, ast::Expression * leftOperand = nullptr, ast::Expression * rightOperand = nullptr )
-                : mType         ( type         )
-                , mLeftOperand  ( leftOperand  )
-                , mRightOperand ( rightOperand )
-                {
-                }
+                inline Binary( ast::expr::Binary::Operator type, ast::Expression * leftOperand = nullptr, ast::Expression * rightOperand = nullptr );
 
             public:
 
-                ast::expr::Binary::Operator type( void ) const
-                {
-                    return mType;
-                }
+                inline ast::expr::Binary::Operator type( void ) const;
 
-                Binary & type( ast::expr::Binary::Operator type )
-                {
-                    mType = type;
-
-                    return * this;
-                }
+                inline Binary & type( ast::expr::Binary::Operator type );
 
             public:
 
-                ast::Expression * leftOperand( void ) const
-                {
-                    return mLeftOperand.get( );
-                }
+                inline ast::Expression * leftOperand( void ) const;
 
-                Binary & leftOperand( ast::Expression * expression )
-                {
-                    mLeftOperand.reset( expression );
+                inline Binary & leftOperand( ast::Expression * expression );
 
-                    return * this;
-                }
-
-                ast::Expression * takeLeftOperand( void )
-                {
-                    return mLeftOperand.release( );
-                }
+                inline ast::Expression * takeLeftOperand( void );
 
             public:
 
-                ast::Expression * rightOperand( void ) const
-                {
-                    return mRightOperand.get( );
-                }
+                inline ast::Expression * rightOperand( void ) const;
 
-                Binary & rightOperand( ast::Expression * expression )
-                {
-                    mRightOperand.reset( expression );
+                inline Binary & rightOperand( ast::Expression * expression );
 
-                    return *this;
-                }
-
-                ast::Expression * takeRightOperand( void )
-                {
-                    return mRightOperand.release( );
-                }
+                inline ast::Expression * takeRightOperand( void );
 
             public:
 
-                virtual void accept( utils::Visitor & visitor )
-                {
-                    visitor.visit( *this );
-                }
+                virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
@@ -138,6 +98,81 @@ namespace castel
                 std::unique_ptr< ast::Expression > mRightOperand;
 
             };
+
+        }
+
+    }
+
+}
+
+#include "castel/ast/tools/Visitor.hh"
+
+namespace castel
+{
+
+    namespace ast
+    {
+
+        namespace expr
+        {
+
+            Binary::Binary( ast::expr::Binary::Operator type, ast::Expression * leftOperand, ast::Expression * rightOperand )
+                : mType( type )
+                , mLeftOperand( leftOperand )
+                , mRightOperand( rightOperand )
+            {
+            }
+
+            ast::expr::Binary::Operator Binary::type( void ) const
+            {
+                return mType;
+            }
+
+            Binary & Binary::type( ast::expr::Binary::Operator type )
+            {
+                mType = type;
+
+                return * this;
+            }
+
+            ast::Expression * Binary::leftOperand( void ) const
+            {
+                return mLeftOperand.get( );
+            }
+
+            Binary & Binary::leftOperand( ast::Expression * leftOperand )
+            {
+                mLeftOperand.reset( leftOperand );
+
+                return * this;
+            }
+
+            ast::Expression * Binary::takeLeftOperand( void )
+            {
+                return mLeftOperand.release( );
+            }
+
+            ast::Expression * Binary::rightOperand( void ) const
+            {
+                return mRightOperand.get( );
+            }
+
+            Binary & Binary::rightOperand( ast::Expression * rightOperand )
+            {
+                mRightOperand.reset( rightOperand );
+
+                return * this;
+            }
+
+            ast::Expression * Binary::takeRightOperand( void )
+            {
+                return mRightOperand.release( );
+            }
+
+            void Binary::accept( ast::tools::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
 
         }
 

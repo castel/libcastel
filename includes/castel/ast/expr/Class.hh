@@ -3,9 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "castel/ast/expr/Function.hh"
 #include "castel/ast/Expression.hh"
-#include "castel/utils/Visitor.hh"
 
 namespace castel
 {
@@ -13,8 +11,17 @@ namespace castel
     namespace ast
     {
 
+        namespace tools
+        {
+
+            class Visitor;
+
+        }
+
         namespace expr
         {
+
+            class Function;
 
             class Class : public ast::Expression
             {
@@ -24,6 +31,7 @@ namespace castel
                 class Member;
 
                 class Attribute;
+
                 class Method;
 
             public:
@@ -33,12 +41,14 @@ namespace castel
             public:
 
                 inline ast::expr::Class::Member * members( void ) const;
+
                 inline Class & members( ast::expr::Class::Member * members );
+
                 inline ast::expr::Class::Member * takeMembers( void );
 
             public:
 
-                inline virtual void accept( utils::Visitor & visitor );
+                virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
@@ -77,33 +87,28 @@ namespace castel
             public:
 
                 inline ast::expr::Class::Member::Visibility visibility( void ) const;
+
                 inline Member & visibility( ast::expr::Class::Member::Visibility visibility );
-
-                inline ast::expr::Class::Member::Type type( void ) const;
-                inline Member & type( ast::expr::Class::Member::Type type );
-
-                inline std::string const & name( void ) const;
-                inline Member & name( std::string const & );
 
             public:
 
-                inline virtual void accept( ast::expr::Class::Member::Visitor & visitor ) = 0;
+                inline ast::expr::Class::Member::Type type( void ) const;
+
+                inline Member & type( ast::expr::Class::Member::Type type );
+
+            public:
+
+                inline std::string const & name( void ) const;
+
+                inline Member & name( std::string const & );
 
             private:
 
                 ast::expr::Class::Member::Visibility mVisibility;
+
                 ast::expr::Class::Member::Type mType;
+
                 std::string mName;
-
-            };
-
-            class Class::Member::Visitor
-            {
-
-            public:
-
-                virtual void visit( ast::expr::Class::Attribute & attribute ) = 0;
-                virtual void visit( ast::expr::Class::Method & method ) = 0;
 
             };
 
@@ -117,12 +122,10 @@ namespace castel
             public:
 
                 inline ast::Expression * initializer( void ) const;
+
                 inline Attribute & initializer( ast::Expression * initializer );
+
                 inline ast::Expression * takeInitializer( void );
-
-            public:
-
-                inline virtual void accept( ast::expr::Class::Member::Visitor & visitor );
 
             private:
 
@@ -140,12 +143,10 @@ namespace castel
             public:
 
                 inline ast::expr::Function * function( void ) const;
+
                 inline Method & function( ast::expr::Function * function );
+
                 inline ast::expr::Function * takeFunction( void );
-
-            public:
-
-                inline virtual void accept( ast::expr::Class::Member::Visitor & visitor );
 
             private:
 
@@ -159,12 +160,7 @@ namespace castel
 
 }
 
-#include <string>
-
-#include "castel/ast/expr/Class.hh"
-#include "castel/ast/expr/Function.hh"
-#include "castel/ast/Expression.hh"
-#include "castel/utils/Visitor.hh"
+#include "castel/ast/tools/Visitor.hh"
 
 namespace castel
 {
@@ -241,11 +237,6 @@ namespace castel
                 return mInitializer.release( );
             }
 
-            void Class::Attribute::accept( ast::expr::Class::Member::Visitor & visitor )
-            {
-                visitor.visit( * this );
-            }
-
             Class::Method::Method( ast::expr::Class::Member::Visibility visibility, ast::expr::Class::Member::Type type, std::string const & name, ast::expr::Function * function )
                 : Member( visibility, type, name )
                 , mFunction( function )
@@ -267,11 +258,6 @@ namespace castel
             ast::expr::Function * Class::Method::takeFunction( void )
             {
                 return mFunction.release( );
-            }
-
-            void Class::Method::accept( ast::expr::Class::Member::Visitor & visitor )
-            {
-                visitor.visit( * this );
             }
 
             Class::Class( ast::expr::Class::Member * members )
@@ -296,7 +282,7 @@ namespace castel
                 return mMembers.release( );
             }
 
-            void Class::accept( utils::Visitor & visitor )
+            void Class::accept( ast::tools::Visitor & visitor )
             {
                 visitor.visit( * this );
             }

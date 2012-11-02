@@ -61,9 +61,8 @@ llvm::Value * ClassBuilder::createInitializer( builder::Context & context, build
         for ( auto & member : mMembers ) {
             if ( auto attribute = dynamic_cast< ast::expr::Class::Attribute * >( & member ) ) {
                 if ( attribute->type( ) == ast::expr::Class::Member::Type::Binded ) {
-                    builder::CodeGenerator codeGenerator( context, scope );
                     llvm::Value * llvmName = context.irBuilder( ).CreateGlobalStringPtr( attribute->name( ) );
-                    llvm::Value * llvmInitializer = codeGenerator.expression( attribute->initializer( ) );
+                    llvm::Value * llvmInitializer = builder::CodeGenerator( context, scope ).expression( * ( attribute->initializer( ) ) );
                     context.irBuilder( ).CreateCastelCall( "castel_addMember", runtimeArguments_instance, llvmName, llvmInitializer );
                 }
             }

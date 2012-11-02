@@ -1,7 +1,6 @@
 #pragma once
 
 #include "castel/ast/Expression.hh"
-#include "castel/utils/Visitor.hh"
 
 namespace castel
 {
@@ -17,18 +16,39 @@ namespace castel
 
             public:
 
-                Undefined ( void )
-                {
-                }
+                inline Undefined ( void );
 
             public:
 
-                virtual void accept( utils::Visitor & visitor )
-                {
-                    visitor.visit( * this );
-                }
+                virtual inline void accept( ast::tools::Visitor & visitor );
 
             };
+
+        }
+
+    }
+
+}
+
+#include "castel/ast/tools/Visitor.hh"
+
+namespace castel
+{
+
+    namespace ast
+    {
+
+        namespace expr
+        {
+
+            Undefined::Undefined( void )
+            {
+            }
+
+            void Undefined::accept( ast::tools::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
 
         }
 

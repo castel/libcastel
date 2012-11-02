@@ -5,6 +5,7 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/Class.hh"
+#include "castel/ast/tools/Visitor.hh"
 #include "castel/builder/Context.hh"
 #include "castel/builder/Scope.hh"
 
@@ -20,10 +21,6 @@ namespace castel
 
         class ClassBuilder
         {
-
-        private:
-
-            class MemberVisitor;
 
         public:
 
@@ -125,29 +122,6 @@ namespace castel
 
         };
 
-        /**
-         * Visitor building the code which will import new members into a class box.
-         */
-
-        class ClassBuilder::MemberVisitor : public ast::expr::Class::Member::Visitor
-        {
-
-        public:
-
-            inline MemberVisitor( builder::Context & context, llvm::Value * llvmClassBox );
-
-        public:
-
-            virtual void accept( ast::expr::Class::Attribute & attribute ) = 0;
-            virtual void accept( ast::expr::Class::Method & method ) = 0;
-
-        private:
-
-            builder::Context & mContext;
-            llvm::Value * mLLVMClassBox;
-
-        };
-
     }
 
 }
@@ -165,12 +139,6 @@ namespace castel
 
     namespace builder
     {
-
-        ClassBuilder::MemberVisitor::MemberVisitor( builder::Context & context, llvm::Value * llvmClassBox )
-            : mContext( context )
-            , mLLVMClassBox( llvmClassBox )
-        {
-        }
 
         ClassBuilder::ClassBuilder( std::string const & name, llvm::Value * parent, ast::expr::Class::Member * members )
             : mName( name )

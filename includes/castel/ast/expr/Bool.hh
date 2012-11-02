@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "castel/ast/Expression.hh"
 
 namespace castel
@@ -10,21 +8,28 @@ namespace castel
     namespace ast
     {
 
+        namespace tools
+        {
+
+            class Visitor;
+
+        }
+
         namespace expr
         {
 
-            class Variable : public ast::Expression
+            class Bool : public ast::Expression
             {
 
             public:
 
-                inline Variable( std::string const & name );
+                inline Bool( bool value );
 
             public:
 
-                inline std::string const & name( void ) const;
+                inline bool value( void ) const;
 
-                inline Variable & name( std::string const & name );
+                inline Bool & value( bool value );
 
             public:
 
@@ -32,7 +37,7 @@ namespace castel
 
             private:
 
-                std::string mName;
+                bool mValue;
 
             };
 
@@ -53,24 +58,24 @@ namespace castel
         namespace expr
         {
 
-            Variable::Variable( std::string const & name )
-                : mName( name )
+            Bool::Bool( bool value )
+                : mValue( value )
             {
             }
 
-            std::string const & Variable::name( void ) const
+            bool Bool::value( void ) const
             {
-                return mName;
+                return mValue;
             }
 
-            Variable & Variable::name( std::string const & name )
+            Bool & Bool::value( bool value )
             {
-                mName = name;
+                mValue = value;
 
                 return * this;
             }
 
-            void Variable::accept( ast::tools::Visitor & visitor )
+            void Bool::accept( ast::tools::Visitor & visitor )
             {
                 visitor.visit( * this );
             }

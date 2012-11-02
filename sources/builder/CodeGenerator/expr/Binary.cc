@@ -5,6 +5,7 @@
 #include "castel/ast/expr/Binary.hh"
 #include "castel/ast/expr/Variable.hh"
 #include "castel/builder/CodeGenerator.hh"
+#include "castel/builder/SetterGenerator.hh"
 
 using namespace castel;
 using builder::CodeGenerator;
@@ -48,31 +49,29 @@ static std::map< ast::expr::Binary::Operator, char const * > const operatorsTabl
 
 void CodeGenerator::visit( ast::expr::Binary & astBinaryExpression )
 {
-    if ( ! astBinaryExpression.leftOperand( ) )
-        throw std::runtime_error( "Missing left operand" );
+    ast::Expression * astLeftOperand = astBinaryExpression.leftOperand( );
+    ast::Expression * astRightOperand = astBinaryExpression.rightOperand( );
 
-    if ( ! astBinaryExpression.rightOperand( ) )
-        throw std::runtime_error( "Missing right operand" );
+    if ( astLeftOperand == nullptr && astRightOperand == nullptr )
+        throw std::runtime_error( "Both operands missing" );
+
+    if ( astLeftOperand == nullptr )
+        throw std::runtime_error( "Left operand missing" );
+
+    if ( astRightOperand == nullptr )
+        throw std::runtime_error( "Right operand missing" );
 
     if ( astBinaryExpression.type( ) == ast::expr::Binary::Operator::Assignment ) {
 
-        ast::expr::Variable * astVariable = dynamic_cast< ast::expr::Variable * >( astBinaryExpression.leftOperand( ) );
-
-        if ( ! astVariable )
-            throw std::runtime_error( "Invalid lvalue" );
-
-        astBinaryExpression.rightOperand( )->accept( *this );
-        mScope.set( astVariable->name( ), mValue.get( ) );
+        llvm::Value * llvmValue = builder::CodeGenerator( mContext, mScope ).expression( * astRightOperand );
+        mValue.reset( builder::SetterGenerator( mContext, mScope ).expression( * astLeftOperand, llvmValue ) );
 
     } else {
 
-        astBinaryExpression.leftOperand( )->accept( * this );
-        llvm::Value * llvmLeftOperand = mValue.release( );
+        llvm::Value * llvmLeftOperand = builder::CodeGenerator( mContext, mScope ).expression( * astLeftOperand );
+        llvm::Value * llvmRightOperand = builder::CodeGenerator( mContext, mScope ).expression( * astRightOperand );
 
-        astBinaryExpression.rightOperand( )->accept( * this );
-        llvm::Value * llvmRightOperand = mValue.release( );
-
-        mValue.reset( mContext.irBuilder().CreateCastelCall( operatorsTable.at( astBinaryExpression.type( ) ), llvmLeftOperand, llvmRightOperand ) );
+        mValue.reset( mContext.irBuilder( ).CreateCastelCall( operatorsTable.at( astBinaryExpression.type( ) ), llvmLeftOperand, llvmRightOperand ) );
 
     }
 

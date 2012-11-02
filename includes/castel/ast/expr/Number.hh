@@ -1,8 +1,57 @@
 #pragma once
 
 #include "castel/ast/Expression.hh"
-#include "castel/lexer/Lexeme.hh"
-#include "castel/utils/Visitor.hh"
+
+namespace castel
+{
+
+    namespace ast
+    {
+
+        namespace tools
+        {
+
+            class Visitor;
+
+        }
+
+        namespace expr
+        {
+
+            class Number : public ast::Expression
+            {
+
+            public:
+
+                using DataType = double;
+
+            public:
+
+                inline Number( DataType value );
+
+            public:
+
+                inline DataType value( void ) const;
+
+                inline Number & value( DataType value );
+
+            public:
+
+                virtual inline void accept( ast::tools::Visitor & visitor );
+
+            private:
+
+                DataType mValue;
+
+            };
+
+        }
+
+    }
+
+}
+
+#include "castel/ast/tools/Visitor.hh"
 
 namespace castel
 {
@@ -13,56 +62,27 @@ namespace castel
         namespace expr
         {
 
-            class Number : public ast::Expression
+            Number::Number( ast::expr::Number::DataType value )
+                : mValue( value )
             {
+            }
 
-            public:
+            ast::expr::Number::DataType Number::value( void ) const
+            {
+                return mValue;
+            }
 
-                typedef double dataType;
+            Number & Number::value( ast::expr::Number::DataType value )
+            {
+                mValue = value;
 
-            public:
+                return * this;
+            }
 
-                Number ( void )
-                : mValue ( 0 )
-                {
-                }
-
-                Number ( lexer::Lexeme const & lexeme )
-                : mValue ( lexeme.as< dataType >( ) )
-                {
-                }
-
-                Number ( dataType value )
-                : mValue ( value )
-                {
-                }
-
-            public:
-
-                dataType value( void ) const
-                {
-                    return mValue;
-                }
-
-                Number & value( dataType value )
-                {
-                    mValue = value;
-
-                    return * this;
-                }
-
-            public:
-
-                virtual void accept( utils::Visitor & visitor )
-                {
-                    visitor.visit( * this );
-                }
-
-            private:
-
-                dataType mValue;
-
-            };
+            void Number::accept( ast::tools::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
 
         }
 

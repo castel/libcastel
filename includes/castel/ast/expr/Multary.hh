@@ -3,14 +3,19 @@
 #include <memory>
 
 #include "castel/ast/Expression.hh"
-#include "castel/lexer/Lexeme.hh"
-#include "castel/utils/Visitor.hh"
 
 namespace castel
 {
 
     namespace ast
     {
+
+        namespace tools
+        {
+
+            class Visitor;
+
+        }
 
         namespace expr
         {
@@ -24,57 +29,32 @@ namespace castel
 
                     New,
                     Call,
+
                     Subscript,
 
                 };
 
             public:
 
-                Multary     ( ast::expr::Multary::Operator type, ast::Expression * operands = nullptr )
-                : mType     ( type     )
-                , mOperands ( operands )
-                {
-                }
+                inline Multary( ast::expr::Multary::Operator type, ast::Expression * operands );
 
             public:
 
-                ast::expr::Multary::Operator type( void ) const
-                {
-                    return mType;
-                }
+                inline ast::expr::Multary::Operator type( void ) const;
 
-                Multary & type( ast::expr::Multary::Operator type )
-                {
-                    mType = type;
-
-                    return * this;
-                }
+                inline Multary & type( ast::expr::Multary::Operator type );
 
             public:
 
-                ast::Expression * operands( void ) const
-                {
-                    return mOperands.get( );
-                }
+                inline ast::Expression * operands( void ) const;
 
-                Multary & operands( ast::Expression * operands )
-                {
-                    mOperands.reset( operands );
+                inline Multary & operands( ast::Expression * operands );
 
-                    return * this;
-                }
-
-                ast::Expression * takeOperands( void )
-                {
-                    return mOperands.release( );
-                }
+                inline ast::Expression * takeOperands( void );
 
             public:
 
-                virtual void accept( utils::Visitor & visitor )
-                {
-                    visitor.visit( * this );
-                }
+                virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
@@ -82,6 +62,63 @@ namespace castel
                 std::unique_ptr< ast::Expression > mOperands;
 
             };
+
+        }
+
+    }
+
+}
+
+#include "castel/ast/tools/Visitor.hh"
+
+namespace castel
+{
+
+    namespace ast
+    {
+
+        namespace expr
+        {
+
+            Multary::Multary( ast::expr::Multary::Operator type, ast::Expression * operands )
+                : mType( type )
+                , mOperands( operands )
+            {
+            }
+
+            ast::expr::Multary::Operator Multary::type( void ) const
+            {
+                return mType;
+            }
+
+            Multary & Multary::type( ast::expr::Multary::Operator type )
+            {
+                mType = type;
+
+                return * this;
+            }
+
+            ast::Expression * Multary::operands( void ) const
+            {
+                return mOperands.get( );
+            }
+
+            Multary & Multary::operands( ast::Expression * operands )
+            {
+                mOperands.reset( operands );
+
+                return * this;
+            }
+
+            ast::Expression * Multary::takeOperands( void )
+            {
+                return mOperands.release( );
+            }
+
+            void Multary::accept( ast::tools::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
 
         }
 
