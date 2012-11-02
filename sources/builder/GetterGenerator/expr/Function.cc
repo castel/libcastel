@@ -1,14 +1,14 @@
 #include "castel/ast/expr/Function.hh"
-#include "castel/builder/CodeGenerator.hh"
+#include "castel/builder/GetterGenerator.hh"
 #include "castel/builder/FunctionBuilder.hh"
 
 using namespace castel;
-using builder::CodeGenerator;
+using builder::GetterGenerator;
 
-void CodeGenerator::visit( ast::expr::Function & astFunctionExpression )
+void GetterGenerator::visit( ast::expr::Function & astFunctionExpression )
 {
-    mValue.reset( builder::FunctionBuilder( "literal" )
+    mLLVMValue = builder::FunctionBuilder( "literal" )
         .parameters( astFunctionExpression.parameters( ) )
         .statements( astFunctionExpression.statements( ) )
-    .create( mScope ) );
+    .create( mScope );
 }

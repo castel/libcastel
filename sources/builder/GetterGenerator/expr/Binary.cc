@@ -3,12 +3,11 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/Binary.hh"
-#include "castel/ast/expr/Variable.hh"
-#include "castel/builder/CodeGenerator.hh"
+#include "castel/builder/GetterGenerator.hh"
 #include "castel/builder/SetterGenerator.hh"
 
 using namespace castel;
-using builder::CodeGenerator;
+using builder::GetterGenerator;
 
 static std::map< ast::expr::Binary::Operator, char const * > const operatorsTable {
 
@@ -47,7 +46,7 @@ static std::map< ast::expr::Binary::Operator, char const * > const operatorsTabl
 
 };
 
-void CodeGenerator::visit( ast::expr::Binary & astBinaryExpression )
+void GetterGenerator::visit( ast::expr::Binary & astBinaryExpression )
 {
     ast::Expression * astLeftOperand = astBinaryExpression.leftOperand( );
     ast::Expression * astRightOperand = astBinaryExpression.rightOperand( );
@@ -63,15 +62,15 @@ void CodeGenerator::visit( ast::expr::Binary & astBinaryExpression )
 
     if ( astBinaryExpression.type( ) == ast::expr::Binary::Operator::Assignment ) {
 
-        llvm::Value * llvmValue = builder::CodeGenerator( mContext, mScope ).expression( * astRightOperand );
-        mValue.reset( builder::SetterGenerator( mContext, mScope ).expression( * astLeftOperand, llvmValue ) );
+        mLLVMValue = builder::GetterGenerator( mScope ).run( * astRightOperand );
+        builder::SetterGenerator( mScope ).run( * astLeftOperand, mLLVMValue );
 
     } else {
 
-        llvm::Value * llvmLeftOperand = builder::CodeGenerator( mContext, mScope ).expression( * astLeftOperand );
-        llvm::Value * llvmRightOperand = builder::CodeGenerator( mContext, mScope ).expression( * astRightOperand );
+        llvm::Value * llvmLeftOperand = builder::GetterGenerator( mScope ).run( * astLeftOperand );
+        llvm::Value * llvmRightOperand = builder::GetterGenerator( mScope ).run( * astRightOperand );
 
-        mValue.reset( mContext.irBuilder( ).CreateCastelCall( operatorsTable.at( astBinaryExpression.type( ) ), llvmLeftOperand, llvmRightOperand ) );
+        mLLVMValue = mContext.irBuilder( ).CreateCastelCall( operatorsTable.at( astBinaryExpression.type( ) ), llvmLeftOperand, llvmRightOperand );
 
     }
 

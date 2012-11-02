@@ -12,38 +12,25 @@ namespace castel
     namespace ast
     {
 
-        namespace expr
-        {
-            class Bool;
-            class Binary;
-            class Class;
-            class Dict;
-            class Function;
-            class List;
-            class Multary;
-            class Null;
-            class Number;
-            class String;
-            class Unary;
-            class Undefined;
-            class Variable;
-        }
-
         namespace stmt
         {
+
             namespace decl
             {
+
                 class Variables;
+
             }
 
             class Expression;
+
             class If;
+
             class Return;
+
         }
 
-        class Expression;
         class Statement;
-        class Token;
 
     }
 
@@ -51,7 +38,12 @@ namespace castel
     {
 
         class Context;
+
         class Scope;
+
+        /**
+         * This class allows to generate the IR code corresponding to a list of statements.
+         */
 
         class CodeGenerator : public ast::tools::Visitor
         {
@@ -62,55 +54,49 @@ namespace castel
              * Constructs a CodeGenerator instance.
              */
 
-            inline CodeGenerator( builder::Context & context, builder::Scope & scope );
+            inline CodeGenerator( builder::Scope & scope );
 
         public:
 
             /**
-             * Return a LLVM value resulting from the specified AST evaluation.
+             * @param astStatement AST statement
+             *
+             * Generates the IR code corresponding to the specified statement (or list of statements).
              */
 
-            inline llvm::Value * expression( ast::Expression & astExpression );
+            inline void run( ast::Statement & astStatement );
+
+        public:
 
             /**
-             * Generate code corresponding to the specified AST.
+             * This method should only be called by instances of ast::stmt::decl::Variables.
              */
-
-            inline void statement( ast::Statement & astStatement );
-
-        public:
-
-            virtual void visit( ast::expr::Bool & astBoolExpression );
-            virtual void visit( ast::expr::Binary & astBinaryExpression );
-            virtual void visit( ast::expr::Class & astClassExpression );
-            virtual void visit( ast::expr::Dict & astDictExpression );
-            virtual void visit( ast::expr::Function & astFunctionExpression );
-            virtual void visit( ast::expr::List & astListExpression );
-            virtual void visit( ast::expr::Multary & astMultaryExpression );
-            virtual void visit( ast::expr::Null & astNullExpression );
-            virtual void visit( ast::expr::Number & astNumberExpression );
-            virtual void visit( ast::expr::String & astStringExpression );
-            virtual void visit( ast::expr::Unary & astUnaryExpression );
-            virtual void visit( ast::expr::Undefined & astUndefinedExpression );
-            virtual void visit( ast::expr::Variable & astVariableExpression );
-
-        public:
 
             virtual void visit( ast::stmt::decl::Variables & astVariableDeclaration );
+
+            /**
+             * This method should only be called by instances of ast::stmt::Expression.
+             */
+
             virtual void visit( ast::stmt::Expression & astExpressionStatement );
+
+            /**
+             * This method should only be called by instances of ast::stmt::If.
+             */
+
             virtual void visit( ast::stmt::If & astIfStatement );
+
+            /**
+             * This method should only be called by instances of ast::stmt::Return.
+             */
+
             virtual void visit( ast::stmt::Return & astReturnStatement );
-
-        public:
-
-            virtual void defaultAction( ast::Token & astToken );
 
         private:
 
             builder::Context & mContext;
-            builder::Scope & mScope;
 
-            std::unique_ptr< llvm::Value > mValue;
+            builder::Scope & mScope;
 
         };
 
@@ -118,17 +104,6 @@ namespace castel
 
 }
 
-#include "castel/ast/expr/Bool.hh"
-#include "castel/ast/expr/Binary.hh"
-#include "castel/ast/expr/Class.hh"
-#include "castel/ast/expr/Function.hh"
-#include "castel/ast/expr/List.hh"
-#include "castel/ast/expr/Multary.hh"
-#include "castel/ast/expr/Null.hh"
-#include "castel/ast/expr/Number.hh"
-#include "castel/ast/expr/Unary.hh"
-#include "castel/ast/expr/Undefined.hh"
-#include "castel/ast/expr/Variable.hh"
 #include "castel/ast/stmt/decl/Variables.hh"
 #include "castel/ast/stmt/Expression.hh"
 #include "castel/ast/stmt/If.hh"
@@ -143,22 +118,17 @@ namespace castel
     namespace builder
     {
 
-        CodeGenerator::CodeGenerator( builder::Context & context, builder::Scope & scope )
-            : mContext( context )
+        CodeGenerator::CodeGenerator( builder::Scope & scope )
+            : mContext( scope.context( ) )
             , mScope( scope )
         {
         }
 
-        llvm::Value * CodeGenerator::expression( ast::Expression & expression )
+        void CodeGenerator::run( ast::Statement & astStatement )
         {
-            expression.accept( * this );
-
-            return mValue.release( );
-        }
-
-        void CodeGenerator::statement( ast::Statement & statement )
-        {
-            statement.accept( * this );
+            for ( auto & astStatementNode : & astStatement ) {
+                astStatementNode.accept( * this );
+            }
         }
 
     }

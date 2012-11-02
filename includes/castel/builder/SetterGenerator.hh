@@ -16,12 +16,12 @@ namespace castel
         {
 
             class Binary;
+
             class Variable;
 
         }
 
         class Expression;
-        class Token;
 
     }
 
@@ -29,7 +29,12 @@ namespace castel
     {
 
         class Context;
+
         class Scope;
+
+        /**
+         * This allows to generate the IR code which will set the value of an expression.
+         */
 
         class SetterGenerator : public ast::tools::Visitor
         {
@@ -40,31 +45,42 @@ namespace castel
              * Constructs a SetterGenerator instance.
              */
 
-            inline SetterGenerator( builder::Context & context, builder::Scope & scope );
+            inline SetterGenerator( builder::Scope & scope );
 
         public:
 
             /**
-             * Return a LLVM value resulting from the specified AST evaluation.
+             * @param astExpression AST expression
+             * @param llvmValue Value
+             *
+             * Generates the IR code corresponding to the specified expression, and assigns a value to this expression.
+             *
+             * If the expression is actually a list of expressions, only the code for the first one will be built.
              */
 
-            inline llvm::Value * expression( ast::Expression & astExpression, llvm::Value * value );
+            inline void run( ast::Expression & astExpression, llvm::Value * llvmValue );
 
         public:
 
+            /**
+             * This method should only be called by instances of ast::expr::Binary.
+             */
+
             virtual void visit( ast::expr::Binary & astBinaryExpression );
+
+            /**
+             * This method should only be called by instances of ast::expr::Variable.
+             */
+
             virtual void visit( ast::expr::Variable & astVariableExpression );
-
-        protected:
-
-            virtual void defaultAction( ast::Token & astToken );
 
         private:
 
             builder::Context & mContext;
+
             builder::Scope & mScope;
 
-            std::unique_ptr< llvm::Value > mValue;
+            llvm::Value * mLLVMValue;
 
         };
 
@@ -72,11 +88,9 @@ namespace castel
 
 }
 
-#include <llvm/Value.h>
-
 #include "castel/ast/expr/Binary.hh"
+#include "castel/ast/expr/Variable.hh"
 #include "castel/ast/Expression.hh"
-#include "castel/ast/Token.hh"
 #include "castel/builder/Context.hh"
 #include "castel/builder/Scope.hh"
 
@@ -86,18 +100,16 @@ namespace castel
     namespace builder
     {
 
-        SetterGenerator::SetterGenerator( builder::Context & context, builder::Scope & scope )
-            : mContext( context )
+        SetterGenerator::SetterGenerator( builder::Scope & scope )
+            : mContext( scope.context( ) )
             , mScope( scope )
         {
         }
 
-        llvm::Value * SetterGenerator::expression( ast::Expression & astExpression, llvm::Value * value )
+        void SetterGenerator::run( ast::Expression & astExpression, llvm::Value * llvmValue )
         {
-            mValue.reset( value );
-
+            mLLVMValue = llvmValue;
             astExpression.accept( * this );
-            return mValue.release( );
         }
 
     }

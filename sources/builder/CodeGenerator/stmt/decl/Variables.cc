@@ -1,5 +1,6 @@
 #include "castel/ast/stmt/decl/Variables.hh"
 #include "castel/builder/CodeGenerator.hh"
+#include "castel/builder/GetterGenerator.hh"
 
 using namespace castel;
 using builder::CodeGenerator;
@@ -7,16 +8,15 @@ using builder::CodeGenerator;
 void CodeGenerator::visit( ast::stmt::decl::Variables & astVariablesDeclarationStatement )
 {
     for ( auto & variable : astVariablesDeclarationStatement.variables( ) ) {
-        if ( variable.initializer( ) ) {
-            mScope.declare( variable.name( ) );
-            variable.initializer( )->accept( * this );
-            mScope.set( variable.name( ), mValue.release( ) );
-        } else {
-            mScope.declare( variable.name( ) );
-        }
-    }
 
-    if ( astVariablesDeclarationStatement.next( ) ) {
-        astVariablesDeclarationStatement.next( )->accept( * this );
+        ast::Expression * astInitializer = variable.initializer( );
+
+        mScope.declare( variable.name( ) );
+
+        if ( astInitializer != nullptr ) {
+            llvm::Value * llvmValue = builder::GetterGenerator( mScope ).run( * astInitializer );
+            mScope.set( variable.name( ), llvmValue );
+        }
+
     }
 }

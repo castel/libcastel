@@ -45,8 +45,7 @@ llvm::Value * FunctionBuilder::create( builder::Context & context, builder::Scop
         for ( auto & astParameter : mParameters )
             scope.declare( astParameter.name( ), context.irBuilder( ).CreateLoad( context.irBuilder( ).CreateConstGEP1_32( runtimeArguments_argumentsArray, parameterCount ++ ) ) );
 
-        builder::CodeGenerator codeGenerator( context, scope );
-        mStatements->accept( codeGenerator );
+        builder::CodeGenerator( scope ).run( * mStatements );
 
         llvm::BasicBlock * llvmLastBasicBlock = & llvmFunction->getBasicBlockList( ).back( );
         if ( llvmLastBasicBlock->empty( ) || ! llvmLastBasicBlock->back( ).isTerminator( ) ) {

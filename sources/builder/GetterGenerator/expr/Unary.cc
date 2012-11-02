@@ -3,10 +3,10 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/Unary.hh"
-#include "castel/builder/CodeGenerator.hh"
+#include "castel/builder/GetterGenerator.hh"
 
 using namespace castel;
-using builder::CodeGenerator;
+using builder::GetterGenerator;
 
 static std::map< ast::expr::Unary::Operator, char const * > const operatorsTable {
 
@@ -23,13 +23,13 @@ static std::map< ast::expr::Unary::Operator, char const * > const operatorsTable
 
 };
 
-void CodeGenerator::visit( ast::expr::Unary & astUnaryExpression )
+void GetterGenerator::visit( ast::expr::Unary & astUnaryExpression )
 {
     ast::Expression * astOperand = astUnaryExpression.operand( );
 
     if ( astOperand == nullptr )
         throw std::runtime_error( "Missing operand" );
 
-    llvm::Value * llvmOperand = builder::CodeGenerator( mContext, mScope ).expression( * astOperand );
-    mValue.reset( mContext.irBuilder( ).CreateCastelCall( operatorsTable.at( astUnaryExpression.type( ) ), llvmOperand ) );
+    llvm::Value * llvmOperand = builder::GetterGenerator( mScope ).run( * astOperand );
+    mLLVMValue = mContext.irBuilder( ).CreateCastelCall( operatorsTable.at( astUnaryExpression.type( ) ), llvmOperand );
 }

@@ -11,7 +11,7 @@ void CodeGenerator::visit( ast::expr::New & astNewExpression )
         throw std::runtime_error( "Missing constructor" );
 
     astNewExpression.constructor( )->accept( * this );
-    mValue.reset( mContext.irBuilder( ).CreateCastelCall( "castelClass_instanciate", mValue.release( ) ) );
+    mLLVMValue.reset( mContext.irBuilder( ).CreateCastelCall( "castelClass_instanciate", mLLVMValue.release( ) ) );
 }
 
 #endif

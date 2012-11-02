@@ -3,9 +3,9 @@
 #include <llvm/Value.h>
 
 #include "castel/builder/ClassBuilder.hh"
-#include "castel/builder/CodeGenerator.hh"
 #include "castel/builder/Context.hh"
 #include "castel/builder/FunctionBuilder.hh"
+#include "castel/builder/GetterGenerator.hh"
 #include "castel/builder/Scope.hh"
 #include "castel/runtime/boxes/Class.hh"
 
@@ -62,7 +62,7 @@ llvm::Value * ClassBuilder::createInitializer( builder::Context & context, build
             if ( auto attribute = dynamic_cast< ast::expr::Class::Attribute * >( & member ) ) {
                 if ( attribute->type( ) == ast::expr::Class::Member::Type::Binded ) {
                     llvm::Value * llvmName = context.irBuilder( ).CreateGlobalStringPtr( attribute->name( ) );
-                    llvm::Value * llvmInitializer = builder::CodeGenerator( context, scope ).expression( * ( attribute->initializer( ) ) );
+                    llvm::Value * llvmInitializer = builder::GetterGenerator( scope ).run( * ( attribute->initializer( ) ) );
                     context.irBuilder( ).CreateCastelCall( "castel_addMember", runtimeArguments_instance, llvmName, llvmInitializer );
                 }
             }
