@@ -1,6 +1,0 @@
-from x import y as lol;
-from x import y;
-import y as lol;
-
-from x.x.x.x import y as lol;
-from x.x.x.x import y;
