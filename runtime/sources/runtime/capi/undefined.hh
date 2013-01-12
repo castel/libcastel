@@ -1,8 +1,8 @@
 #include "castel/runtime/boxes/Undefined.hh"
 #include "castel/runtime/capi/Undefined.hh"
-#include "castel/runtime/Context.hh"
+#include "castel/runtime/helper/create.hh"
 
-castel::runtime::boxes::Undefined * castelUndefined_create( castel::runtime::Context * context )
+castel::runtime::boxes::Undefined * castelUndefined_create( void )
 {
-    return context->create< castel::runtime::boxes::Undefined >( );
+    return castel::runtime::helper::create< castel::runtime::boxes::Undefined >( );
 }

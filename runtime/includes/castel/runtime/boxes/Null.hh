@@ -8,29 +8,25 @@ namespace castel
     namespace runtime
     {
 
-        class Context;
-
         namespace boxes
         {
 
             class Null : public runtime::Box
             {
 
-                friend runtime::Context;
-
-            protected:
+            public:
 
                 inline Null( void );
 
             public:
 
-                virtual bool operatorBool( runtime::Context * context );
+                virtual bool operatorBool( void );
 
             public:
 
-                virtual runtime::Box * operatorLogicalEqual( runtime::Context * context, runtime::Box * operand );
+                virtual runtime::Box * operatorLogicalEqual( runtime::Box * operand );
 
-                virtual runtime::Box * operatorLogicalNotEqual( runtime::Context * context, runtime::Box * operand );
+                virtual runtime::Box * operatorLogicalNotEqual( runtime::Box * operand );
 
             };
 
@@ -39,9 +35,6 @@ namespace castel
     }
 
 }
-
-#include "castel/runtime/Context.hh"
-#include "castel/runtime/capi.hh"
 
 namespace castel
 {

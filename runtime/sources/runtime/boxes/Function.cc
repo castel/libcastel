@@ -1,19 +1,19 @@
 #include "castel/runtime/boxes/Function.hh"
+#include "castel/runtime/helper/Fatal.hh"
 #include "castel/runtime/Box.hh"
-#include "castel/runtime/capi.hh"
 
 using namespace castel;
 using runtime::boxes::Function;
 
-bool Function::operatorBool( runtime::Context * )
+bool Function::operatorBool( void )
 {
     return true;
 }
 
-runtime::Box * Function::operatorCall( runtime::Context * context, unsigned int argc, runtime::Box ** argv )
+runtime::Box * Function::operatorCall( unsigned int argc, runtime::Box ** argv )
 {
     if ( argc < mArgumentCount )
-        context->fatal( "Bad argument count" );
+        runtime::helper::Fatal( ) << "Bad argument count" << std::endl;
 
-    return mFunctionPtr( context, mEnvironment, argc, argv );
+    return mFunctionPtr( mEnvironment, argc, argv );
 }

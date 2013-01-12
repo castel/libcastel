@@ -3,7 +3,7 @@
 using namespace castel;
 using runtime::boxes::Bool;
 
-bool Bool::operatorBool( runtime::Context * )
+bool Bool::operatorBool( void )
 {
     return mValue;
 }

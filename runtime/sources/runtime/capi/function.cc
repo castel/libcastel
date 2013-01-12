@@ -1,9 +1,9 @@
 #include "castel/runtime/boxes/Function.hh"
-#include "castel/runtime/capi/function.hh"
+#include "castel/runtime/helper/create.hh"
 #include "castel/runtime/Box.hh"
-#include "castel/runtime/Context.hh"
+#include "castel/runtime/capi.hh"
 
-castel::runtime::boxes::Function * castelFunction_create( castel::runtime::Context * context, castel::runtime::boxes::Function::Signature * functionPtr, unsigned int argumentCount, castel::runtime::Box *** environment )
+castel::runtime::boxes::Function * castelFunction_create( castel::runtime::boxes::Function::Signature * functionPtr, unsigned int argumentCount, castel::runtime::Box *** environment )
 {
-    return context->create< castel::runtime::boxes::Function >( functionPtr, argumentCount, environment );
+    return castel::runtime::helper::create< castel::runtime::boxes::Function >( functionPtr, argumentCount, environment );
 }

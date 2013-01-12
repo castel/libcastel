@@ -31,11 +31,11 @@ namespace castel
 
             class String;
 
-            class Symbol;
-
             class Unary;
 
             class Undefined;
+
+            class Variable;
 
         }
 
@@ -95,11 +95,11 @@ namespace castel
 
                 virtual inline void visit( ast::expr::String & astStringExpression );
 
-                virtual inline void visit( ast::expr::Symbol & astSymbolExpression );
-
                 virtual inline void visit( ast::expr::Unary & astUnaryExpression );
 
                 virtual inline void visit( ast::expr::Undefined & astUndefinedExpression );
+
+                virtual inline void visit( ast::expr::Variable & astVariableExpression );
 
             public:
 
@@ -138,9 +138,9 @@ namespace castel
 #include "castel/ast/expr/Null.hh"
 #include "castel/ast/expr/Number.hh"
 #include "castel/ast/expr/String.hh"
-#include "castel/ast/expr/Symbol.hh"
 #include "castel/ast/expr/Unary.hh"
 #include "castel/ast/expr/Undefined.hh"
+#include "castel/ast/expr/Variable.hh"
 #include "castel/ast/stmt/decl/Variables.hh"
 #include "castel/ast/stmt/Expression.hh"
 #include "castel/ast/stmt/If.hh"
@@ -216,11 +216,6 @@ namespace castel
                 this->defaultAction( astStringExpression );
             }
 
-            void Visitor::visit( ast::expr::Symbol & astSymbolExpression )
-            {
-                this->defaultAction( astSymbolExpression );
-            }
-
             void Visitor::visit( ast::expr::Unary & astUnaryExpression )
             {
                 this->defaultAction( astUnaryExpression );
@@ -229,6 +224,11 @@ namespace castel
             void Visitor::visit( ast::expr::Undefined & astUndefinedExpression )
             {
                 this->defaultAction( astUndefinedExpression );
+            }
+
+            void Visitor::visit( ast::expr::Variable & astVariableExpression )
+            {
+                this->defaultAction( astVariableExpression );
             }
 
             void Visitor::visit( ast::stmt::decl::Variables & astVariablesDeclaration )

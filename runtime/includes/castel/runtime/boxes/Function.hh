@@ -8,36 +8,34 @@ namespace castel
     namespace runtime
     {
 
-        class Context;
-
         namespace boxes
         {
 
             class Function : public runtime::Box
             {
 
-                friend runtime::Context;
-
             public:
 
-                using Signature = runtime::Box * ( runtime::Context * context, runtime::Box *** environment, unsigned int argc, runtime::Box ** argv );
+                using Signature = runtime::Box * ( runtime::Box *** environment, unsigned int argc, runtime::Box ** argv );
 
-            protected:
+            public:
 
                 inline Function( runtime::boxes::Function::Signature * functionPtr, unsigned int argc, runtime::Box *** environment );
 
             public:
 
-                virtual bool operatorBool( runtime::Context * context );
+                virtual bool operatorBool( void );
 
             public:
 
-                virtual runtime::Box * operatorCall( runtime::Context * context, unsigned int argc, runtime::Box ** argv );
+                virtual runtime::Box * operatorCall( unsigned int argc, runtime::Box ** argv );
 
             private:
 
                 runtime::boxes::Function::Signature * mFunctionPtr;
+
                 unsigned int mArgumentCount;
+
                 runtime::Box *** mEnvironment;
 
             };
@@ -47,9 +45,6 @@ namespace castel
     }
 
 }
-
-#include "castel/runtime/Context.hh"
-#include "castel/runtime/capi.hh"
 
 namespace castel
 {

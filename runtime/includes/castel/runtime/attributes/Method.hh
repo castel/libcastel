@@ -17,37 +17,21 @@ namespace castel
 
         class Box;
 
-        class Context;
-
-        /**
-         */
-
         namespace attributes
         {
 
             class Method : public runtime::Attribute
             {
 
-                friend runtime::Context;
-
-            protected:
-
-                /**
-                 */
+            public:
 
                 inline Method( runtime::boxes::Function * function );
 
             public:
 
-                /**
-                 */
+                virtual runtime::Box * get( runtime::Box * instance ) const;
 
-                virtual runtime::Box * get( runtime::Context * context, runtime::Box * instance ) const;
-
-                /**
-                 */
-
-                virtual Attribute & set( runtime::Context * context, runtime::Box * instance, runtime::Box * value );
+                virtual Attribute & set( runtime::Box * instance, runtime::Box * value );
 
             public:
 
@@ -63,7 +47,6 @@ namespace castel
 
 #include "castel/runtime/boxes/Function.hh"
 #include "castel/runtime/Box.hh"
-#include "castel/runtime/Context.hh"
 
 namespace castel
 {

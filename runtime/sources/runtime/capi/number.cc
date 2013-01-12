@@ -1,8 +1,8 @@
 #include "castel/runtime/boxes/Number.hh"
-#include "castel/runtime/capi/number.hh"
-#include "castel/runtime/Context.hh"
+#include "castel/runtime/helper/create.hh"
+#include "castel/runtime/capi.hh"
 
-castel::runtime::boxes::Number * castelNumber_create( castel::runtime::Context * context, double value )
+castel::runtime::boxes::Number * castelNumber_create( double value )
 {
-    return context->create< castel::runtime::boxes::Number >( value );
+    return castel::runtime::helper::create< castel::runtime::boxes::Number >( value );
 }

@@ -8,8 +8,6 @@ namespace castel
     namespace runtime
     {
 
-        class Context;
-
         namespace boxes
         {
 
@@ -18,9 +16,7 @@ namespace castel
             class Object : public runtime::Box
             {
 
-                friend runtime::Context;
-
-            protected:
+            public:
 
                 inline Object( runtime::boxes::Class * type );
 
@@ -33,8 +29,6 @@ namespace castel
 }
 
 #include "castel/runtime/boxes/Class.hh"
-#include "castel/runtime/Context.hh"
-#include "castel/runtime/capi.hh"
 
 namespace castel
 {

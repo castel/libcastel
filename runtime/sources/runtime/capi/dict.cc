@@ -1,8 +1,8 @@
 #include "castel/runtime/boxes/Dict.hh"
-#include "castel/runtime/capi/dict.hh"
-#include "castel/runtime/Context.hh"
+#include "castel/runtime/helper/create.hh"
+#include "castel/runtime/capi.hh"
 
-castel::runtime::boxes::Dict * castelDict_create( castel::runtime::Context * context )
+castel::runtime::boxes::Dict * castelDict_create( void )
 {
-    return context->create< castel::runtime::boxes::Dict >( );
+    return castel::runtime::helper::create< castel::runtime::boxes::Dict >( );
 }

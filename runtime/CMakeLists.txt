@@ -22,5 +22,7 @@ endforeach(HEADER)
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_FLAGS -std=c++11)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+
 include_directories("${CMAKE_BINARY_DIR}/includes")
+
 add_library(CastelRuntime STATIC ${RUNTIME_HEADERS} ${RUNTIME_SOURCES})

@@ -30,12 +30,12 @@ namespace castel
             /**
              */
 
-            virtual runtime::Box * get( runtime::Context * context, runtime::Box * instance ) const = 0;
+            virtual runtime::Box * get( runtime::Box * instance ) const = 0;
 
             /**
              */
 
-            virtual Attribute & set( runtime::Context * context, runtime::Box * instance, runtime::Box * box ) = 0;
+            virtual Attribute & set( runtime::Box * instance, runtime::Box * box ) = 0;
 
         };
 

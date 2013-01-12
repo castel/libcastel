@@ -1,8 +1,8 @@
 #include "castel/runtime/boxes/Bool.hh"
-#include "castel/runtime/capi/bool.hh"
-#include "castel/runtime/Context.hh"
+#include "castel/runtime/helper/create.hh"
+#include "castel/runtime/capi.hh"
 
-castel::runtime::boxes::Bool * castelBool_create( castel::runtime::Context * context, bool value )
+castel::runtime::boxes::Bool * castelBool_create( bool value )
 {
-    return context->create< castel::runtime::boxes::Bool >( value );
+    return castel::runtime::helper::create< castel::runtime::boxes::Bool >( value );
 }

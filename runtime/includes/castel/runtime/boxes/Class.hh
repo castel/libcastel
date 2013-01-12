@@ -11,18 +11,14 @@ namespace castel
         namespace boxes
         {
 
-            class Context;
-
             class Class : public runtime::Box
             {
 
-                friend runtime::Context;
-
             public:
 
-                using InitializerSignature = void ( runtime::Context * context, runtime::Box * instance, runtime::Box *** environment );
+                using InitializerSignature = void ( runtime::Box * instance, runtime::Box *** environment );
 
-            protected:
+            public:
 
                 inline Class( runtime::boxes::Class * parent, runtime::boxes::Class::InitializerSignature * initializer, runtime::Box *** environment );
 
@@ -38,11 +34,11 @@ namespace castel
 
             public:
 
-                runtime::Box * instanciate( runtime::Context * context, unsigned int argc, runtime::Box ** argv );
+                runtime::Box * instanciate( unsigned int argc, runtime::Box ** argv );
 
             public:
 
-                virtual bool operatorBool( runtime::Context * context );
+                virtual bool operatorBool( void );
 
             private:
 
@@ -60,9 +56,6 @@ namespace castel
     }
 
 }
-
-#include "castel/runtime/Context.hh"
-#include "castel/runtime/capi.hh"
 
 namespace castel
 {

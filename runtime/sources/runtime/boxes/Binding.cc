@@ -6,12 +6,12 @@
 using namespace castel;
 using runtime::boxes::Binding;
 
-bool Binding::operatorBool( runtime::Context * )
+bool Binding::operatorBool( void )
 {
     return true;
 }
 
-runtime::Box * Binding::operatorCall( runtime::Context * context, unsigned int argc, runtime::Box ** argv )
+runtime::Box * Binding::operatorCall( unsigned int argc, runtime::Box ** argv )
 {
     unsigned int newArgc = argc + mArgumentCount;
     runtime::Box * newArgv[ newArgc ];
@@ -19,5 +19,5 @@ runtime::Box * Binding::operatorCall( runtime::Context * context, unsigned int a
     std::copy( mArguments, mArguments + mArgumentCount, newArgv );
     std::copy( argv, argv + argc, newArgv + mArgumentCount );
 
-    return mCallable->operatorCall( context, newArgc, newArgv );
+    return mCallable->operatorCall( newArgc, newArgv );
 }

@@ -1,17 +1,19 @@
 #include "castel/runtime/boxes/Class.hh"
 #include "castel/runtime/boxes/Object.hh"
+#include "castel/runtime/helper/create.hh"
+#include "castel/runtime/Box.hh"
 
 using namespace castel;
 using runtime::boxes::Class;
 
-bool Class::operatorBool( runtime::Context * )
+bool Class::operatorBool( void )
 {
     return true;
 }
 
-runtime::Box * Class::instanciate( runtime::Context * context, unsigned int argc, runtime::Box ** argv )
+runtime::Box * Class::instanciate( unsigned int argc, runtime::Box ** argv )
 {
-    runtime::boxes::Object * instance = context->create< runtime::boxes::Object >( this );
-    mInitializer( context, instance, mEnvironment );
+    runtime::boxes::Object * instance = runtime::helper::create< runtime::boxes::Object >( this );
+    mInitializer( instance, mEnvironment );
     return instance;
 }

@@ -1,8 +1,8 @@
 #include "castel/runtime/boxes/List.hh"
-#include "castel/runtime/capi/list.hh"
-#include "castel/runtime/Context.hh"
+#include "castel/runtime/helper/create.hh"
+#include "castel/runtime/capi.hh"
 
-castel::runtime::boxes::List * castelList_create( castel::runtime::Context * context )
+castel::runtime::boxes::List * castelList_create( void )
 {
-    return context->create< castel::runtime::boxes::List >( );
+    return castel::runtime::helper::create< castel::runtime::boxes::List >( );
 }

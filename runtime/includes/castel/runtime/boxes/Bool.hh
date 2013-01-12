@@ -8,17 +8,13 @@ namespace castel
     namespace runtime
     {
 
-        class Context;
-
         namespace boxes
         {
 
             class Bool : public runtime::Box
             {
 
-                friend runtime::Context;
-
-            protected:
+            public:
 
                 inline Bool( bool value );
 
@@ -30,7 +26,7 @@ namespace castel
 
             public:
 
-                virtual bool operatorBool( runtime::Context * context );
+                virtual bool operatorBool( void );
 
             private:
 
@@ -43,9 +39,6 @@ namespace castel
     }
 
 }
-
-#include "castel/runtime/Context.hh"
-#include "castel/runtime/capi.hh"
 
 namespace castel
 {

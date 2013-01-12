@@ -1,8 +1,8 @@
 #include "castel/runtime/boxes/String.hh"
-#include "castel/runtime/capi/string.hh"
-#include "castel/runtime/Context.hh"
+#include "castel/runtime/helper/create.hh"
+#include "castel/runtime/capi.hh"
 
-castel::runtime::boxes::String * castelString_create( castel::runtime::Context * context, char const * value )
+castel::runtime::boxes::String * castelString_create( char const * value )
 {
-    return context->create< castel::runtime::boxes::String >( value );
+    return castel::runtime::helper::create< castel::runtime::boxes::String >( value );
 }

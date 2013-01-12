@@ -1,0 +1,1 @@
+CASTEL_FUNCTION( castelNull_create, castel::runtime::boxes::Null *, ( void ) )

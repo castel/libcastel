@@ -98,6 +98,11 @@ namespace castel
                 return * this;
             }
 
+            void Require::accept( ast::tools::Visitor & visitor )
+            {
+                visitor.visit( * this );
+            }
+
         }
 
     }

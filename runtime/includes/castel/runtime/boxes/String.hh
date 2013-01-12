@@ -10,17 +10,13 @@ namespace castel
     namespace runtime
     {
 
-        class Context;
-
         namespace boxes
         {
 
             class String : public runtime::Box
             {
 
-                friend runtime::Context;
-
-            protected:
+            public:
 
                 inline String( char const * value, unsigned int length = 0 );
 
@@ -36,17 +32,17 @@ namespace castel
 
             public:
 
-                virtual bool operatorBool( runtime::Context * context );
+                virtual bool operatorBool( void );
 
             public:
 
-                virtual runtime::Box * operatorNumericAddition( runtime::Context * context, runtime::Box * operand );
+                virtual runtime::Box * operatorNumericAddition( runtime::Box * operand );
 
             public:
 
-                virtual runtime::Box * operatorComparisonEqual( runtime::Context * context, runtime::Box * operand );
+                virtual runtime::Box * operatorComparisonEqual( runtime::Box * operand );
 
-                virtual runtime::Box * operatorComparisonNotEqual( runtime::Context * context, runtime::Box * operand );
+                virtual runtime::Box * operatorComparisonNotEqual( runtime::Box * operand );
 
             private:
 
@@ -61,9 +57,6 @@ namespace castel
     }
 
 }
-
-#include "castel/runtime/Context.hh"
-#include "castel/runtime/capi.hh"
 
 namespace castel
 {

@@ -8,27 +8,23 @@ namespace castel
     namespace runtime
     {
 
-        class Context;
-
         namespace boxes
         {
 
             class Binding : public runtime::Box
             {
 
-                friend runtime::Context;
-
-            protected:
+            public:
 
                 inline Binding( runtime::Box * callable, unsigned int argumentCount, runtime::Box ** arguments );
 
             public:
 
-                virtual bool operatorBool( runtime::Context * context );
+                virtual bool operatorBool( void );
 
             public:
 
-                virtual runtime::Box * operatorCall( runtime::Context * context, unsigned int argc, runtime::Box ** argv );
+                virtual runtime::Box * operatorCall( unsigned int argc, runtime::Box ** argv );
 
             private:
 
@@ -45,11 +41,6 @@ namespace castel
     }
 
 }
-
-#include "castel/runtime/boxes/Function.hh"
-#include "castel/runtime/Box.hh"
-#include "castel/runtime/Context.hh"
-#include "castel/runtime/capi.hh"
 
 namespace castel
 {
