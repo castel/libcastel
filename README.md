@@ -8,9 +8,9 @@ Bug reports should be reported on the bug tracker of the [castel compiler](https
 
 You will need LLVM 3.2, Ragel, Lemon, Clang and CMake.
 
-    $> git clone git@github.com:castel/libraries
-    $> mkdir libraries/build
-    $> cd libraries/build
+    $> git clone git@github.com:castel/libcastel
+    $> mkdir libcastel/build
+    $> cd libcastel/build
     $> cmake ..
     $> make
 
