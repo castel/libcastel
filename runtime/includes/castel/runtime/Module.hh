@@ -13,7 +13,9 @@ namespace castel
 
         public:
 
-            using Signature = runtime::Box * ( runtime::Box * );
+            using Signature = runtime::Box * ( void * runner );
+
+            using GlobalInitializerSignature = runtime::Box * ( void * runner, char const * globalName );
 
         private:
 
