@@ -14,6 +14,9 @@ bool Class::operatorBool( void )
 runtime::Box * Class::instanciate( unsigned int argc, runtime::Box ** argv )
 {
     runtime::boxes::Object * instance = runtime::helper::create< runtime::boxes::Object >( this );
-    mInitializer( instance, mEnvironment );
+
+    for ( runtime::boxes::Class * type = this; type != nullptr; type = type->parent( ) )
+        type->mInitializer( instance, mEnvironment );
+
     return instance;
 }

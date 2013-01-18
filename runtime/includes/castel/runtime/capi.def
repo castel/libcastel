@@ -1,8 +1,4 @@
 CASTEL_FUNCTION( castel_malloc, void *, ( std::size_t size, unsigned int count ) )
-CASTEL_FUNCTION( castel_fatal, void, ( char const * errorMessage ) )
-
-CASTEL_FUNCTION( castel_unaryOperatorMissing, void, ( char const * name, castel::runtime::Box * operand ) )
-CASTEL_FUNCTION( castel_binaryOperatorMissing, void, ( char const * name, castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
 
 CASTEL_FUNCTION( castel_addMember, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value ) )
 CASTEL_FUNCTION( castel_addMethod, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function ) )

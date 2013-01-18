@@ -1,7 +1,7 @@
 #pragma once
 
-#include <exception>
-#include <sstream>
+#include <cstdlib>
+#include <iostream>
 
 #include "castel/runtime/capi.hh"
 
@@ -21,17 +21,13 @@ namespace castel
 
                 [[noreturn]]
                 inline ~Fatal( void )
-                { castel_fatal( mStream.str( ).c_str( ) ); throw std::exception( ); }
-
-            private:
-
-                std::ostringstream mStream;
+                { std::exit( 1 ); }
 
             public:
 
                 template < typename T >
-                inline auto operator<<( T const & t ) -> decltype( mStream << t )
-                { return mStream << t; }
+                inline auto operator<<( T const & t ) -> decltype( std::cerr << t )
+                { return std::cerr << t; }
             };
 
         }
