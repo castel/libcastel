@@ -23,7 +23,7 @@ using gen::FunctionBuilder;
 
 llvm::Value * FunctionBuilder::build( llvm::LLVMContext & context, llvm::Module * module, llvm::IRBuilder< > & parentIRBuilder, gen::Scope & parentScope )
 {
-    llvm::Function * function = llvm::Function::Create( gen::helper::type< runtime::boxes::Function::Signature >( context ), llvm::GlobalVariable::ExternalLinkage, mName, module );
+    llvm::Function * function = llvm::Function::Create( gen::helper::type< runtime::boxes::Function::Signature >( context ), llvm::GlobalVariable::PrivateLinkage, mName, module );
     llvm::Value * argumentCount = gen::helper::i32( context, std::distance( ast::tools::begin( mParameters ), ast::tools::end( mParameters ) ) + ( mUseThis ? 1 : 0 ) );
     llvm::Value * functionBox = gen::helper::call( context, module, parentIRBuilder, "castelFunction_create", function, argumentCount, parentScope.environmentTable( ) );
 

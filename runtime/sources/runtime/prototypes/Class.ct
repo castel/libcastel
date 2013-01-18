@@ -1,0 +1,3 @@
+return %castelClassBt_InstallPrototype((class:
+	public function parent:
+		return %castelClassBt_Parent(this)))

@@ -24,6 +24,8 @@ namespace castel
 
             class Dict;
 
+            class External;
+
             class Function;
 
             class List;
@@ -79,6 +81,8 @@ namespace castel
             virtual void visit( ast::expr::Class & astClassExpression );
 
             virtual void visit( ast::expr::Dict & astDictExpression );
+
+            virtual void visit( ast::expr::External & astExternalExpression );
 
             virtual void visit( ast::expr::Function & astFunctionExpression );
 

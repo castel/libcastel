@@ -20,6 +20,7 @@
     #include "castel/ast/expr/Class.hh"
     #include "castel/ast/expr/Conditional.hh"
     #include "castel/ast/expr/Dict.hh"
+    #include "castel/ast/expr/External.hh"
     #include "castel/ast/expr/Function.hh"
     #include "castel/ast/expr/List.hh"
     #include "castel/ast/expr/Multary.hh"
@@ -212,11 +213,15 @@ expression(A) ::= assignmentexpression(U). { A = U; }
 
                                                         %type primaryexpression { ast::Expression * }
                                                         primaryexpression(A) ::= variable(U). { A = U; }
+                                                        primaryexpression(A) ::= external(U). { A = U; }
                                                         primaryexpression(A) ::= literal(U). { A = U; }
                                                         primaryexpression(A) ::= LParenthesis expression(U) RParenthesis. { A = U; }
 
                                                             %type variable { ast::expr::Variable * }
                                                             variable(A) ::= Identifier(U). { A = new ast::expr::Variable( U->as< std::string >( ) ); }
+
+                                                            %type external { ast::expr::External * }
+                                                            external(A) ::= External(U). { A = ast::expr::External::createFromLiteral( U->as< std::string >( ) ); }
 
                                                             %type literal { ast::Expression * }
                                                             literal(A) ::= nullliteral(U). { A = U; }
@@ -288,7 +293,8 @@ expression(A) ::= assignmentexpression(U). { A = U; }
                                                                             parameter(A) ::= Identifier(U). { A = new ast::expr::Function::Parameter( U->as< std::string >( ) ); }
 
                                                                 %type classliteral { ast::expr::Class * }
-                                                                classliteral(A) ::= LParenthesis Class Colon classblock(V) RParenthesis. { A = new ast::expr::Class( V ); }
+                                                                classliteral(A) ::= LParenthesis Class Colon classblock(U) RParenthesis. { A = new ast::expr::Class( U ); }
+                                                                classliteral(A) ::= LParenthesis Class Extending expression(U) Colon classblock(V) RParenthesis. { A = new ast::expr::Class( V, U ); }
 
                                                                     %type classblock { ast::expr::Class::Member * }
                                                                     classblock(A) ::= Indent classblockiterator(U) Dedent. { A = U; }

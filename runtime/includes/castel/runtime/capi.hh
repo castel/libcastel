@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstddef>
 
 #include "castel/runtime/boxes/Binding.hh"
@@ -16,7 +18,20 @@
 extern "C" {
 
     #define CASTEL_FUNCTION( NAME, RETURN, PARAMETERS ) RETURN NAME PARAMETERS;
+    #define CASTEL_EXTERNAL( NAME ) castel::runtime::Box * NAME( castel::runtime::Box ***, int argc, castel::runtime::Box ** argv );
+
+    #include "castel/runtime/capi/bool.def"
+    #include "castel/runtime/capi/class.def"
+    #include "castel/runtime/capi/dict.def"
+    #include "castel/runtime/capi/function.def"
+    #include "castel/runtime/capi/list.def"
+    #include "castel/runtime/capi/null.def"
+    #include "castel/runtime/capi/number.def"
+    #include "castel/runtime/capi/string.def"
+    #include "castel/runtime/capi/undefined.def"
     #include "castel/runtime/capi.def"
+
+    #undef CASTEL_EXTERNAL
     #undef CASTEL_FUNCTION
 
 }

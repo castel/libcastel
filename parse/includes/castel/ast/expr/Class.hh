@@ -37,7 +37,15 @@ namespace castel
 
             public:
 
-                inline Class( ast::expr::Class::Member * members );
+                inline Class( ast::expr::Class::Member * members, ast::Expression * parent = nullptr );
+
+            public:
+
+                inline ast::Expression * parent( void ) const;
+
+                inline Class & parent( ast::Expression * parent );
+
+                inline ast::Expression * takeParent( void );
 
             public:
 
@@ -52,6 +60,8 @@ namespace castel
                 virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
+
+                std::unique_ptr< ast::Expression > mParent;
 
                 std::unique_ptr< ast::expr::Class::Member > mMembers;
 
@@ -261,9 +271,27 @@ namespace castel
                 return mFunction.release( );
             }
 
-            Class::Class( ast::expr::Class::Member * members )
-                : mMembers( members )
+            Class::Class( ast::expr::Class::Member * members, ast::Expression * parent )
+                : mParent( parent )
+                , mMembers( members )
             {
+            }
+
+            ast::Expression * Class::parent( void ) const
+            {
+                return mParent.get( );
+            }
+
+            Class & Class::parent( ast::Expression * parent )
+            {
+                mParent.reset( parent );
+
+                return * this;
+            }
+
+            ast::Expression * Class::takeParent( void )
+            {
+                return mParent.release( );
             }
 
             ast::expr::Class::Member * Class::members( void ) const

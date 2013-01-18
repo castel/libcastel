@@ -28,7 +28,7 @@ namespace castel
 
                 static inline String * createFromLiteral( std::string const & literalValue );
 
-            public:
+            private:
 
                 inline String( void );
 

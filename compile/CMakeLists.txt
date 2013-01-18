@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
+find_package(LLVM)
+
 file(GLOB_RECURSE GEN_STATIC_HEADERS_ORIGIN "${CMAKE_CURRENT_SOURCE_DIR}/includes/*.hh" "${CMAKE_CURRENT_SOURCE_DIR}/includes/*.def")
 string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_BINARY_DIR}" GEN_STATIC_HEADERS "${GEN_STATIC_HEADERS_ORIGIN}")
 file(GLOB_RECURSE GEN_STATIC_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cc")
@@ -15,16 +17,9 @@ foreach(HEADER ${GEN_STATIC_HEADERS})
         "${CMAKE_BINARY_DIR}/${RELATIVE_HEADER}"
         COMMAND mkdir -p "${BINARY_PATH}"
         COMMAND cp "${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_HEADER}" "${CMAKE_BINARY_DIR}/${RELATIVE_HEADER}"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_HEADER}"
-    )
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${RELATIVE_HEADER}")
 endforeach(HEADER)
 
-execute_process(COMMAND llvm-config --cppflags COMMAND tr -d "\\n" OUTPUT_VARIABLE LLVM_CPP_FLAGS)
-
-set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_CXX_FLAGS "-std=c++11 ${LLVM_CPP_FLAGS}")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
-
-include_directories("${CMAKE_BINARY_DIR}/includes" "${CMAKE_CURRENT_SOURCE_DIR}/../parse/includes" "${CMAKE_CURRENT_SOURCE_DIR}/../runtime/includes")
-
 add_library(CastelCompile STATIC ${GEN_HEADERS} ${GEN_SOURCES})
+set_property(TARGET CastelCompile APPEND_STRING PROPERTY COMPILE_FLAGS "${LLVM_CXX_FLAGS}")
+add_dependencies(CastelCompile CastelParse)

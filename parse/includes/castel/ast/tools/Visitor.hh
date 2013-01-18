@@ -19,6 +19,8 @@ namespace castel
 
             class Dict;
 
+            class External;
+
             class Function;
 
             class List;
@@ -83,6 +85,8 @@ namespace castel
 
                 virtual inline void visit( ast::expr::Dict & astDictExpression );
 
+                virtual inline void visit( ast::expr::External & astExternalExpression );
+
                 virtual inline void visit( ast::expr::Function & astFunctionExpression );
 
                 virtual inline void visit( ast::expr::List & astListExpression );
@@ -132,6 +136,7 @@ namespace castel
 #include "castel/ast/expr/Class.hh"
 #include "castel/ast/expr/Conditional.hh"
 #include "castel/ast/expr/Dict.hh"
+#include "castel/ast/expr/External.hh"
 #include "castel/ast/expr/Function.hh"
 #include "castel/ast/expr/List.hh"
 #include "castel/ast/expr/Multary.hh"
@@ -184,6 +189,11 @@ namespace castel
             void Visitor::visit( ast::expr::Dict & astDictExpression )
             {
                 this->defaultAction( astDictExpression );
+            }
+
+            void Visitor::visit( ast::expr::External & astExternalExpression )
+            {
+                this->defaultAction( astExternalExpression );
             }
 
             void Visitor::visit( ast::expr::Function & astFunctionExpression )

@@ -25,7 +25,13 @@ namespace castel
 
         public:
 
-            inline ModuleBuilder( void );
+            inline ModuleBuilder( std::string const & name = "" );
+
+        public:
+
+            inline std::string const & name( void ) const;
+
+            inline ModuleBuilder & name( std::string const & name );
 
         public:
 
@@ -47,6 +53,8 @@ namespace castel
 
         private:
 
+            std::string mName;
+
             std::list< std::string > mGlobals;
 
             ast::Statement * mStatements;
@@ -65,10 +73,23 @@ namespace castel
     namespace gen
     {
 
-        ModuleBuilder::ModuleBuilder( void )
-            : mGlobals( )
+        ModuleBuilder::ModuleBuilder( std::string const & name )
+            : mName( name )
+            , mGlobals( )
             , mStatements( nullptr )
         {
+        }
+
+        std::string const & ModuleBuilder::name( void ) const
+        {
+            return mName;
+        }
+
+        ModuleBuilder & ModuleBuilder::name( std::string const & name )
+        {
+            mName = name;
+
+            return * this;
         }
 
         std::list< std::string > const & ModuleBuilder::globals( void ) const

@@ -121,6 +121,7 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
 
         Undefined                  = 'undefined';
         Protected                  = 'protected';
+        Extending                  = 'extending';
         Operator                   = 'operator';
         Function                   = 'function';
         Private                    = 'private';
@@ -179,7 +180,8 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
 
         String                     = '"'([^\"]|'\\' any)*'"';
         Number                     = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+);
-        Identifier                 = [a-zA-Z]+[0-9a-zA-Z_]*;
+        External                   = '%'[a-zA-Z][0-9a-zA-Z_]*;
+        Identifier                 = [a-zA-Z][0-9a-zA-Z_]*;
 
         Spaces                     = [ ]+;
         Newline                    = ('\r''\n'|'\r'|'\n')('\t'*);
@@ -190,6 +192,8 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
             Dict                       => { type = lex::Lexeme::Type::Dict;                       fbreak; };
             List                       => { type = lex::Lexeme::Type::List;                       fbreak; };
             Class                      => { type = lex::Lexeme::Type::Class;                      fbreak; };
+
+            Extending                  => { type = lex::Lexeme::Type::Extending;                  fbreak; };
 
             Public                     => { type = lex::Lexeme::Type::Public;                     fbreak; };
             Protected                  => { type = lex::Lexeme::Type::Protected;                  fbreak; };
@@ -255,12 +259,13 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
 
             String                     => { type = lex::Lexeme::Type::String;                     fbreak; };
             Number                     => { type = lex::Lexeme::Type::Number;                     fbreak; };
+            External                   => { type = lex::Lexeme::Type::External;                   fbreak; };
             Identifier                 => { type = lex::Lexeme::Type::Identifier;                 fbreak; };
 
             Spaces                     => { type = lex::Lexeme::Type::Spaces;                     fbreak; };
             Newline                    => { type = lex::Lexeme::Type::Newline;                    fbreak; };
 
-            any                        => {                                                         fbreak; };
+            any                        => {                                                       fbreak; };
 
         *|;
 

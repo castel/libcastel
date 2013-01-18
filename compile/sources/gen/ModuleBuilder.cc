@@ -21,7 +21,7 @@ using gen::ModuleBuilder;
 
 llvm::Module * ModuleBuilder::build( llvm::LLVMContext & context, llvm::Module * module ) const
 {
-    llvm::Function * mainFunction = llvm::Function::Create( gen::helper::type< runtime::Module::Signature >( context ), llvm::GlobalVariable::ExternalLinkage, "main", module );
+    llvm::Function * mainFunction = llvm::Function::Create( gen::helper::type< runtime::Module::Signature >( context ), llvm::GlobalVariable::ExternalLinkage, mName, module );
 
     llvm::BasicBlock * bootstrapBlock = llvm::BasicBlock::Create( context, "bootstrap" );
     llvm::BasicBlock * entryBlock = llvm::BasicBlock::Create( context, "entry" );
