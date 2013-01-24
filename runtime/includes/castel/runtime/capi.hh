@@ -3,7 +3,7 @@
 #include <cstddef>
 
 #include "castel/runtime/boxes/Binding.hh"
-#include "castel/runtime/boxes/Bool.hh"
+#include "castel/runtime/boxes/Boolean.hh"
 #include "castel/runtime/boxes/Class.hh"
 #include "castel/runtime/boxes/Dict.hh"
 #include "castel/runtime/boxes/Function.hh"
@@ -20,7 +20,7 @@ extern "C" {
     #define CASTEL_FUNCTION( NAME, RETURN, PARAMETERS ) RETURN NAME PARAMETERS;
     #define CASTEL_EXTERNAL( NAME ) castel::runtime::Box * NAME( castel::runtime::Box ***, int argc, castel::runtime::Box ** argv );
 
-    #include "castel/runtime/capi/bool.def"
+    #include "castel/runtime/capi/boolean.def"
     #include "castel/runtime/capi/class.def"
     #include "castel/runtime/capi/dict.def"
     #include "castel/runtime/capi/function.def"

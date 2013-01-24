@@ -6,12 +6,12 @@
 using namespace castel;
 using runtime::boxes::Class;
 
-bool Class::operatorBool( void )
+bool Class::operatorBoolCast( void )
 {
     return true;
 }
 
-runtime::Box * Class::instanciate( unsigned int argc, runtime::Box ** argv )
+runtime::Box * Class::operatorNew( unsigned int argc, runtime::Box ** argv )
 {
     runtime::boxes::Object * instance = runtime::helper::create< runtime::boxes::Object >( this );
 

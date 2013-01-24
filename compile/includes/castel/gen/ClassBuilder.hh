@@ -7,7 +7,7 @@
 #include <llvm/Module.h>
 #include <llvm/Value.h>
 
-#include "castel/ast/expr/Class.hh"
+#include "castel/ast/expr/literal/Class.hh"
 
 namespace castel
 {
@@ -38,9 +38,9 @@ namespace castel
 
         public:
 
-            inline ast::expr::Class::Member * members( void ) const;
+            inline ast::expr::literal::Class::Member * members( void ) const;
 
-            inline ClassBuilder & members( ast::expr::Class::Member * members );
+            inline ClassBuilder & members( ast::expr::literal::Class::Member * members );
 
         public:
 
@@ -56,7 +56,7 @@ namespace castel
 
             llvm::Value * mParent;
 
-            ast::expr::Class::Member * mMembers;
+            ast::expr::literal::Class::Member * mMembers;
 
         };
 
@@ -103,12 +103,12 @@ namespace castel
             return * this;
         }
 
-        ast::expr::Class::Member * ClassBuilder::members( void ) const
+        ast::expr::literal::Class::Member * ClassBuilder::members( void ) const
         {
             return mMembers;
         }
 
-        ClassBuilder & ClassBuilder::members( ast::expr::Class::Member * members )
+        ClassBuilder & ClassBuilder::members( ast::expr::literal::Class::Member * members )
         {
             mMembers = members;
 

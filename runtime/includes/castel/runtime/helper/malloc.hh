@@ -16,7 +16,7 @@ namespace castel
 
             inline void * malloc( std::size_t size, unsigned int count = 1 )
             {
-                return ::castel_malloc( size, count );
+                return ::Castel_malloc( size, count );
             }
 
             template < typename T >

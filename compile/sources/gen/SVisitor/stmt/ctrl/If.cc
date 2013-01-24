@@ -5,7 +5,7 @@
 #include <llvm/Function.h>
 #include <llvm/Value.h>
 
-#include "castel/ast/stmt/If.hh"
+#include "castel/ast/stmt/ctrl/If.hh"
 #include "castel/ast/Expression.hh"
 #include "castel/ast/Statement.hh"
 #include "castel/gen/helper/call.hh"
@@ -16,11 +16,11 @@
 using namespace castel;
 using gen::SVisitor;
 
-void SVisitor::visit( ast::stmt::If & ifStatementAst )
+void SVisitor::visit( ast::stmt::ctrl::If & ifControlAst )
 {
-    ast::Expression * conditionAst = ifStatementAst.condition( );
-    ast::Statement * thenBranchAst = ifStatementAst.thenBranch( );
-    ast::Statement * elseBranchAst = ifStatementAst.elseBranch( );
+    ast::Expression * conditionAst = ifControlAst.condition( );
+    ast::Statement * thenBranchAst = ifControlAst.thenBranch( );
+    ast::Statement * elseBranchAst = ifControlAst.elseBranch( );
 
     if ( conditionAst == nullptr )
         throw std::runtime_error( "Missing condition" );
@@ -29,7 +29,7 @@ void SVisitor::visit( ast::stmt::If & ifStatementAst )
         throw std::runtime_error( "Missing 'then' branch" );
 
     llvm::Value * condition = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * conditionAst );
-    llvm::Value * booleanCast = gen::helper::call( mContext, mModule, mIRBuilder, "castel_operatorBool", condition );
+    llvm::Value * booleanCast = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Operator_boolCast", condition );
     llvm::Value * test = mIRBuilder.CreateICmpEQ( booleanCast, llvm::ConstantInt::getTrue( mContext ) );
 
     llvm::Function * function = mIRBuilder.GetInsertBlock( )->getParent( );

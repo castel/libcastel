@@ -16,6 +16,19 @@ namespace castel
         namespace stmt
         {
 
+            namespace ctrl
+            {
+
+                class ForIn;
+
+                class If;
+
+                class Until;
+
+                class While;
+
+            }
+
             namespace decl
             {
 
@@ -24,8 +37,6 @@ namespace castel
             }
 
             class Expression;
-
-            class If;
 
             class Return;
 
@@ -55,11 +66,17 @@ namespace castel
 
         public:
 
+            virtual void visit( ast::stmt::ctrl::ForIn & astForInStatement );
+
+            virtual void visit( ast::stmt::ctrl::If & astIfStatement );
+
+            virtual void visit( ast::stmt::ctrl::Until & astUntilStatement );
+
+            virtual void visit( ast::stmt::ctrl::While & astWhileStatement );
+
             virtual void visit( ast::stmt::decl::Variables & astVariableDeclaration );
 
             virtual void visit( ast::stmt::Expression & astExpressionStatement );
-
-            virtual void visit( ast::stmt::If & astIfStatement );
 
             virtual void visit( ast::stmt::Return & astReturnStatement );
 
@@ -79,9 +96,12 @@ namespace castel
 
 }
 
+#include "castel/ast/stmt/ctrl/ForIn.hh"
+#include "castel/ast/stmt/ctrl/If.hh"
+#include "castel/ast/stmt/ctrl/Until.hh"
+#include "castel/ast/stmt/ctrl/While.hh"
 #include "castel/ast/stmt/decl/Variables.hh"
 #include "castel/ast/stmt/Expression.hh"
-#include "castel/ast/stmt/If.hh"
 #include "castel/ast/stmt/Return.hh"
 #include "castel/ast/Statement.hh"
 #include "castel/ast/Token.hh"

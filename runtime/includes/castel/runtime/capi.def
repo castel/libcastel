@@ -1,47 +1,47 @@
-CASTEL_FUNCTION( castel_malloc, void *, ( std::size_t size, unsigned int count ) )
+CASTEL_FUNCTION( Castel_malloc, void *, ( std::size_t size, unsigned int count ) )
 
-CASTEL_FUNCTION( castel_addMember, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value ) )
-CASTEL_FUNCTION( castel_addMethod, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function ) )
+CASTEL_FUNCTION( Castel_addMember, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value ) )
+CASTEL_FUNCTION( Castel_addMethod, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function ) )
 
-CASTEL_FUNCTION( castel_getProperty, castel::runtime::Box *, ( castel::runtime::Box * instance, castel::runtime::Box * name ) )
-CASTEL_FUNCTION( castel_setProperty, castel::runtime::Box *, ( castel::runtime::Box * instance, castel::runtime::Box * name, castel::runtime::Box * value ) )
+CASTEL_FUNCTION( Castel_getProperty, castel::runtime::Box *, ( castel::runtime::Box * instance, castel::runtime::Box * name ) )
+CASTEL_FUNCTION( Castel_setProperty, castel::runtime::Box *, ( castel::runtime::Box * instance, castel::runtime::Box * name, castel::runtime::Box * value ) )
 
-CASTEL_FUNCTION( castel_new, castel::runtime::Box *, ( castel::runtime::Box * instance, unsigned int argc, castel::runtime::Box ** argv ) )
+CASTEL_FUNCTION( Castel_Operator_boolCast, bool, ( castel::runtime::Box * operand ) )
 
-CASTEL_FUNCTION( castel_operatorBool, bool, ( castel::runtime::Box * operand ) )
+CASTEL_FUNCTION( Castel_Operator_positive, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
+CASTEL_FUNCTION( Castel_Operator_negative, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
 
-CASTEL_FUNCTION( castel_operatorNumericPlus, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
-CASTEL_FUNCTION( castel_operatorNumericMinus, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
+CASTEL_FUNCTION( Castel_Operator_preIncrementation, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
+CASTEL_FUNCTION( Castel_Operator_preDecrementation, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
+CASTEL_FUNCTION( Castel_Operator_postIncrementation, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
+CASTEL_FUNCTION( Castel_Operator_postDecrementation, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
 
-CASTEL_FUNCTION( castel_operatorNumericPreIncrementation, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
-CASTEL_FUNCTION( castel_operatorNumericPreDecrementation, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
-CASTEL_FUNCTION( castel_operatorNumericPostIncrementation, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
-CASTEL_FUNCTION( castel_operatorNumericPostDecrementation, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
+CASTEL_FUNCTION( Castel_Operator_addition, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_substraction, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_multiplication, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_division, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_modulo, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
 
-CASTEL_FUNCTION( castel_operatorNumericAddition, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorNumericSubstraction, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorNumericMultiplication, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorNumericDivision, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorNumericModulo, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_lesser, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_greater, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_lesserOrEqual, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_greaterOrEqual, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_equal, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_notEqual, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
 
-CASTEL_FUNCTION( castel_operatorComparisonLesser, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorComparisonGreater, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorComparisonLesserOrEqual, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorComparisonGreaterOrEqual, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorComparisonEqual, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorComparisonNotEqual, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_bitwiseNot, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
+CASTEL_FUNCTION( Castel_Operator_bitwiseAnd, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_bitwiseOr, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_bitwiseXOr, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_leftShift, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_rightShift, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
 
-CASTEL_FUNCTION( castel_operatorBinaryNot, castel::runtime::Box *, ( castel::runtime::Box * operand ) )
-CASTEL_FUNCTION( castel_operatorBinaryAnd, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorBinaryOr, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorBinaryXOr, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorBinaryLShift, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
-CASTEL_FUNCTION( castel_operatorBinaryRShift, castel::runtime::Box *, ( castel::runtime::Box * operandA, castel::runtime::Box * operandB ) )
+CASTEL_FUNCTION( Castel_Operator_subscript, castel::runtime::Box *, ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv ) )
+CASTEL_FUNCTION( Castel_Operator_call, castel::runtime::Box *, ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv ) )
+CASTEL_FUNCTION( Castel_Operator_new, castel::runtime::Box *, ( castel::runtime::Box * instance, unsigned int argc, castel::runtime::Box ** argv ) )
+CASTEL_FUNCTION( Castel_Operator_require, castel::runtime::Box *, ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv ) )
 
-CASTEL_FUNCTION( castel_operatorCall, castel::runtime::Box *, ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv ) )
-CASTEL_FUNCTION( castel_operatorSubscript, castel::runtime::Box *, ( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv ) )
-
-#include "castel/runtime/capi/bool.def"
+#include "castel/runtime/capi/boolean.def"
 #include "castel/runtime/capi/class.def"
 #include "castel/runtime/capi/dict.def"
 #include "castel/runtime/capi/function.def"

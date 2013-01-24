@@ -11,22 +11,22 @@ namespace castel
         namespace boxes
         {
 
-            class Bool : public runtime::Box
+            class Boolean : public runtime::Box
             {
 
             public:
 
-                inline Bool( bool value );
+                inline Boolean( bool value );
 
             public:
 
                 inline bool value( void ) const;
 
-                inline Bool & value( bool value );
+                inline Boolean & value( bool value );
 
             public:
 
-                virtual bool operatorBool( void );
+                virtual bool operatorBoolCast( void );
 
             private:
 
@@ -49,18 +49,18 @@ namespace castel
         namespace boxes
         {
 
-            Bool::Bool( bool value )
+            Boolean::Boolean( bool value )
                 : Box( )
                 , mValue( value )
             {
             }
 
-            bool Bool::value( void ) const
+            bool Boolean::value( void ) const
             {
                 return mValue;
             }
 
-            Bool & Bool::value( bool value )
+            Boolean & Boolean::value( bool value )
             {
                 mValue = value;
 

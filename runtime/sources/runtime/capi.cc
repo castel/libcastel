@@ -25,22 +25,22 @@ static void binaryOperatorMissing( char const * name, castel::runtime::Box * ope
         << "Binary operator '" << name << "' is invalid with data types '" << "UNDEFINED" << "' and '" << "UNDEFINED" << "'" << std::endl;
 }
 
-void * castel_malloc( std::size_t size, unsigned int count )
+void * Castel_malloc( std::size_t size, unsigned int count )
 {
     return malloc( size * count );
 }
 
-void castel_addMember( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value )
+void Castel_addMember( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value )
 {
     instance->attribute( std::make_pair( castel::runtime::Box::PropertyNS::Standards, name ), castel::runtime::helper::create< castel::runtime::attributes::Member >( value ) );
 }
 
-void castel_addMethod( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function )
+void Castel_addMethod( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function )
 {
     instance->attribute( std::make_pair( castel::runtime::Box::PropertyNS::Standards, name ), castel::runtime::helper::create< castel::runtime::attributes::Method >( function ) );
 }
 
-castel::runtime::Attribute * castel_getAttribute( castel::runtime::Box * instance, castel::runtime::Box * operand )
+castel::runtime::Attribute * Castel_getAttribute( castel::runtime::Box * instance, castel::runtime::Box * operand )
 {
     std::string propertyName = dynamic_cast< castel::runtime::boxes::String * >( operand )->value( );
     auto key = std::make_pair( castel::runtime::Box::PropertyNS::Standards, std::string( propertyName ) );
@@ -66,282 +66,293 @@ castel::runtime::Attribute * castel_getAttribute( castel::runtime::Box * instanc
     return attribute;
 }
 
-castel::runtime::Box * castel_getProperty( castel::runtime::Box * instance, castel::runtime::Box * operand )
+castel::runtime::Box * Castel_getProperty( castel::runtime::Box * instance, castel::runtime::Box * operand )
 {
-    return ::castel_getAttribute( instance, operand )->get( instance );
+    return Castel_getAttribute( instance, operand )->get( instance );
 }
 
-castel::runtime::Box * castel_setProperty( castel::runtime::Box * instance, castel::runtime::Box * operand, castel::runtime::Box * value )
+castel::runtime::Box * Castel_setProperty( castel::runtime::Box * instance, castel::runtime::Box * operand, castel::runtime::Box * value )
 {
-    ::castel_getAttribute( instance, operand )->set( instance, value );
+    Castel_getAttribute( instance, operand )->set( instance, value );
 
     return value;
 }
 
-castel::runtime::Box * castel_new( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv )
+bool Castel_Operator_boolCast( castel::runtime::Box * operand )
 {
-    auto classOperand = dynamic_cast< castel::runtime::boxes::Class * >( operand );
-
-    if ( classOperand == nullptr )
-        castel::runtime::helper::Fatal( )
-            << "Trying to instanciate non-class object" << std::endl;
-
-    return classOperand->instanciate( argc, argv );
+    return operand->operatorBoolCast( );
 }
 
-bool castel_operatorBool( castel::runtime::Box * operand )
+castel::runtime::Box * Castel_Operator_positive( castel::runtime::Box * operand )
 {
-    return operand->operatorBool( );
-}
-
-castel::runtime::Box * castel_operatorNumericPlus( castel::runtime::Box * operand )
-{
-    castel::runtime::Box * ret = operand->operatorNumericPlus( );
+    castel::runtime::Box * ret = operand->operatorPositive( );
 
     if ( ret == nullptr )
-        ::unaryOperatorMissing( "plus", operand );
+        ::unaryOperatorMissing( "positive", operand );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericMinus( castel::runtime::Box * operand )
+castel::runtime::Box * Castel_Operator_negative( castel::runtime::Box * operand )
 {
-    castel::runtime::Box * ret = operand->operatorNumericMinus( );
+    castel::runtime::Box * ret = operand->operatorNegative( );
 
     if ( ret == nullptr )
-        ::unaryOperatorMissing( "minus", operand );
+        unaryOperatorMissing( "negative", operand );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericPreIncrementation( castel::runtime::Box * operand )
+castel::runtime::Box * Castel_Operator_preIncrementation( castel::runtime::Box * operand )
 {
-    castel::runtime::Box * ret = operand->operatorNumericPreIncrementation( );
+    castel::runtime::Box * ret = operand->operatorPreIncrementation( );
 
     if ( ret == nullptr )
-        ::unaryOperatorMissing( "pre-incrementation", operand );
+        unaryOperatorMissing( "pre-incrementation", operand );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericPreDecrementation( castel::runtime::Box * operand )
+castel::runtime::Box * Castel_Operator_preDecrementation( castel::runtime::Box * operand )
 {
-    castel::runtime::Box * ret = operand->operatorNumericPreDecrementation( );
+    castel::runtime::Box * ret = operand->operatorPreDecrementation( );
 
     if ( ret == nullptr )
-        ::unaryOperatorMissing( "pre-decrementation", operand );
+        unaryOperatorMissing( "pre-decrementation", operand );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericPostIncrementation( castel::runtime::Box * operand )
+castel::runtime::Box * Castel_Operator_postIncrementation( castel::runtime::Box * operand )
 {
-    castel::runtime::Box * ret = operand->operatorNumericPostIncrementation( );
+    castel::runtime::Box * ret = operand->operatorPostIncrementation( );
 
     if ( ret == nullptr )
-        ::unaryOperatorMissing( "post-incrementation", operand );
+        unaryOperatorMissing( "post-incrementation", operand );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericPostDecrementation( castel::runtime::Box * operand )
+castel::runtime::Box * Castel_Operator_postDecrementation( castel::runtime::Box * operand )
 {
-    castel::runtime::Box * ret = operand->operatorNumericPostDecrementation( );
+    castel::runtime::Box * ret = operand->operatorPostDecrementation( );
 
     if ( ret == nullptr )
-        ::unaryOperatorMissing( "post-decrementation", operand );
+        unaryOperatorMissing( "post-decrementation", operand );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericAddition( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_addition( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorNumericAddition( operandB );
+    castel::runtime::Box * ret = operandA->operatorAddition( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "addition", operandA, operandB );
+        binaryOperatorMissing( "addition", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericSubstraction( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_substraction( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorNumericSubstraction( operandB );
+    castel::runtime::Box * ret = operandA->operatorSubstraction( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "substraction", operandA, operandB );
+        binaryOperatorMissing( "substraction", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericMultiplication( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_multiplication( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorNumericMultiplication( operandB );
+    castel::runtime::Box * ret = operandA->operatorMultiplication( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "multiplication", operandA, operandB );
+        binaryOperatorMissing( "multiplication", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericDivision( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_division( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorNumericDivision( operandB );
+    castel::runtime::Box * ret = operandA->operatorDivision( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "division", operandA, operandB );
+        binaryOperatorMissing( "division", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorNumericModulo( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_modulo( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorNumericModulo( operandB );
+    castel::runtime::Box * ret = operandA->operatorModulo( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "modulo", operandA, operandB );
+        binaryOperatorMissing( "modulo", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorComparisonLesser( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_bitwiseNot( castel::runtime::Box * operand )
 {
-    castel::runtime::Box * ret = operandA->operatorComparisonLesser( operandB );
+    castel::runtime::Box * ret = operand->operatorBitwiseNot( );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "lesser than", operandA, operandB );
+        unaryOperatorMissing( "bitwise not", operand );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorComparisonGreater( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_bitwiseAnd( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorComparisonGreater( operandB );
+    castel::runtime::Box * ret = operandA->operatorBitwiseAnd( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "greater than", operandA, operandB );
+        binaryOperatorMissing( "bitwise and", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorComparisonLesserOrEqual( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_bitwiseOr( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorComparisonLesserOrEqual( operandB );
+    castel::runtime::Box * ret = operandA->operatorBitwiseOr( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "lesser or equal", operandA, operandB );
+        binaryOperatorMissing( "bitwise or", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorComparisonGreaterOrEqual( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_bitwiseXOr( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorComparisonGreaterOrEqual( operandB );
+    castel::runtime::Box * ret = operandA->operatorBitwiseXOr( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "greater or equal", operandA, operandB );
+        binaryOperatorMissing( "bitwise xor", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorComparisonEqual( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_leftShift( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorComparisonEqual( operandB );
+    castel::runtime::Box * ret = operandA->operatorLeftShift( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "equal", operandA, operandB );
+        binaryOperatorMissing( "left shift", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorComparisonNotEqual( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_rightShift( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorComparisonNotEqual( operandB );
+    castel::runtime::Box * ret = operandA->operatorRightShift( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "not equal", operandA, operandB );
+        binaryOperatorMissing( "right shift", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorBinaryNot( castel::runtime::Box * operand )
+castel::runtime::Box * Castel_Operator_lesser( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operand->operatorBinaryNot( );
+    castel::runtime::Box * ret = operandA->operatorLesser( operandB );
 
     if ( ret == nullptr )
-        ::unaryOperatorMissing( "binary not", operand );
+        binaryOperatorMissing( "lesser than", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorBinaryAnd( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_greater( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorBinaryAnd( operandB );
+    castel::runtime::Box * ret = operandA->operatorGreater( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "binary and", operandA, operandB );
+        binaryOperatorMissing( "greater than", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorBinaryOr( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_lesserOrEqual( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorBinaryOr( operandB );
+    castel::runtime::Box * ret = operandA->operatorLesserOrEqual( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "binary or", operandA, operandB );
+        binaryOperatorMissing( "lesser or equal", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorBinaryXOr( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_greaterOrEqual( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorBinaryXOr( operandB );
+    castel::runtime::Box * ret = operandA->operatorGreaterOrEqual( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "binary xor", operandA, operandB );
+        binaryOperatorMissing( "greater or equal", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorBinaryLShift( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_equal( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorBinaryLShift( operandB );
+    castel::runtime::Box * ret = operandA->operatorEqual( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "binary left shift", operandA, operandB );
+        binaryOperatorMissing( "equal", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorBinaryRShift( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
+castel::runtime::Box * Castel_Operator_notEqual( castel::runtime::Box * operandA, castel::runtime::Box * operandB )
 {
-    castel::runtime::Box * ret = operandA->operatorBinaryRShift( operandB );
+    castel::runtime::Box * ret = operandA->operatorNotEqual( operandB );
 
     if ( ret == nullptr )
-        ::binaryOperatorMissing( "binary right shift", operandA, operandB );
+        binaryOperatorMissing( "not equal", operandA, operandB );
 
     return ret;
 }
 
-castel::runtime::Box * castel_operatorCall( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv )
-{
-    castel::runtime::Box * ret = operand->operatorCall( argc, argv );
-
-    if ( ret == nullptr )
-        castel::runtime::helper::Fatal( )
-            << "Non-callable instance" << std::endl;
-
-    return ret;
-}
-
-castel::runtime::Box * castel_operatorSubscript( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv )
+castel::runtime::Box * Castel_Operator_subscript( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv )
 {
     castel::runtime::Box * ret = operand->operatorSubscript( argc, argv );
 
     if ( ret == nullptr )
         castel::runtime::helper::Fatal( )
-            << "Non-subscriptable instance" << std::endl;
+            << "Non-subscriptable operator" << std::endl;
+
+    return ret;
+}
+
+castel::runtime::Box * Castel_Operator_call( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv )
+{
+    castel::runtime::Box * ret = operand->operatorCall( argc, argv );
+
+    if ( ret == nullptr )
+        castel::runtime::helper::Fatal( )
+            << "Non-callable operator" << std::endl;
+
+    return ret;
+}
+
+castel::runtime::Box * Castel_Operator_new( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv )
+{
+    castel::runtime::Box * ret = operand->operatorNew( argc, argv );
+
+    if ( ret == nullptr )
+        castel::runtime::helper::Fatal( )
+            << "Non-instanciable operator" << std::endl;
+
+    return ret;
+}
+
+castel::runtime::Box * Castel_Operator_require( castel::runtime::Box * operand, unsigned int argc, castel::runtime::Box ** argv )
+{
+    castel::runtime::Box * ret = operand->operatorRequire( argc, argv );
+
+    if ( ret == nullptr )
+        castel::runtime::helper::Fatal( )
+            << "Non-requirable operator" << std::endl;
 
     return ret;
 }

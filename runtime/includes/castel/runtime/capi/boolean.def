@@ -1,0 +1,1 @@
+CASTEL_FUNCTION( Castel_Bool_create, castel::runtime::boxes::Boolean *, ( bool value ) )

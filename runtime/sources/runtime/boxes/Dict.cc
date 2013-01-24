@@ -3,7 +3,7 @@
 using namespace castel;
 using runtime::boxes::Dict;
 
-bool Dict::operatorBool( void )
+bool Dict::operatorBoolCast( void )
 {
     return true;
 }

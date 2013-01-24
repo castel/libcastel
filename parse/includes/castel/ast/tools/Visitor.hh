@@ -9,33 +9,40 @@ namespace castel
         namespace expr
         {
 
-            class Bool;
+            namespace literal
+            {
+
+                class Boolean;
+
+                class Class;
+
+                class Dict;
+
+                class Function;
+
+                class List;
+
+                class Null;
+
+                class Number;
+
+                class String;
+
+                class Undefined;
+
+            }
 
             class Binary;
 
-            class Class;
-
             class Conditional;
-
-            class Dict;
 
             class External;
 
-            class Function;
-
-            class List;
-
             class Multary;
 
-            class Null;
-
-            class Number;
-
-            class String;
+            class Require;
 
             class Unary;
-
-            class Undefined;
 
             class Variable;
 
@@ -47,15 +54,28 @@ namespace castel
             namespace decl
             {
 
+                class Class;
+
+                class Function;
+
                 class Variables;
 
             }
 
+            namespace ctrl
+            {
+
+                class ForIn;
+
+                class If;
+
+                class Until;
+
+                class While;
+
+            }
+
             class Expression;
-
-            class If;
-
-            class Require;
 
             class Return;
 
@@ -75,51 +95,59 @@ namespace castel
 
             public:
 
-                virtual inline void visit( ast::expr::Bool & astBoolExpression );
+                virtual inline void visit( ast::expr::literal::Boolean & booleanLiteralAst );
 
-                virtual inline void visit( ast::expr::Binary & astBinaryExpression );
+                virtual inline void visit( ast::expr::literal::Class & classLiteralAst );
 
-                virtual inline void visit( ast::expr::Class & astClassExpression );
+                virtual inline void visit( ast::expr::literal::Dict & dictLiteralAst );
 
-                virtual inline void visit( ast::expr::Conditional & astConditionalExpression );
+                virtual inline void visit( ast::expr::literal::Function & functionLiteralAst );
 
-                virtual inline void visit( ast::expr::Dict & astDictExpression );
+                virtual inline void visit( ast::expr::literal::List & listLiteralAst );
 
-                virtual inline void visit( ast::expr::External & astExternalExpression );
+                virtual inline void visit( ast::expr::literal::Null & nullLiteralAst );
 
-                virtual inline void visit( ast::expr::Function & astFunctionExpression );
+                virtual inline void visit( ast::expr::literal::Number & numberLiteralAst );
 
-                virtual inline void visit( ast::expr::List & astListExpression );
+                virtual inline void visit( ast::expr::literal::String & stringLiteralAst );
 
-                virtual inline void visit( ast::expr::Multary & astMultaryExpression );
+                virtual inline void visit( ast::expr::literal::Undefined & undefinedLiteralAst );
 
-                virtual inline void visit( ast::expr::Null & astNullExpression );
+                virtual inline void visit( ast::expr::Binary & binaryExpressionAst );
 
-                virtual inline void visit( ast::expr::Number & astNumberExpression );
+                virtual inline void visit( ast::expr::Conditional & conditionalExpressionAst );
 
-                virtual inline void visit( ast::expr::String & astStringExpression );
+                virtual inline void visit( ast::expr::External & externalExpressionAst );
 
-                virtual inline void visit( ast::expr::Unary & astUnaryExpression );
+                virtual inline void visit( ast::expr::Multary & multaryExpressionAst );
 
-                virtual inline void visit( ast::expr::Undefined & astUndefinedExpression );
+                virtual inline void visit( ast::expr::Unary & unaryExpressionAst );
 
-                virtual inline void visit( ast::expr::Variable & astVariableExpression );
+                virtual inline void visit( ast::expr::Variable & variableExpressionAst );
 
             public:
 
-                virtual inline void visit( ast::stmt::decl::Variables & astVariablesDeclaration );
+                virtual inline void visit( ast::stmt::ctrl::ForIn & forInControlAst );
 
-                virtual inline void visit( ast::stmt::Expression & astExpressionStatement );
+                virtual inline void visit( ast::stmt::ctrl::If & ifControlAst );
 
-                virtual inline void visit( ast::stmt::If & astIfStatement );
+                virtual inline void visit( ast::stmt::ctrl::Until & untilControlAst );
 
-                virtual inline void visit( ast::stmt::Require & astRequireStatement );
+                virtual inline void visit( ast::stmt::ctrl::While & whileControlAst );
 
-                virtual inline void visit( ast::stmt::Return & astReturnStatement );
+                virtual inline void visit( ast::stmt::decl::Class & classDeclarationAst );
+
+                virtual inline void visit( ast::stmt::decl::Function & functionDeclarationAst );
+
+                virtual inline void visit( ast::stmt::decl::Variables & variablesDeclarationAst );
+
+                virtual inline void visit( ast::stmt::Expression & expressionStatementAst );
+
+                virtual inline void visit( ast::stmt::Return & returnStatementAst );
 
             protected:
 
-                virtual inline void defaultAction( ast::Token & astToken );
+                virtual inline void defaultAction( ast::Token & tokenAst );
 
             };
 
@@ -131,26 +159,30 @@ namespace castel
 
 #include <stdexcept>
 
-#include "castel/ast/expr/Bool.hh"
+#include "castel/ast/expr/literal/Boolean.hh"
+#include "castel/ast/expr/literal/Class.hh"
+#include "castel/ast/expr/literal/Dict.hh"
+#include "castel/ast/expr/literal/Function.hh"
+#include "castel/ast/expr/literal/List.hh"
+#include "castel/ast/expr/literal/Null.hh"
+#include "castel/ast/expr/literal/Number.hh"
+#include "castel/ast/expr/literal/String.hh"
+#include "castel/ast/expr/literal/Undefined.hh"
 #include "castel/ast/expr/Binary.hh"
-#include "castel/ast/expr/Class.hh"
 #include "castel/ast/expr/Conditional.hh"
-#include "castel/ast/expr/Dict.hh"
 #include "castel/ast/expr/External.hh"
-#include "castel/ast/expr/Function.hh"
-#include "castel/ast/expr/List.hh"
 #include "castel/ast/expr/Multary.hh"
-#include "castel/ast/expr/Null.hh"
-#include "castel/ast/expr/Number.hh"
-#include "castel/ast/expr/String.hh"
 #include "castel/ast/expr/Unary.hh"
-#include "castel/ast/expr/Undefined.hh"
 #include "castel/ast/expr/Variable.hh"
+#include "castel/ast/stmt/ctrl/ForIn.hh"
+#include "castel/ast/stmt/ctrl/If.hh"
+#include "castel/ast/stmt/ctrl/Until.hh"
+#include "castel/ast/stmt/ctrl/While.hh"
+#include "castel/ast/stmt/decl/Class.hh"
+#include "castel/ast/stmt/decl/Function.hh"
 #include "castel/ast/stmt/decl/Variables.hh"
 #include "castel/ast/stmt/Expression.hh"
-#include "castel/ast/stmt/If.hh"
 #include "castel/ast/stmt/Return.hh"
-#include "castel/ast/stmt/Require.hh"
 #include "castel/ast/Token.hh"
 
 namespace castel
@@ -166,104 +198,124 @@ namespace castel
             {
             }
 
-            void Visitor::visit( ast::expr::Bool & astBoolExpression )
+            void Visitor::visit( ast::expr::literal::Boolean & booleanLiteralAst )
             {
-                this->defaultAction( astBoolExpression );
+                this->defaultAction( booleanLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::Binary & astBinaryExpression )
+            void Visitor::visit( ast::expr::literal::Class & classLiteralAst )
             {
-                this->defaultAction( astBinaryExpression );
+                this->defaultAction( classLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::Class & astClassExpression )
+            void Visitor::visit( ast::expr::literal::Dict & dictLiteralAst )
             {
-                this->defaultAction( astClassExpression );
+                this->defaultAction( dictLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::Conditional & astConditionalExpression )
+            void Visitor::visit( ast::expr::literal::Function & functionLiteralAst )
             {
-                this->defaultAction( astConditionalExpression );
+                this->defaultAction( functionLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::Dict & astDictExpression )
+            void Visitor::visit( ast::expr::literal::List & listLiteralAst )
             {
-                this->defaultAction( astDictExpression );
+                this->defaultAction( listLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::External & astExternalExpression )
+            void Visitor::visit( ast::expr::literal::Null & nullLiteralAst )
             {
-                this->defaultAction( astExternalExpression );
+                this->defaultAction( nullLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::Function & astFunctionExpression )
+            void Visitor::visit( ast::expr::literal::Number & numberLiteralAst )
             {
-                this->defaultAction( astFunctionExpression );
+                this->defaultAction( numberLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::List & astListExpression )
+            void Visitor::visit( ast::expr::literal::String & stringLiteralAst )
             {
-                this->defaultAction( astListExpression );
+                this->defaultAction( stringLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::Multary & astMultaryExpression )
+            void Visitor::visit( ast::expr::literal::Undefined & undefinedLiteralAst )
             {
-                this->defaultAction( astMultaryExpression );
+                this->defaultAction( undefinedLiteralAst );
             }
 
-            void Visitor::visit( ast::expr::Null & astNullExpression )
+            void Visitor::visit( ast::expr::Binary & binaryExpressionAst )
             {
-                this->defaultAction( astNullExpression );
+                this->defaultAction( binaryExpressionAst );
             }
 
-            void Visitor::visit( ast::expr::Number & astNumberExpression )
+            void Visitor::visit( ast::expr::Conditional & conditionalExpressionAst )
             {
-                this->defaultAction( astNumberExpression );
+                this->defaultAction( conditionalExpressionAst );
             }
 
-            void Visitor::visit( ast::expr::String & astStringExpression )
+            void Visitor::visit( ast::expr::External & externalExpressionAst )
             {
-                this->defaultAction( astStringExpression );
+                this->defaultAction( externalExpressionAst );
             }
 
-            void Visitor::visit( ast::expr::Unary & astUnaryExpression )
+            void Visitor::visit( ast::expr::Multary & multaryExpressionAst )
             {
-                this->defaultAction( astUnaryExpression );
+                this->defaultAction( multaryExpressionAst );
             }
 
-            void Visitor::visit( ast::expr::Undefined & astUndefinedExpression )
+            void Visitor::visit( ast::expr::Unary & unaryExpressionAst )
             {
-                this->defaultAction( astUndefinedExpression );
+                this->defaultAction( unaryExpressionAst );
             }
 
-            void Visitor::visit( ast::expr::Variable & astVariableExpression )
+            void Visitor::visit( ast::expr::Variable & variableExpressionAst )
             {
-                this->defaultAction( astVariableExpression );
+                this->defaultAction( variableExpressionAst );
             }
 
-            void Visitor::visit( ast::stmt::decl::Variables & astVariablesDeclaration )
+            void Visitor::visit( ast::stmt::ctrl::ForIn & forInControlAst )
             {
-                this->defaultAction( astVariablesDeclaration );
+                this->defaultAction( forInControlAst );
             }
 
-            void Visitor::visit( ast::stmt::Expression & astExpressionStatement )
+            void Visitor::visit( ast::stmt::ctrl::If & ifControlAst )
             {
-                this->defaultAction( astExpressionStatement );
+                this->defaultAction( ifControlAst );
             }
 
-            void Visitor::visit( ast::stmt::If & astIfStatement )
+            void Visitor::visit( ast::stmt::ctrl::Until & untilControlAst )
             {
-                this->defaultAction( astIfStatement );
+                this->defaultAction( untilControlAst );
             }
 
-            void Visitor::visit( ast::stmt::Require & astRequireStatement )
+            void Visitor::visit( ast::stmt::ctrl::While & whileControlAst )
             {
-                this->defaultAction( astRequireStatement );
+                this->defaultAction( whileControlAst );
             }
 
-            void Visitor::visit( ast::stmt::Return & astReturnStatement )
+            void Visitor::visit( ast::stmt::decl::Class & classDeclarationAst )
             {
-                this->defaultAction( astReturnStatement );
+                this->defaultAction( classDeclarationAst );
+            }
+
+            void Visitor::visit( ast::stmt::decl::Function & functionDeclarationAst )
+            {
+                this->defaultAction( functionDeclarationAst );
+            }
+
+            void Visitor::visit( ast::stmt::decl::Variables & variablesDeclarationAst )
+            {
+                this->defaultAction( variablesDeclarationAst );
+            }
+
+            void Visitor::visit( ast::stmt::Expression & expressionStatementAst )
+            {
+                this->defaultAction( expressionStatementAst );
+            }
+
+            void Visitor::visit( ast::stmt::Return & returnStatementAst )
+            {
+                this->defaultAction( returnStatementAst );
             }
 
             void Visitor::defaultAction( ast::Token & )

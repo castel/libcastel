@@ -25,15 +25,9 @@ namespace castel
 
         private:
 
-            void computeNextLexemes( void );
-
             lex::Lexeme * fetchNextLexeme( void );
 
         private:
-
-            std::queue< lex::Lexeme * > mLexemeQueue;
-
-            std::stack< unsigned int > mLevelStack;
 
             std::pair< int, int > mPosition;
 

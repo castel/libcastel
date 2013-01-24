@@ -1,14 +1,14 @@
-#include "castel/ast/expr/Function.hh"
+#include "castel/ast/expr/literal/Function.hh"
 #include "castel/gen/FunctionBuilder.hh"
 #include "castel/gen/GPEVisitor.hh"
 
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::Function & functionExpressionAst )
+void GPEVisitor::visit( ast::expr::literal::Function & functionLiteralAst )
 {
     mLastReturnedValue = gen::FunctionBuilder( "literal" )
-        .parameters( functionExpressionAst.parameters( ) )
-        .statements( functionExpressionAst.statements( ) )
+        .parameters( functionLiteralAst.parameters( ) )
+        .statements( functionLiteralAst.statements( ) )
     .build( mContext, mModule, mIRBuilder, mScope );
 }

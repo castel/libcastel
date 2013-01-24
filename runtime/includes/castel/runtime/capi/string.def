@@ -1,1 +1,1 @@
-CASTEL_FUNCTION( castelString_create, castel::runtime::boxes::String *, ( char const * value ) )
+CASTEL_FUNCTION( Castel_String_create, castel::runtime::boxes::String *, ( char const * value ) )

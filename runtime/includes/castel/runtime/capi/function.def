@@ -1,1 +1,1 @@
-CASTEL_FUNCTION( castelFunction_create, castel::runtime::boxes::Function *, ( castel::runtime::boxes::Function::Signature * functionPtr, unsigned int argumentCount, castel::runtime::Box *** environment ) )
+CASTEL_FUNCTION( Castel_Function_create, castel::runtime::boxes::Function *, ( castel::runtime::boxes::Function::Signature * functionPtr, unsigned int argumentCount, castel::runtime::Box *** environment ) )

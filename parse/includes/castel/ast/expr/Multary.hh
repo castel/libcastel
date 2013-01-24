@@ -32,6 +32,8 @@ namespace castel
 
                     Subscript,
 
+                    Require,
+
                 };
 
             public:

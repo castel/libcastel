@@ -25,7 +25,7 @@ llvm::Value * FunctionBuilder::build( llvm::LLVMContext & context, llvm::Module 
 {
     llvm::Function * function = llvm::Function::Create( gen::helper::type< runtime::boxes::Function::Signature >( context ), llvm::GlobalVariable::PrivateLinkage, mName, module );
     llvm::Value * argumentCount = gen::helper::i32( context, std::distance( ast::tools::begin( mParameters ), ast::tools::end( mParameters ) ) + ( mUseThis ? 1 : 0 ) );
-    llvm::Value * functionBox = gen::helper::call( context, module, parentIRBuilder, "castelFunction_create", function, argumentCount, parentScope.environmentTable( ) );
+    llvm::Value * functionBox = gen::helper::call( context, module, parentIRBuilder, "Castel_Function_create", function, argumentCount, parentScope.environmentTable( ) );
 
     llvm::BasicBlock * bootstrapBlock = llvm::BasicBlock::Create( context, "bootstrap" );
     llvm::BasicBlock * entryBlock = llvm::BasicBlock::Create( context, "entry" );
@@ -60,7 +60,7 @@ llvm::Value * FunctionBuilder::build( llvm::LLVMContext & context, llvm::Module 
        llvm::BasicBlock * lastBlock = & ( function->getBasicBlockList( ).back( ) );
        if ( lastBlock->empty( ) || ! lastBlock->back( ).isTerminator( ) ) {
            irBuilder.SetInsertPoint( lastBlock, lastBlock->end( ) );
-           irBuilder.CreateRet( gen::helper::call( context, module, irBuilder, "castelUndefined_create" ) );
+           irBuilder.CreateRet( gen::helper::call( context, module, irBuilder, "Castel_Undefined_create" ) );
        }
     }}
 

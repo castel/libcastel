@@ -1,3 +1,7 @@
-return %castelClassBt_InstallPrototype((class:
-	public function parent:
-		return %castelClassBt_Parent(this)))
+return extern Castel_Class_installPrototype( class {
+
+	public function parent( ) {
+		return extern Castel_Class_parent( this );
+	}
+
+} );

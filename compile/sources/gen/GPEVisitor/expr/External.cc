@@ -14,9 +14,9 @@ using gen::GPEVisitor;
 
 void GPEVisitor::visit( ast::expr::External & externalExpressionAst )
 {
-    mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "castelFunction_create",
+    mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Function_create",
         mModule->getOrInsertFunction(
-            externalExpressionAst.rawName( ),
+            externalExpressionAst.name( ),
             gen::helper::type< runtime::Box * ( runtime::Box ***, int, runtime::Box ** ) >( mContext ) ),
         llvm::ConstantInt::get( mContext, llvm::APInt( 32, 0 ) ),
         gen::helper::null< runtime::Box *** >( mContext )

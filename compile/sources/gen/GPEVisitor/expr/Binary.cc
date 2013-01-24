@@ -15,38 +15,26 @@ using gen::GPEVisitor;
 #define OPERATOR( X, Y ) std::make_pair( ast::expr::Binary::Operator::X, Y )
 static std::map< ast::expr::Binary::Operator, char const * > const operatorsTable {
 
-    OPERATOR( Member, "castel_getProperty" ),
+    OPERATOR( Member, "Castel_getProperty" ),
 
-    OPERATOR( NumericAddition, "castel_operatorNumericAddition" ),
-    OPERATOR( NumericSubstraction, "castel_operatorNumericSubstraction" ),
-    OPERATOR( NumericMultiplication, "castel_operatorNumericMultiplication" ),
-    OPERATOR( NumericDivision, "castel_operatorNumericDivision" ),
-    OPERATOR( NumericModulo, "castel_operatorNumericModulo" ),
+    OPERATOR( Addition, "Castel_Operator_addition" ),
+    OPERATOR( Substraction, "Castel_Operator_substraction" ),
+    OPERATOR( Multiplication, "Castel_Operator_multiplication" ),
+    OPERATOR( Division, "Castel_Operator_division" ),
+    OPERATOR( Modulo, "Castel_Operator_modulo" ),
 
-    OPERATOR( NumericAssignmentAddition, "castel_operatorNumericAssignmentAddition" ),
-    OPERATOR( NumericAssignmentSubstraction, "castel_operatorNumericAssignmentSubstraction" ),
-    OPERATOR( NumericAssignmentMultiplication, "castel_operatorNumericAssignmentMultiplication" ),
-    OPERATOR( NumericAssignmentDivision, "castel_operatorNumericAssignmentDivision" ),
-    OPERATOR( NumericAssignmentModulo, "castel_operatorNumericAssignmentModulo" ),
+    OPERATOR( BitwiseAnd, "Castel_Operator_bitwiseAnd" ),
+    OPERATOR( BitwiseOr, "Castel_Operator_bitwiseOr" ),
+    OPERATOR( BitwiseXOr, "Castel_Operator_bitwiseXOr" ),
+    OPERATOR( LeftShift, "Castel_Operator_leftShift" ),
+    OPERATOR( RightShift, "Castel_Operator_rightShift" ),
 
-    OPERATOR( BinaryAnd, "castel_operatorBinaryAnd" ),
-    OPERATOR( BinaryOr, "castel_operatorBinaryOr" ),
-    OPERATOR( BinaryXOr, "castel_operatorBinaryXOr" ),
-    OPERATOR( BinaryLShift, "castel_operatorBinaryLShift" ),
-    OPERATOR( BinaryRShift, "castel_operatorBinaryRShift" ),
-
-    OPERATOR( BinaryAssignmentAnd, "castel_operatorBinaryAssignmentAnd" ),
-    OPERATOR( BinaryAssignmentOr, "castel_operatorBinaryAssignmentOr" ),
-    OPERATOR( BinaryAssignmentXOr, "castel_operatorBinaryAssignmentXOr" ),
-    OPERATOR( BinaryAssignmentLShift, "castel_operatorBinaryAssignmentLShift" ),
-    OPERATOR( BinaryAssignmentRShift, "castel_operatorBinaryAssignmentRShift" ),
-
-    OPERATOR( ComparisonLesser, "castel_operatorComparisonLesser" ),
-    OPERATOR( ComparisonGreater, "castel_operatorComparisonGreater" ),
-    OPERATOR( ComparisonLesserOrEqual, "castel_operatorComparisonLesserOrEqual" ),
-    OPERATOR( ComparisonGreaterOrEqual, "castel_operatorComparisonGreaterOrEqual" ),
-    OPERATOR( ComparisonEqual, "castel_operatorComparisonEqual" ),
-    OPERATOR( ComparisonNotEqual, "castel_operatorComparisonNotEqual" ),
+    OPERATOR( Lesser, "Castel_Operator_lesser" ),
+    OPERATOR( Greater, "Castel_Operator_greater" ),
+    OPERATOR( LesserOrEqual, "Castel_Operator_lesserOrEqual" ),
+    OPERATOR( GreaterOrEqual, "Castel_Operator_greaterOrEqual" ),
+    OPERATOR( Equal, "Castel_Operator_equal" ),
+    OPERATOR( NotEqual, "Castel_Operator_notEqual" ),
 
 };
 

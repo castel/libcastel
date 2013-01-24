@@ -11,7 +11,7 @@ static runtime::boxes::Class * classPrototype = nullptr;
 
 static std::vector< runtime::boxes::Class * > incompleteClasses;
 
-runtime::boxes::Class * castelClass_create( runtime::boxes::Class * parent, runtime::boxes::Class::InitializerSignature * initializer, runtime::Box *** environment )
+runtime::boxes::Class * Castel_Class_create( runtime::boxes::Class * parent, runtime::boxes::Class::InitializerSignature * initializer, runtime::Box *** environment )
 {
     auto instance = runtime::helper::create< runtime::boxes::Class >( parent, initializer, environment );
 
@@ -23,7 +23,7 @@ runtime::boxes::Class * castelClass_create( runtime::boxes::Class * parent, runt
     return instance;
 }
 
-runtime::Box * castelClassBt_InstallPrototype( runtime::Box ***, int argc, runtime::Box ** argv )
+runtime::Box * Castel_Class_installPrototype( runtime::Box ***, int argc, runtime::Box ** argv )
 {
     auto prototype = dynamic_cast< runtime::boxes::Class * >( argv[ 0 ] );
 
@@ -36,7 +36,7 @@ runtime::Box * castelClassBt_InstallPrototype( runtime::Box ***, int argc, runti
     return prototype;
 }
 
-runtime::Box * castelClassBt_Parent( runtime::Box ***, int argc, runtime::Box ** argv )
+runtime::Box * Castel_Class_parent( runtime::Box ***, int argc, runtime::Box ** argv )
 {
     auto classBox = dynamic_cast< runtime::boxes::Class * >( argv[ 0 ] );
 

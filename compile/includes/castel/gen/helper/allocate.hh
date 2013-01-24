@@ -28,7 +28,7 @@ namespace castel
                     return irBuilder.CreateAlloca( type, count );
 
                 llvm::Value * size = gen::helper::sizeOf( context, irBuilder, type );
-                llvm::Value * raw = gen::helper::call( context, module, irBuilder, "castel_malloc", size, count );
+                llvm::Value * raw = gen::helper::call( context, module, irBuilder, "Castel_malloc", size, count );
 
                 return irBuilder.CreateBitCast( raw, llvm::PointerType::getUnqual( type ) );
             }

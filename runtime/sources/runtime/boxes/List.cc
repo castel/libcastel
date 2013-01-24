@@ -3,7 +3,7 @@
 using namespace castel;
 using runtime::boxes::List;
 
-bool List::operatorBool( void )
+bool List::operatorBoolCast( void )
 {
     return true;
 }

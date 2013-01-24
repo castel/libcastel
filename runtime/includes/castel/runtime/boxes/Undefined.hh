@@ -20,13 +20,13 @@ namespace castel
 
             public:
 
-                virtual bool operatorBool( void );
+                virtual bool operatorBoolCast( void );
 
             public:
 
-                virtual runtime::Box * operatorLogicalEqual( runtime::Box * operand );
+                virtual runtime::Box * operatorEqual( runtime::Box * operand );
 
-                virtual runtime::Box * operatorLogicalNotEqual( runtime::Box * operand );
+                virtual runtime::Box * operatorNotEqual( runtime::Box * operand );
 
             };
 

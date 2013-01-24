@@ -22,7 +22,8 @@ ast::Statement * Parser::exec( void )
 
     lexeme.reset( mLexer.consume( ) );
 
-    if ( lexeme->type( ) == lex::Lexeme::Type::Spaces )
+    if ( lexeme->type( ) == lex::Lexeme::Type::Spaces
+      || lexeme->type( ) == lex::Lexeme::Type::Newline )
         goto loop;
 
     castelparserIsValid = true;

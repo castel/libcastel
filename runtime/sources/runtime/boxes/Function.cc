@@ -5,7 +5,7 @@
 using namespace castel;
 using runtime::boxes::Function;
 
-bool Function::operatorBool( void )
+bool Function::operatorBoolCast( void )
 {
     return true;
 }

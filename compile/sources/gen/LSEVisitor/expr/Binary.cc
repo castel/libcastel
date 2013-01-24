@@ -30,5 +30,5 @@ void LSEVisitor::visit( ast::expr::Binary & binaryExpressionAst )
 
     llvm::Value * object = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * leftOperandAst );
     llvm::Value * property = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * rightOperandAst );
-    gen::helper::call( mContext, mModule, mIRBuilder, "castel_setProperty", object, property, mValue );
+    gen::helper::call( mContext, mModule, mIRBuilder, "Castel_setProperty", object, property, mValue );
 }

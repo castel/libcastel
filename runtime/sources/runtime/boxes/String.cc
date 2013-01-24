@@ -1,6 +1,6 @@
 #include <cstring>
 
-#include "castel/runtime/boxes/Bool.hh"
+#include "castel/runtime/boxes/Boolean.hh"
 #include "castel/runtime/boxes/String.hh"
 #include "castel/runtime/helper/Fatal.hh"
 #include "castel/runtime/helper/create.hh"
@@ -10,12 +10,12 @@
 using namespace castel;
 using runtime::boxes::String;
 
-bool String::operatorBool( void )
+bool String::operatorBoolCast( void )
 {
     return mLength > 0;
 }
 
-runtime::Box * String::operatorNumericAddition( runtime::Box * operand )
+runtime::Box * String::operatorAddition( runtime::Box * operand )
 {
     auto stringOperand = dynamic_cast< runtime::boxes::String * >( operand );
 
@@ -35,7 +35,7 @@ runtime::Box * String::operatorNumericAddition( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::String >( data, newLength );
 }
 
-runtime::Box * String::operatorComparisonEqual( runtime::Box * operand )
+runtime::Box * String::operatorEqual( runtime::Box * operand )
 {
     auto stringOperand = dynamic_cast< runtime::boxes::String * >( operand );
 
@@ -43,10 +43,10 @@ runtime::Box * String::operatorComparisonEqual( runtime::Box * operand )
         return nullptr;
 
     bool areStringsEqual = mLength == stringOperand->mLength && std::strcmp( mValue, stringOperand->mValue ) == 0;
-    return runtime::helper::create< runtime::boxes::Bool >( areStringsEqual );
+    return runtime::helper::create< runtime::boxes::Boolean >( areStringsEqual );
 }
 
-runtime::Box * String::operatorComparisonNotEqual( runtime::Box * operand )
+runtime::Box * String::operatorNotEqual( runtime::Box * operand )
 {
     auto stringOperand = dynamic_cast< runtime::boxes::String * >( operand );
 
@@ -54,5 +54,5 @@ runtime::Box * String::operatorComparisonNotEqual( runtime::Box * operand )
         return nullptr;
 
     bool areStringsNotEqual = mLength != stringOperand->mLength || std::strcmp( mValue, stringOperand->mValue ) != 0;
-    return runtime::helper::create< runtime::boxes::Bool >( areStringsNotEqual );
+    return runtime::helper::create< runtime::boxes::Boolean >( areStringsNotEqual );
 }

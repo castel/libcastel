@@ -26,85 +26,63 @@ namespace castel
 
             public:
 
-                virtual bool operatorBool( void );
+                virtual bool operatorBoolCast( void );
 
             public:
 
-                virtual runtime::Box * operatorNumericPostIncrementation( void );
+                virtual runtime::Box * operatorPostIncrementation( void );
 
-                virtual runtime::Box * operatorNumericPostDecrementation( void );
+                virtual runtime::Box * operatorPostDecrementation( void );
 
-                virtual runtime::Box * operatorNumericPreIncrementation( void );
+                virtual runtime::Box * operatorPreIncrementation( void );
 
-                virtual runtime::Box * operatorNumericPreDecrementation( void );
-
-            public:
-
-                virtual runtime::Box * operatorNumericPlus( void );
-
-                virtual runtime::Box * operatorNumericMinus( void );
-
-                virtual runtime::Box * operatorNumericAddition( runtime::Box * operand );
-
-                virtual runtime::Box * operatorNumericSubstraction( runtime::Box * operand );
-
-                virtual runtime::Box * operatorNumericMultiplication( runtime::Box * operand );
-
-                virtual runtime::Box * operatorNumericDivision( runtime::Box * operand );
-
-                virtual runtime::Box * operatorNumericModulo( runtime::Box * operand );
+                virtual runtime::Box * operatorPreDecrementation( void );
 
             public:
 
-                virtual runtime::Box * operatorNumericAssignmentAddition( runtime::Box * operand );
+                virtual runtime::Box * operatorPositive( void );
 
-                virtual runtime::Box * operatorNumericAssignmentSubstraction( runtime::Box * operand );
-
-                virtual runtime::Box * operatorNumericAssignmentMultiplication( runtime::Box * operand );
-
-                virtual runtime::Box * operatorNumericAssignmentDivision( runtime::Box * operand );
-
-                virtual runtime::Box * operatorNumericAssignmentModulo( runtime::Box * operand );
+                virtual runtime::Box * operatorNegative( void );
 
             public:
 
-                virtual runtime::Box * operatorBinaryNot( void );
+                virtual runtime::Box * operatorAddition( runtime::Box * operand );
 
-                virtual runtime::Box * operatorBinaryAnd( runtime::Box * operand );
+                virtual runtime::Box * operatorSubstraction( runtime::Box * operand );
 
-                virtual runtime::Box * operatorBinaryOr( runtime::Box * operand );
+                virtual runtime::Box * operatorMultiplication( runtime::Box * operand );
 
-                virtual runtime::Box * operatorBinaryXOr( runtime::Box * operand );
+                virtual runtime::Box * operatorDivision( runtime::Box * operand );
 
-                virtual runtime::Box * operatorBinaryLShift( runtime::Box * operand );
-
-                virtual runtime::Box * operatorBinaryRShift( runtime::Box * operand );
+                virtual runtime::Box * operatorModulo( runtime::Box * operand );
 
             public:
 
-                virtual runtime::Box * operatorBinaryAssignmentAnd( runtime::Box * operand );
+                virtual runtime::Box * operatorBitwiseNot( void );
 
-                virtual runtime::Box * operatorBinaryAssignmentOr( runtime::Box * operand );
+                virtual runtime::Box * operatorBitwiseAnd( runtime::Box * operand );
 
-                virtual runtime::Box * operatorBinaryAssignmentXOr( runtime::Box * operand );
+                virtual runtime::Box * operatorBitwiseOr( runtime::Box * operand );
 
-                virtual runtime::Box * operatorBinaryAssignmentLShift( runtime::Box * operand );
+                virtual runtime::Box * operatorBitwiseXOr( runtime::Box * operand );
 
-                virtual runtime::Box * operatorBinaryAssignmentRShift( runtime::Box * operand );
+                virtual runtime::Box * operatorLeftShift( runtime::Box * operand );
+
+                virtual runtime::Box * operatorRightShift( runtime::Box * operand );
 
             public:
 
-                virtual runtime::Box * operatorComparisonLesser( runtime::Box * operand );
+                virtual runtime::Box * operatorLesser( runtime::Box * operand );
 
-                virtual runtime::Box * operatorComparisonGreater( runtime::Box * operand );
+                virtual runtime::Box * operatorGreater( runtime::Box * operand );
 
-                virtual runtime::Box * operatorComparisonLesserOrEqual( runtime::Box * operand );
+                virtual runtime::Box * operatorLesserOrEqual( runtime::Box * operand );
 
-                virtual runtime::Box * operatorComparisonGreaterOrEqual( runtime::Box * operand );
+                virtual runtime::Box * operatorGreaterOrEqual( runtime::Box * operand );
 
-                virtual runtime::Box * operatorComparisonEqual( runtime::Box * operand );
+                virtual runtime::Box * operatorEqual( runtime::Box * operand );
 
-                virtual runtime::Box * operatorComparisonNotEqual( runtime::Box * operand );
+                virtual runtime::Box * operatorNotEqual( runtime::Box * operand );
 
             private:
 

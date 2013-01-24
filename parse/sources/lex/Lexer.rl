@@ -21,104 +21,20 @@ Lexer::Lexer( char const * p, int n )
     , mTe( 0 )
     , mCs( 0 )
     , mAct( mCs )
-    , mLexemeQueue( )
-    , mLevelStack( )
     , mPosition( std::make_pair( 1, 1 ) )
 {
-    mLevelStack.push( 0 );
 }
 
 lex::Lexeme * Lexer::consume( void )
 {
-    if ( mLexemeQueue.empty( ) ) {
-        if ( ! mLevelStack.empty( ) ) {
-            this->computeNextLexemes( );
-        } else {
-            return new lex::Lexeme( lex::Lexeme::Type::Invalid, "", std::make_pair( - 1, - 1 ) );
-        }
-    }
-
-    lex::Lexeme * front = mLexemeQueue.front( );
-    mLexemeQueue.pop( );
-
-    return front;
-}
-
-void Lexer::computeNextLexemes( void )
-{
-
-    lex::Lexeme * lexeme;
-
-    std::unique_ptr< lex::Lexeme > lastNewline;
-
-    while ( true ) {
-
-        lexeme = this->fetchNextLexeme( );
-
-        if ( lexeme->type( ) == lex::Lexeme::Type::Newline ) {
-            lastNewline.reset( lexeme );
-        } else {
-            break;
-        }
-
-    }
-
-    if ( lastNewline.get( ) ) {
-
-        std::string str = lastNewline->as< std::string >( );
-
-        std::size_t start = str.find_first_of( '\t' );
-        std::size_t end = str.find_last_of( '\t' );
-
-        unsigned int currentLevel = mLevelStack.top( );
-        unsigned int expectedLevel = start != std::string::npos ? 1 + end - start : 0;
-
-        if ( currentLevel == expectedLevel )
-            mLexemeQueue.push( lastNewline.release( ) );
-
-        else if ( currentLevel < expectedLevel ) {
-            for ( ; currentLevel < expectedLevel; ++ currentLevel ) {
-                mLexemeQueue.push( new lex::Lexeme( lex::Lexeme::Type::Indent, "", lastNewline->position( ) ) );
-            }
-        }
-
-        else if ( currentLevel > expectedLevel ) {
-            mLexemeQueue.push( new lex::Lexeme( lex::Lexeme::Type::Newline, "", lastNewline->position( ) ) );
-            for ( ; currentLevel > expectedLevel; -- currentLevel ) {
-                mLexemeQueue.push( new lex::Lexeme( lex::Lexeme::Type::Dedent, "", lastNewline->position( ) ) );
-            }
-        }
-
-        mLevelStack.top( ) = currentLevel;
-
-    }
-
-    if ( lexeme->type( ) == lex::Lexeme::Type::LParenthesis ) {
-
-        mLevelStack.push( mLevelStack.top( ) );
-
-    } else if ( lexeme->type( ) == lex::Lexeme::Type::RParenthesis || lexeme->type( ) == lex::Lexeme::Type::End ) {
-
-        unsigned int currentLevel = mLevelStack.top( ); mLevelStack.pop( );
-        unsigned int expectedLevel = ! mLevelStack.empty( ) ? mLevelStack.top( ) : 0;
-
-        if ( lexeme->type( ) == lex::Lexeme::Type::End || currentLevel > expectedLevel ) {
-            mLexemeQueue.push( new lex::Lexeme( lex::Lexeme::Type::Newline, "", lexeme->position( ) ) );
-        }
-
-        for ( int t = currentLevel; t > expectedLevel; -- t ) {
-            mLexemeQueue.push( new lex::Lexeme( lex::Lexeme::Type::Dedent, "", lexeme->position( ) ) );
-        }
-
-    }
-
-    mLexemeQueue.push( lexeme );
+    return this->fetchNextLexeme( );
 }
 
 lex::Lexeme * Lexer::fetchNextLexeme( void )
 {
     %%{
 
+        Constructor                = 'constructor';
         Undefined                  = 'undefined';
         Protected                  = 'protected';
         Extending                  = 'extending';
@@ -126,44 +42,41 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
         Function                   = 'function';
         Private                    = 'private';
         Require                    = 'require';
+        Extern                     = 'extern';
         Return                     = 'return';
         Public                     = 'public';
         False                      = 'false';
         Class                      = 'class';
+        While                      = 'while';
+        Until                      = 'until';
         True                       = 'true';
         Else                       = 'else';
-        Dict                       = 'dict';
-        List                       = 'list';
         Null                       = 'null';
         New                        = 'new';
+        For                        = 'for';
         Var                        = 'var';
-        And                        = 'and';
-        Or                         = 'or';
-        As                         = 'as';
         If                         = 'if';
+        In                         = 'in';
 
         Incrementation             = '++';
         Decrementation             = '--';
-
-        LesserOrEqual              = '<=';
-        GreaterOrEqual             = '>=';
-        Lesser                     = '<';
-        Greater                    = '>';
         Equal                      = '==';
         NotEqual                   = '!=';
-
+        LesserOrEqual              = '<=';
+        GreaterOrEqual             = '>=';
         AdditionAssignment         = '+=';
         SubstractionAssignment     = '-=';
         MultiplicationAssignment   = '*=';
         DivisionAssignment         = '/=';
         ModuloAssignment           = '%=';
 
-        PositiveAddition           = '+';
-        NegativeSubstractionHyphen = '-';
+        Lesser                     = '<';
+        Greater                    = '>';
+        Plus                       = '+';
+        Minus                      = '-';
         Multiplication             = '*';
         Division                   = '/';
         Modulo                     = '%';
-
         Assignment                 = '=';
 
         LParenthesis               = '(';
@@ -172,43 +85,25 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
         LBracket                   = '[';
         RBracket                   = ']';
 
+        LBrace                     = '{';
+        RBrace                     = '}';
+
         QuestionMark               = '?';
         Colon                      = ':';
         Comma                      = ',';
         Dot                        = '.';
+        Semicolon                  = ';';
+
         Quote                      = '\'';
 
         String                     = '"'([^\"]|'\\' any)*'"';
-        Number                     = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|[0-9]+('.'[0-9]*)?|[0-9]*'.'[0-9]+);
-        External                   = '%'[a-zA-Z][0-9a-zA-Z_]*;
+        Number                     = ('0'[xX][0-9a-fA-F]+|'0'[bB][01]+|'0'[0-9]*|[1-9][0-9]*('.'[0-9]*)?|[0-9]*'.'[0-9]+);
         Identifier                 = [a-zA-Z][0-9a-zA-Z_]*;
 
-        Spaces                     = [ ]+;
-        Newline                    = ('\r''\n'|'\r'|'\n')('\t'*);
+        Spaces                     = (' '|'\t')+;
+        Newline                    = ('\r''\n'|'\r'|'\n');
 
         main := |*
-
-            Function                   => { type = lex::Lexeme::Type::Function;                   fbreak; };
-            Dict                       => { type = lex::Lexeme::Type::Dict;                       fbreak; };
-            List                       => { type = lex::Lexeme::Type::List;                       fbreak; };
-            Class                      => { type = lex::Lexeme::Type::Class;                      fbreak; };
-
-            Extending                  => { type = lex::Lexeme::Type::Extending;                  fbreak; };
-
-            Public                     => { type = lex::Lexeme::Type::Public;                     fbreak; };
-            Protected                  => { type = lex::Lexeme::Type::Protected;                  fbreak; };
-            Private                    => { type = lex::Lexeme::Type::Private;                    fbreak; };
-
-            Operator                   => { type = lex::Lexeme::Type::Operator;                   fbreak; };
-
-            Var                        => { type = lex::Lexeme::Type::Var;                        fbreak; };
-            Require                    => { type = lex::Lexeme::Type::Require;                    fbreak; };
-            As                         => { type = lex::Lexeme::Type::As;                         fbreak; };
-
-            Return                     => { type = lex::Lexeme::Type::Return;                     fbreak; };
-
-            If                         => { type = lex::Lexeme::Type::If;                         fbreak; };
-            Else                       => { type = lex::Lexeme::Type::Else;                       fbreak; };
 
             False                      => { type = lex::Lexeme::Type::False;                      fbreak; };
             True                       => { type = lex::Lexeme::Type::True;                       fbreak; };
@@ -216,8 +111,26 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
             Null                       => { type = lex::Lexeme::Type::Null;                       fbreak; };
             Undefined                  => { type = lex::Lexeme::Type::Undefined;                  fbreak; };
 
-            And                        => { type = lex::Lexeme::Type::And;                        fbreak; };
-            Or                         => { type = lex::Lexeme::Type::Or;                         fbreak; };
+            Function                   => { type = lex::Lexeme::Type::Function;                   fbreak; };
+
+            Class                      => { type = lex::Lexeme::Type::Class;                      fbreak; };
+            Extending                  => { type = lex::Lexeme::Type::Extending;                  fbreak; };
+            Public                     => { type = lex::Lexeme::Type::Public;                     fbreak; };
+            Protected                  => { type = lex::Lexeme::Type::Protected;                  fbreak; };
+            Private                    => { type = lex::Lexeme::Type::Private;                    fbreak; };
+            Constructor                => { type = lex::Lexeme::Type::Constructor;                fbreak; };
+            Operator                   => { type = lex::Lexeme::Type::Operator;                   fbreak; };
+
+            If                         => { type = lex::Lexeme::Type::If;                         fbreak; };
+            While                      => { type = lex::Lexeme::Type::While;                      fbreak; };
+            Until                      => { type = lex::Lexeme::Type::Until;                      fbreak; };
+            For                        => { type = lex::Lexeme::Type::For;                        fbreak; };
+            In                         => { type = lex::Lexeme::Type::In;                         fbreak; };
+            Else                       => { type = lex::Lexeme::Type::Else;                       fbreak; };
+
+            Var                        => { type = lex::Lexeme::Type::Var;                        fbreak; };
+
+            Return                     => { type = lex::Lexeme::Type::Return;                     fbreak; };
 
             New                        => { type = lex::Lexeme::Type::New;                        fbreak; };
 
@@ -237,8 +150,8 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
             DivisionAssignment         => { type = lex::Lexeme::Type::DivisionAssignment;         fbreak; };
             ModuloAssignment           => { type = lex::Lexeme::Type::ModuloAssignment;           fbreak; };
 
-            PositiveAddition           => { type = lex::Lexeme::Type::PositiveAddition;           fbreak; };
-            NegativeSubstractionHyphen => { type = lex::Lexeme::Type::NegativeSubstractionHyphen; fbreak; };
+            Plus                       => { type = lex::Lexeme::Type::Plus;                       fbreak; };
+            Minus                      => { type = lex::Lexeme::Type::Minus;                      fbreak; };
             Multiplication             => { type = lex::Lexeme::Type::Multiplication;             fbreak; };
             Division                   => { type = lex::Lexeme::Type::Division;                   fbreak; };
             Modulo                     => { type = lex::Lexeme::Type::Modulo;                     fbreak; };
@@ -251,16 +164,20 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
             LBracket                   => { type = lex::Lexeme::Type::LBracket;                   fbreak; };
             RBracket                   => { type = lex::Lexeme::Type::RBracket;                   fbreak; };
 
+            LBrace                     => { type = lex::Lexeme::Type::LBrace;                     fbreak; };
+            RBrace                     => { type = lex::Lexeme::Type::RBrace;                     fbreak; };
+
             QuestionMark               => { type = lex::Lexeme::Type::QuestionMark;               fbreak; };
             Colon                      => { type = lex::Lexeme::Type::Colon;                      fbreak; };
             Comma                      => { type = lex::Lexeme::Type::Comma;                      fbreak; };
             Dot                        => { type = lex::Lexeme::Type::Dot;                        fbreak; };
-            Quote                      => { type = lex::Lexeme::Type::Quote;                      fbreak; };
+            Semicolon                  => { type = lex::Lexeme::Type::Semicolon;                  fbreak; };
 
             String                     => { type = lex::Lexeme::Type::String;                     fbreak; };
             Number                     => { type = lex::Lexeme::Type::Number;                     fbreak; };
-            External                   => { type = lex::Lexeme::Type::External;                   fbreak; };
+            Extern                     => { type = lex::Lexeme::Type::Extern;                     fbreak; };
             Identifier                 => { type = lex::Lexeme::Type::Identifier;                 fbreak; };
+            Require                    => { type = lex::Lexeme::Type::Require;                    fbreak; };
 
             Spaces                     => { type = lex::Lexeme::Type::Spaces;                     fbreak; };
             Newline                    => { type = lex::Lexeme::Type::Newline;                    fbreak; };

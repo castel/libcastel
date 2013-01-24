@@ -4,172 +4,122 @@
 using namespace castel;
 using runtime::Box;
 
-bool Box::operatorBool( void )
+bool Box::operatorBoolCast( void )
 {
     return false;
 }
 
-runtime::Box * Box::operatorNumericPlus( void )
+runtime::Box * Box::operatorPositive( void )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericMinus( void )
+runtime::Box * Box::operatorNegative( void )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericPreIncrementation( void )
+runtime::Box * Box::operatorPreIncrementation( void )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericPreDecrementation( void )
+runtime::Box * Box::operatorPreDecrementation( void )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericPostIncrementation( void )
+runtime::Box * Box::operatorPostIncrementation( void )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericPostDecrementation( void )
+runtime::Box * Box::operatorPostDecrementation( void )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericAddition( runtime::Box * )
+runtime::Box * Box::operatorAddition( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericSubstraction( runtime::Box * )
+runtime::Box * Box::operatorSubstraction( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericMultiplication( runtime::Box * )
+runtime::Box * Box::operatorMultiplication( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericDivision( runtime::Box * )
+runtime::Box * Box::operatorDivision( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericModulo( runtime::Box * )
+runtime::Box * Box::operatorModulo( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericAssignmentAddition( runtime::Box * )
+runtime::Box * Box::operatorBitwiseNot( void )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericAssignmentSubstraction( runtime::Box * )
+runtime::Box * Box::operatorBitwiseAnd( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericAssignmentMultiplication( runtime::Box * )
+runtime::Box * Box::operatorBitwiseOr( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericAssignmentDivision( runtime::Box * )
+runtime::Box * Box::operatorBitwiseXOr( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorNumericAssignmentModulo( runtime::Box * )
+runtime::Box * Box::operatorLeftShift( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorBinaryNot( void )
+runtime::Box * Box::operatorRightShift( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorBinaryAnd( runtime::Box * )
+runtime::Box * Box::operatorLesser( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorBinaryOr( runtime::Box * )
+runtime::Box * Box::operatorGreater( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorBinaryXOr( runtime::Box * )
+runtime::Box * Box::operatorLesserOrEqual( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorBinaryLShift( runtime::Box * )
+runtime::Box * Box::operatorGreaterOrEqual( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorBinaryRShift( runtime::Box * )
+runtime::Box * Box::operatorEqual( runtime::Box * )
 {
     return nullptr;
 }
 
-runtime::Box * Box::operatorBinaryAssignmentAnd( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorBinaryAssignmentOr( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorBinaryAssignmentXOr( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorBinaryAssignmentLShift( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorBinaryAssignmentRShift( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorComparisonLesser( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorComparisonGreater( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorComparisonLesserOrEqual( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorComparisonGreaterOrEqual( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorComparisonEqual( runtime::Box * )
-{
-    return nullptr;
-}
-
-runtime::Box * Box::operatorComparisonNotEqual( runtime::Box * )
+runtime::Box * Box::operatorNotEqual( runtime::Box * )
 {
     return nullptr;
 }
@@ -180,6 +130,16 @@ runtime::Box * Box::operatorSubscript( unsigned int, runtime::Box ** )
 }
 
 runtime::Box * Box::operatorCall( unsigned int, runtime::Box ** )
+{
+    return nullptr;
+}
+
+runtime::Box * Box::operatorNew( unsigned int, runtime::Box ** )
+{
+    return nullptr;
+}
+
+runtime::Box * Box::operatorRequire( unsigned int, runtime::Box ** )
 {
     return nullptr;
 }

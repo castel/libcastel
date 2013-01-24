@@ -16,10 +16,10 @@ using gen::GPEVisitor;
 #define OPERATOR( X, Y ) std::make_pair( ast::expr::Multary::Operator::X, Y )
 static std::map< ast::expr::Multary::Operator, char const * > const operatorsTable {
 
-    OPERATOR( New, "castel_new" ),
-
-    OPERATOR( Call, "castel_operatorCall" ),
-    OPERATOR( Subscript, "castel_operatorSubscript" ),
+    OPERATOR( Subscript, "Castel_Operator_subscript" ),
+    OPERATOR( Call, "Castel_Operator_call" ),
+    OPERATOR( New, "Castel_Operator_new" ),
+    OPERATOR( Require, "Castel_Operator_require" )
 
 };
 

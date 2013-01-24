@@ -1,23 +1,30 @@
 CASTEL_DEFINE_LEXEME_TYPE   ( End, 0                     )
 CASTEL_AUTO_LEXEME_TYPE     ( Invalid                    )
 
-CASTEL_DEMANGLE_LEXEME_TYPE ( Function                   )
-CASTEL_DEMANGLE_LEXEME_TYPE ( Dict                       )
-CASTEL_DEMANGLE_LEXEME_TYPE ( List                       )
-CASTEL_DEMANGLE_LEXEME_TYPE ( Class                      )
+CASTEL_AUTO_LEXEME_TYPE     ( Spaces                     )
+CASTEL_AUTO_LEXEME_TYPE     ( Newline                    )
 
+CASTEL_DEMANGLE_LEXEME_TYPE ( Function                   )
+
+CASTEL_DEMANGLE_LEXEME_TYPE ( Class                      )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Extending                  )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Public                     )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Protected                  )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Private                    )
-
-CASTEL_DEMANGLE_LEXEME_TYPE ( Extending                  )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Constructor                )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Operator                   )
 
 CASTEL_DEMANGLE_LEXEME_TYPE ( Require                    )
-CASTEL_DEMANGLE_LEXEME_TYPE ( As                         )
+
 CASTEL_DEMANGLE_LEXEME_TYPE ( Var                        )
+
 CASTEL_DEMANGLE_LEXEME_TYPE ( Return                     )
 
+CASTEL_DEMANGLE_LEXEME_TYPE ( For                        )
+CASTEL_DEMANGLE_LEXEME_TYPE ( In                         )
 CASTEL_DEMANGLE_LEXEME_TYPE ( If                         )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Until                      )
+CASTEL_DEMANGLE_LEXEME_TYPE ( While                      )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Else                       )
 
 CASTEL_DEMANGLE_LEXEME_TYPE ( False                      )
@@ -25,11 +32,6 @@ CASTEL_DEMANGLE_LEXEME_TYPE ( True                       )
 
 CASTEL_DEMANGLE_LEXEME_TYPE ( Null                       )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Undefined                  )
-
-CASTEL_DEMANGLE_LEXEME_TYPE ( And                        )
-CASTEL_DEMANGLE_LEXEME_TYPE ( Or                         )
-
-CASTEL_DEMANGLE_LEXEME_TYPE ( Operator                   )
 
 CASTEL_DEMANGLE_LEXEME_TYPE ( New                        )
 
@@ -43,16 +45,16 @@ CASTEL_DEMANGLE_LEXEME_TYPE ( MultiplicationAssignment   )
 CASTEL_DEMANGLE_LEXEME_TYPE ( DivisionAssignment         )
 CASTEL_DEMANGLE_LEXEME_TYPE ( ModuloAssignment           )
 
-CASTEL_DEMANGLE_LEXEME_TYPE ( PositiveAddition           )
-CASTEL_DEMANGLE_LEXEME_TYPE ( NegativeSubstractionHyphen )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Plus                       )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Minus                      )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Multiplication             )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Division                   )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Modulo                     )
 
-CASTEL_DEMANGLE_LEXEME_TYPE ( LesserOrEqual              )
-CASTEL_DEMANGLE_LEXEME_TYPE ( GreaterOrEqual             )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Lesser                     )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Greater                    )
+CASTEL_DEMANGLE_LEXEME_TYPE ( LesserOrEqual              )
+CASTEL_DEMANGLE_LEXEME_TYPE ( GreaterOrEqual             )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Equal                      )
 CASTEL_DEMANGLE_LEXEME_TYPE ( NotEqual                   )
 
@@ -62,19 +64,17 @@ CASTEL_DEMANGLE_LEXEME_TYPE ( RParenthesis               )
 CASTEL_DEMANGLE_LEXEME_TYPE ( LBracket                   )
 CASTEL_DEMANGLE_LEXEME_TYPE ( RBracket                   )
 
+CASTEL_DEMANGLE_LEXEME_TYPE ( LBrace                     )
+CASTEL_DEMANGLE_LEXEME_TYPE ( RBrace                     )
+
 CASTEL_DEMANGLE_LEXEME_TYPE ( QuestionMark               )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Colon                      )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Comma                      )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Dot                        )
-CASTEL_DEMANGLE_LEXEME_TYPE ( Quote                      )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Semicolon                  )
 
 CASTEL_DEMANGLE_LEXEME_TYPE ( String                     )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Number                     )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Identifier                 )
-CASTEL_DEMANGLE_LEXEME_TYPE ( External                   )
 
-CASTEL_DEMANGLE_LEXEME_TYPE ( Spaces                     )
-CASTEL_DEMANGLE_LEXEME_TYPE ( Newline                    )
-
-CASTEL_DEMANGLE_LEXEME_TYPE ( Indent                     )
-CASTEL_DEMANGLE_LEXEME_TYPE ( Dedent                     )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Extern                     )

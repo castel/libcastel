@@ -20,7 +20,7 @@ namespace castel
 
             public:
 
-                virtual bool operatorBool( void );
+                virtual bool operatorBoolCast( void );
 
             public:
 

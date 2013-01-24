@@ -2,7 +2,7 @@
 #include "castel/runtime/helper/create.hh"
 #include "castel/runtime/capi.hh"
 
-castel::runtime::boxes::Undefined * castelUndefined_create( void )
+castel::runtime::boxes::Undefined * Castel_Undefined_create( void )
 {
     return castel::runtime::helper::create< castel::runtime::boxes::Undefined >( );
 }

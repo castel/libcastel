@@ -12,16 +12,16 @@ using gen::GPEVisitor;
 #define OPERATOR( X, Y ) std::make_pair( ast::expr::Unary::Operator::X, Y )
 static std::map< ast::expr::Unary::Operator, char const * > const operatorsTable {
 
-    OPERATOR( NumericPreIncrementation, "castel_operatorNumericPreIncrementation" ),
-    OPERATOR( NumericPreDecrementation, "castel_operatorNumericPreDecrementation" ),
+    OPERATOR( PreIncrementation, "Castel_Operator_preIncrementation" ),
+    OPERATOR( PreDecrementation, "Castel_Operator_preDecrementation" ),
 
-    OPERATOR( NumericPostIncrementation, "castel_operatorNumericPostIncrementation" ),
-    OPERATOR( NumericPostDecrementation, "castel_operatorNumericPostDecrementation" ),
+    OPERATOR( PostIncrementation, "Castel_Operator_postIncrementation" ),
+    OPERATOR( PostDecrementation, "Castel_Operator_postDecrementation" ),
 
-    OPERATOR( NumericPlus, "castel_operatorNumericPlus" ),
-    OPERATOR( NumericMinus, "castel_operatorNumericMinus" ),
+    OPERATOR( Positive, "Castel_Operator_positive" ),
+    OPERATOR( Negative, "Castel_Operator_negative" ),
 
-    OPERATOR( BinaryNot, "castel_operatorBinaryNot" ),
+    OPERATOR( BitwiseNot, "Castel_Operator_bitwiseNot" ),
 
 };
 

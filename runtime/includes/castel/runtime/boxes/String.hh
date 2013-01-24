@@ -32,17 +32,17 @@ namespace castel
 
             public:
 
-                virtual bool operatorBool( void );
+                virtual bool operatorBoolCast( void );
 
             public:
 
-                virtual runtime::Box * operatorNumericAddition( runtime::Box * operand );
+                virtual runtime::Box * operatorAddition( runtime::Box * operand );
 
             public:
 
-                virtual runtime::Box * operatorComparisonEqual( runtime::Box * operand );
+                virtual runtime::Box * operatorEqual( runtime::Box * operand );
 
-                virtual runtime::Box * operatorComparisonNotEqual( runtime::Box * operand );
+                virtual runtime::Box * operatorNotEqual( runtime::Box * operand );
 
             private:
 

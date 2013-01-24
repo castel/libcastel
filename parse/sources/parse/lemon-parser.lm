@@ -1,13 +1,5 @@
 %token_prefix CASTEL_LEXING_MANGLEDLEXEMETYPES_
-%token_type   { lex::Lexeme *     }
-
-%left Incrementation Decrementation LParenthesis LBracket.
-%left PositiveAddition NegativeSubstraction.
-%left Multiplication Division Modulo.
-%left Assignment AdditionAssignment SubstractionAssignment MultiplicationAssignment DivisionAssignment ModuloAssignment.
-
-%nonassoc Spaces Newline.
-%nonassoc Indent Dedent.
+%token_type { lex::Lexeme * }
 
 %include {
 
@@ -15,24 +7,29 @@
     #include <list>
     #include <string>
 
-    #include "castel/ast/expr/Bool.hh"
+    #include "castel/ast/expr/literal/Boolean.hh"
+    #include "castel/ast/expr/literal/Class.hh"
+    #include "castel/ast/expr/literal/Dict.hh"
+    #include "castel/ast/expr/literal/Function.hh"
+    #include "castel/ast/expr/literal/List.hh"
+    #include "castel/ast/expr/literal/Null.hh"
+    #include "castel/ast/expr/literal/Number.hh"
+    #include "castel/ast/expr/literal/String.hh"
+    #include "castel/ast/expr/literal/Undefined.hh"
     #include "castel/ast/expr/Binary.hh"
-    #include "castel/ast/expr/Class.hh"
     #include "castel/ast/expr/Conditional.hh"
-    #include "castel/ast/expr/Dict.hh"
     #include "castel/ast/expr/External.hh"
-    #include "castel/ast/expr/Function.hh"
-    #include "castel/ast/expr/List.hh"
     #include "castel/ast/expr/Multary.hh"
-    #include "castel/ast/expr/Null.hh"
-    #include "castel/ast/expr/Number.hh"
-    #include "castel/ast/expr/String.hh"
     #include "castel/ast/expr/Unary.hh"
-    #include "castel/ast/expr/Undefined.hh"
     #include "castel/ast/expr/Variable.hh"
+    #include "castel/ast/stmt/ctrl/ForIn.hh"
+    #include "castel/ast/stmt/ctrl/If.hh"
+    #include "castel/ast/stmt/ctrl/Until.hh"
+    #include "castel/ast/stmt/ctrl/While.hh"
+    #include "castel/ast/stmt/decl/Class.hh"
+    #include "castel/ast/stmt/decl/Function.hh"
     #include "castel/ast/stmt/decl/Variables.hh"
     #include "castel/ast/stmt/Expression.hh"
-    #include "castel/ast/stmt/If.hh"
     #include "castel/ast/stmt/Return.hh"
     #include "castel/ast/Expression.hh"
     #include "castel/ast/Statement.hh"
@@ -57,263 +54,328 @@
     }
 }
 
-%type program { ast::Statement * }
+%left  PostIncrementation PostDecrementation
+       Call
+       Subscript
+       Member.
+
+%right PreIncrementation PreDecrementation
+       Positive Negative
+       Not BitwiseNot
+       New.
+
+%right Require.
+
+%left  Multiplication Division Modulo.
+
+%left  Addition Substraction.
+
+%left  LeftShift RightShift.
+
+%left  Lesser LesserOrEqual
+       Greater GreaterOrEqual.
+
+%left  Equal NotEqual.
+
+%left  BitwiseAnd.
+
+%left  BitwiseXOr.
+
+%left  BitwiseOr.
+
+%left  And.
+
+%left  Or.
+
+%right Conditional
+       Assignment
+       AdditionAssignment SubstractionAssignment
+       MultiplicationAssignment DivisionAssignment ModuloAssignment
+       LeftShiftAssignment RightShiftAssignment
+       BitwiseAndAssignment BitwiseXOrAssignment BitwiseOrAssignment
+       Dot.
+
+%nonassoc Incrementation Decrementation
+          Plus Minus
+          LBrace LBracket LParenthesis
+          QuestionMark.
+
 program ::= statementlist(U). { castelparserRootStatement = U; }
 
-    %type statementlist { ast::Statement * }
-    statementlist(A) ::= emptystatementlist statementlistiterator(U). { A = U; }
+%type statementlist { ast::Statement * }
+statementlist(A) ::= emptystatementlist statementiterator(U). { A = U; }
 
-    %type statementblock { ast::Statement * }
-    statementblock(A) ::= Indent statementlist(U) Dedent. { A = U; }
+    %type statementiterator { ast::Statement * }
+    statementiterator(A) ::= statement(U) emptystatementlist statementiterator(V). { A = U; U->next( V ); }
+    statementiterator(A) ::= . { A = nullptr; }
 
-    %type statementlistiterator { ast::Statement * }
-    statementlistiterator(A) ::= . { A = nullptr; }
-    statementlistiterator(A) ::= statement(U) emptystatementlist statementlistiterator(V). { A = U; U->next( V ); }
+    %type emptystatementlist { ast::Statement * }
+    emptystatementlist(A) ::= Semicolon emptystatementlist. { A = nullptr; }
+    emptystatementlist(A) ::= . { A = nullptr; }
 
-        emptystatementlist ::= Newline emptystatementlist.
-        emptystatementlist ::= .
+%type statementblock { ast::Statement * }
+statementblock(A) ::= LBrace statementlist(U) RBrace. { A = U; }
 
-    %type statement { ast::Statement * }
-    statement(A) ::= requirestatement(U). { A = U; }
-    statement(A) ::= expressionstatement(U). { A = U; }
-    statement(A) ::= returnstatement(U). { A = U; }
-    statement(A) ::= variabledeclarationstatement(U). { A = U; }
-    statement(A) ::= ifstatement(U). { A = U; }
+%type statement { ast::Statement * }
+statement(A) ::= openstatement(U). { A = U; }
+statement(A) ::= closedstatement(U). { A = U; }
 
-        %type requirestatement { ast::stmt::Require * }
-        requirestatement(A) ::= Require String(U) As Identifier(V) Newline. { A = new ast::stmt::Require( U->as< std::string >( ), V->as< std::string >( ) ); }
+    %type openstatement { ast::Statement * }
+    openstatement(A) ::= openifstatement(U). { A = U; }
+    openstatement(A) ::= openwhilestatement(U). { A = U; }
+    openstatement(A) ::= openuntilstatement(U). { A = U; }
+    openstatement(A) ::= openforinstatement(U). { A = U; }
+
+        %type openifstatement { ast::Statement * }
+        openifstatement(A) ::= If LParenthesis expression(U) RParenthesis statement(V). { A = new ast::stmt::ctrl::If( U, V ); }
+        openifstatement(A) ::= If LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W). { A = new ast::stmt::ctrl::If( U, V, W ); }
+
+        %type openwhilestatement { ast::Statement * }
+        openwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis statement(V). { A = new ast::stmt::ctrl::While( U, V ); }
+        openwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W). { A = new ast::stmt::ctrl::While( U, V, W ); }
+
+        %type openuntilstatement { ast::Statement * }
+        openuntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis statement(V). { A = new ast::stmt::ctrl::Until( U, V ); }
+        openuntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W). { A = new ast::stmt::ctrl::Until( U, V, W ); }
+
+        %type openforinstatement { ast::Statement * }
+        openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis statement(W). { A = new ast::stmt::ctrl::ForIn( U->as< std::string >( ), V, W ); }
+        openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else openstatement(X). { A = new ast::stmt::ctrl::ForIn( U->as< std::string >( ), V, W, X ); }
+
+
+    %type closedstatement { ast::Statement * }
+    closedstatement(A) ::= simplestatement(U). { A = U; }
+    closedstatement(A) ::= closedifstatement(U). { A = U; }
+    closedstatement(A) ::= closedwhilestatement(U). { A = U; }
+    closedstatement(A) ::= closeduntilstatement(U). { A = U; }
+    closedstatement(A) ::= closedforinstatement(U). { A = U; }
+
+        %type closedifstatement { ast::Statement * }
+        closedifstatement(A) ::= If LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W). { A = new ast::stmt::ctrl::If( U, V, W ); }
+
+        %type closedwhilestatement { ast::Statement * }
+        closedwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W). { A = new ast::stmt::ctrl::While( U, V, W ); }
+
+        %type closeduntilstatement { ast::Statement * }
+        closeduntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W). { A = new ast::stmt::ctrl::Until( U, V, W ); }
+
+        %type closedforinstatement { ast::Statement * }
+        closedforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else closedstatement(X). { A = new ast::stmt::ctrl::ForIn( U->as< std::string >( ), V, W, X ); }
+
+    %type simplestatement { ast::Statement * }
+    simplestatement(A) ::= expressionstatement(U). { A = U; }
+    simplestatement(A) ::= returnstatement(U). { A = U; }
+    simplestatement(A) ::= declarationstatement(U). { A = U; }
 
         %type expressionstatement { ast::stmt::Expression * }
-        expressionstatement(A) ::= expression(U) Newline. { A = new ast::stmt::Expression( U ); }
-
-        %type ifstatement { ast::stmt::If * }
-        ifstatement(A) ::= If expression(U) Colon statement(V). { A = new ast::stmt::If( U, V ); }
-        ifstatement(A) ::= If expression(U) Colon statementblock(V) Else Colon statementblock(W). { A = new ast::stmt::If( U, V, W ); }
-        ifstatement(A) ::= If expression(U) Colon statementblock(V). { A = new ast::stmt::If( U, V );    }
+        expressionstatement(A) ::= expression(U) Semicolon. { A = new ast::stmt::Expression( U ); }
 
         %type returnstatement { ast::stmt::Return * }
-        returnstatement(A) ::= Return Newline. { A = new ast::stmt::Return( ); }
-        returnstatement(A) ::= Return expression(U) Newline. { A = new ast::stmt::Return( U ); }
+        returnstatement(A) ::= Return expression(U) Semicolon. { A = new ast::stmt::Return( U ); }
+        returnstatement(A) ::= Return Semicolon. { A = new ast::stmt::Return( ); }
 
-        %type variabledeclarationstatement { ast::stmt::decl::Variables * }
-        variabledeclarationstatement(A) ::= Var variabledeclarations(U) Newline. { A = new ast::stmt::decl::Variables( U ); }
+        %type declarationstatement { ast::Statement * }
+        declarationstatement(A) ::= variablesdeclaration(U). { A = U; }
+        declarationstatement(A) ::= functiondeclaration(U). { A = U; }
+        declarationstatement(A) ::= classdeclaration(U). { A = U; }
 
-        %type variabledeclarations { ast::stmt::decl::Variables::Variable * }
-        variabledeclarations(A) ::= variabledeclaration(U) Comma variabledeclarations(V). { A = U; U->next( V ); }
-        variabledeclarations(A) ::= variabledeclaration(U). { A = U; }
+            %type variablesdeclaration { ast::stmt::decl::Variables * }
+            variablesdeclaration(A) ::= Var variabledeclarationlist(U) Semicolon. { A = new ast::stmt::decl::Variables( U ); }
 
-        %type variabledeclaration { ast::stmt::decl::Variables::Variable * }
-        variabledeclaration(A) ::= Identifier(U). { A = new ast::stmt::decl::Variables::Variable( U->as< std::string >( ) ); }
-        variabledeclaration(A) ::= Identifier(U) Assignment expression(V). { A = new ast::stmt::decl::Variables::Variable( U->as< std::string >( ), V ); }
+                %type variabledeclarationlist { ast::stmt::decl::Variables::Variable * }
+                variabledeclarationlist(A) ::= variabledeclarationitem(U) Comma variabledeclarationlist(V). { A = U; U->next( V ); }
+                variabledeclarationlist(A) ::= variabledeclarationitem(U). { A = U; }
+
+                    %type variabledeclarationitem { ast::stmt::decl::Variables::Variable * }
+                    variabledeclarationitem(A) ::= variabledeclaration(U). { A = U; }
+
+                        %type variabledeclaration { ast::stmt::decl::Variables::Variable * }
+                        variabledeclaration(A) ::= Identifier(U) Assignment expression(V). { A = new ast::stmt::decl::Variables::Variable( U->as< std::string >( ), V ); }
+                        variabledeclaration(A) ::= Identifier(U). { A = new ast::stmt::decl::Variables::Variable( U->as< std::string >( ) ); }
+
+            %type functiondeclaration { ast::stmt::decl::Function * }
+            functiondeclaration(A) ::= Function Identifier(U) parameters(V) statementblock(W). { A = new ast::stmt::decl::Function( U->as< std::string >( ), new ast::expr::literal::Function( V, W ) ); }
+
+            %type classdeclaration { ast::stmt::decl::Class * }
+            classdeclaration(A) ::= Class Identifier(U) classblock(V). { A = new ast::stmt::decl::Class( U->as< std::string >( ), new ast::expr::literal::Class( V ) ); }
+            classdeclaration(A) ::= Class Identifier(U) Extending expression(V) classblock(W). { A = new ast::stmt::decl::Class( U->as< std::string >( ), new ast::expr::literal::Class( W, V ) ); }
 
 %type expression { ast::Expression * }
-expression(A) ::= assignmentexpression(U). { A = U; }
+expression(A) ::= LParenthesis expression(U) RParenthesis. { A = U; }
+expression(A) ::= conditional(U). { A = U; }
+expression(A) ::= dynamic(U). { A = U; }
+expression(A) ::= literal(U). { A = U; }
+expression(A) ::= operation(U). { A = U; }
 
-    %type assignmentexpression { ast::Expression * }
-    assignmentexpression(A) ::= conditionalexpression(U). { A = U; }
-    assignmentexpression(A) ::= logicalexpression(U) assignmentoperator(V) assignmentexpression(W). { A = new ast::expr::Binary( V, U, W ); }
+    %type conditional { ast::Expression * }
+    conditional(A) ::= expression(U) QuestionMark expression(V) Colon expression(W). [Conditional] { A = new ast::expr::Conditional( U, V, W ); }
 
-        %type assignmentoperator { ast::expr::Binary::Operator }
-        assignmentoperator(A) ::= Assignment. { A = ast::expr::Binary::Operator::Assignment; }
-        assignmentoperator(A) ::= AdditionAssignment. { A = ast::expr::Binary::Operator::NumericAssignmentAddition; }
-        assignmentoperator(A) ::= SubstractionAssignment. { A = ast::expr::Binary::Operator::NumericAssignmentSubstraction; }
-        assignmentoperator(A) ::= MultiplicationAssignment. { A = ast::expr::Binary::Operator::NumericAssignmentMultiplication; }
-        assignmentoperator(A) ::= DivisionAssignment. { A = ast::expr::Binary::Operator::NumericDivision; }
-        assignmentoperator(A) ::= ModuloAssignment. { A = ast::expr::Binary::Operator::NumericModulo; }
+    %type dynamic { ast::Expression * }
+    dynamic(A) ::= Extern Identifier(U). { A = new ast::expr::External( U->as< std::string >( ) ); }
+    dynamic(A) ::= Identifier(U). { A = new ast::expr::Variable( U->as< std::string >( ) ); }
 
-        %type conditionalexpression { ast::Expression * }
-        conditionalexpression(A) ::= logicalexpression(U). { A = U; }
-        conditionalexpression(A) ::= logicalexpression(U) QuestionMark expression(V) Colon expression(W). { A = new ast::expr::Conditional( U, V, W ); }
+    %type literal { ast::Expression * }
+    literal(A) ::= undefinedliteral(U). { A = U; }
+    literal(A) ::= nullliteral(U). { A = U; }
+    literal(A) ::= boolliteral(U). { A = U; }
+    literal(A) ::= stringliteral(U). { A = U; }
+    literal(A) ::= numberliteral(U). { A = U; }
+    literal(A) ::= listliteral(U). { A = U; }
+    literal(A) ::= dictliteral(U). { A = U; }
+    literal(A) ::= functionliteral(U). { A = U; }
+    literal(A) ::= classliteral(U). { A = U; }
 
-            %type logicalexpression { ast::Expression * }
-            logicalexpression(A) ::= binaryexpression(U). { A = U; }
-            logicalexpression(A) ::= logicalexpression(U) logicaloperator(V) binaryexpression(W). { A = new ast::expr::Binary( V, U, W ); }
+        %type undefinedliteral { ast::expr::literal::Undefined * }
+        undefinedliteral(A) ::= Undefined. { A = new ast::expr::literal::Undefined( ); }
 
-                %type logicaloperator { ast::expr::Binary::Operator }
-                logicaloperator(A) ::= And. { A = ast::expr::Binary::Operator::LogicAnd; }
-                logicaloperator(A) ::= Or. { A = ast::expr::Binary::Operator::LogicOr; }
+        %type nullliteral { ast::expr::literal::Null * }
+        nullliteral(A) ::= Null. { A = new ast::expr::literal::Null( ); }
 
-                %type binaryexpression { ast::Expression * }
-                binaryexpression(A) ::= comparisonexpression(U). { A = U; }
+        %type boolliteral { ast::expr::literal::Boolean * }
+        boolliteral(A) ::= True. { A = new ast::expr::literal::Boolean( true ); }
+        boolliteral(A) ::= False. { A = new ast::expr::literal::Boolean( false ); }
 
-                    %type comparisonexpression { ast::Expression * }
-                    comparisonexpression(A) ::= shiftexpression(U). { A = U; }
-                    comparisonexpression(A) ::= comparisonexpression(U) comparisonoperator(V) shiftexpression(W). { A = new ast::expr::Binary( V, U, W ); }
+        %type stringliteral { ast::expr::literal::String * }
+        stringliteral(A) ::= String(U). { A = new ast::expr::literal::String( ast::expr::literal::String::parse( U->as< std::string >( ) ) ); }
 
-                        %type comparisonoperator { ast::expr::Binary::Operator }
-                        comparisonoperator(A) ::= Lesser. { A = ast::expr::Binary::Operator::ComparisonLesser; }
-                        comparisonoperator(A) ::= Greater. { A = ast::expr::Binary::Operator::ComparisonGreater; }
-                        comparisonoperator(A) ::= LesserOrEqual. { A = ast::expr::Binary::Operator::ComparisonLesserOrEqual; }
-                        comparisonoperator(A) ::= GreaterOrEqual. { A = ast::expr::Binary::Operator::ComparisonGreaterOrEqual; }
-                        comparisonoperator(A) ::= Equal. { A = ast::expr::Binary::Operator::ComparisonEqual; }
-                        comparisonoperator(A) ::= NotEqual. { A = ast::expr::Binary::Operator::ComparisonNotEqual; }
+        %type numberliteral { ast::expr::literal::Number * }
+        numberliteral(A) ::= Number(U). { A = new ast::expr::literal::Number( std::stod( U->as< std::string >( ) ) ); }
+        numberliteral(A) ::= Number2(U). { A = new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 2 ) ); }
+        numberliteral(A) ::= Number8(U). { A = new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 8 ) ); }
+        numberliteral(A) ::= Number10(U). { A = new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 10 ) ); }
+        numberliteral(A) ::= Number16(U). { A = new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 16 ) ); }
 
-                        %type shiftexpression { ast::Expression * }
-                        shiftexpression(A) ::= additiveexpression(U). { A = U; }
+        %type listliteral { ast::expr::literal::List * }
+        listliteral(A) ::= LBracket listlist(U) RBracket. { A = new ast::expr::literal::List( U ); }
 
-                            %type additiveexpression { ast::Expression * }
-                            additiveexpression(A) ::= multiplicativeexpression(U). { A = U; }
-                            additiveexpression(A) ::= additiveexpression(U) additiveoperator(V) multiplicativeexpression(W). { A = new ast::expr::Binary( V, U, W ); }
+            %type listlist { ast::expr::literal::List::Item * }
+            listlist(A) ::= listitem(U) listnextitem(V). { A = U; U->next( V ); }
+            listlist(A) ::= . { A = nullptr; }
 
-                                %type additiveoperator { ast::expr::Binary::Operator }
-                                additiveoperator(A) ::= PositiveAddition. { A = ast::expr::Binary::Operator::NumericAddition; }
-                                additiveoperator(A) ::= NegativeSubstractionHyphen. { A = ast::expr::Binary::Operator::NumericSubstraction; }
+                %type listnextitem { ast::expr::literal::List::Item * }
+                listnextitem(A) ::= Comma listlist(U). { A = U; }
+                listnextitem(A) ::= . { A = nullptr; }
 
-                                %type multiplicativeexpression { ast::Expression * }
-                                multiplicativeexpression(A) ::= prefixexpression(U). { A = U; }
-                                multiplicativeexpression(A) ::= multiplicativeexpression(U) multiplicativeoperator(V) prefixexpression(W). { A = new ast::expr::Binary( V, U, W ); }
+                %type listitem { ast::expr::literal::List::Item * }
+                listitem(A) ::= expression(U). { A = new ast::expr::literal::List::Item( U ); }
 
-                                    %type multiplicativeoperator { ast::expr::Binary::Operator }
-                                    multiplicativeoperator(A) ::= Multiplication. { A = ast::expr::Binary::Operator::NumericMultiplication; }
-                                    multiplicativeoperator(A) ::= Division. { A = ast::expr::Binary::Operator::NumericDivision; }
-                                    multiplicativeoperator(A) ::= Modulo. { A = ast::expr::Binary::Operator::NumericModulo; }
+        %type dictliteral { ast::expr::literal::Dict * }
+        dictliteral(A) ::= LBrace dictlist(U) RBrace. { A = new ast::expr::literal::Dict( U ); }
 
-                                        %type prefixexpression { ast::Expression * }
-                                        prefixexpression(A) ::= castexpression(U). { A = U; }
-                                        prefixexpression(A) ::= prefixoperator(U) castexpression(V). { A = new ast::expr::Unary( U, V ); }
+            %type dictlist { ast::expr::literal::Dict::Item * }
+            dictlist(A) ::= dictitem(U) dictnextitem(V). { A = U; U->next( V ); }
+            dictlist(A) ::= . { A = nullptr; }
 
-                                            %type prefixoperator { ast::expr::Unary::Operator }
-                                            prefixoperator(A) ::= PositiveAddition. { A = ast::expr::Unary::Operator::NumericPlus; }
-                                            prefixoperator(A) ::= NegativeSubstractionHyphen. { A = ast::expr::Unary::Operator::NumericMinus; }
-                                            prefixoperator(A) ::= Incrementation. { A = ast::expr::Unary::Operator::NumericPreIncrementation; }
-                                            prefixoperator(A) ::= Decrementation. { A = ast::expr::Unary::Operator::NumericPreDecrementation; }
+                %type dictnextitem { ast::expr::literal::Dict::Item * }
+                dictnextitem(A) ::= Comma dictlist(U). { A = U; }
+                dictnextitem(A) ::= . { A = nullptr; }
 
-                                            %type castexpression { ast::Expression * }
-                                            castexpression(A) ::= postfixexpression(U). { A = U; }
-                                            castexpression(A) ::= castexpression(U) Quote postfixexpression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Cast, U, V ); }
+                %type dictitem { ast::expr::literal::Dict::Item * }
+                dictitem(A) ::= Identifer(U) Colon expression(V). { A = new ast::expr::literal::Dict::Item( U->as< std::string >( ), V ); }
 
-                                                %type postfixexpression { ast::Expression * }
-                                                postfixexpression(A) ::= newexpression(U). { A = U; }
-                                                postfixexpression(A) ::= postfixexpression(U) postfixoperator(V). { A = new ast::expr::Unary( V, U ); }
-                                                postfixexpression(A) ::= postfixexpression(U) callexpression(V). { A = new ast::expr::Multary( ast::expr::Multary::Operator::Call, U ); U->next( V ); }
-                                                postfixexpression(A) ::= postfixexpression(U) subscriptexpression(V). { A = new ast::expr::Multary( ast::expr::Multary::Operator::Subscript, U ); U->next( V ); }
-                                                postfixexpression(A) ::= postfixexpression(U) Dot Identifier(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Member, U, ast::expr::String::createFromRaw( V->as< std::string >( ) ) ); }
+        %type functionliteral { ast::expr::literal::Function * }
+        functionliteral(A) ::= Function parameters(U) statementblock(V). { A = new ast::expr::literal::Function( U, V ); }
 
-                                                    %type postfixoperator { ast::expr::Unary::Operator }
-                                                    postfixoperator(A) ::= Incrementation. { A = ast::expr::Unary::Operator::NumericPostIncrementation; }
-                                                    postfixoperator(A) ::= Decrementation. { A = ast::expr::Unary::Operator::NumericPostDecrementation; }
+            %type parameters { ast::expr::literal::Function::Parameter * }
+            parameters(A) ::= LParenthesis parameterlist(U) RParenthesis. { A = U; }
 
-                                                    %type callexpression { ast::Expression * }
-                                                    callexpression(A) ::= LParenthesis expressionlist(U) RParenthesis. { A = U; }
+                %type parameterlist { ast::expr::literal::Function::Parameter * }
+                parameterlist(A) ::= parameteritem(U) parameternextitem(V). { A = U; U->next( V ); }
+                parameterlist(A) ::= . { A = nullptr; }
 
-                                                    %type subscriptexpression { ast::Expression * }
-                                                    subscriptexpression(A) ::= LBracket expressionlist(U) RBracket. { A = U; }
+                    %type parameternextitem { ast::expr::literal::Function::Parameter * }
+                    parameternextitem(A) ::= Comma parameterlist(U). { A = U; }
+                    parameternextitem(A) ::= . { A = nullptr; }
 
-                                                        %type expressionlist { ast::Expression * }
-                                                        expressionlist(A) ::= . { A = nullptr; }
-                                                        expressionlist(A) ::= expressioniterator(U). { A = U; }
+                    %type parameteritem { ast::expr::literal::Function::Parameter * }
+                    parameteritem(A) ::= Identifier(U). { A = new ast::expr::literal::Function::Parameter( U->as< std::string >( ) ); }
 
-                                                            %type expressioniterator { ast::Expression * }
-                                                            expressioniterator(A) ::= expression(U). { A = U; }
-                                                            expressioniterator(A) ::= expression(U) Comma expressioniterator(V). { A = U; A->next( V ); }
+        %type classliteral { ast::expr::literal::Class * }
+        classliteral(A) ::= Class classblock(U). { A = new ast::expr::literal::Class( U ); }
 
-                                                    %type newexpression { ast::Expression * }
-                                                    newexpression(A) ::= primaryexpression(U). { A = U; }
-                                                    newexpression(A) ::= New newexpression(U) callexpression(V). { A = new ast::expr::Multary( ast::expr::Multary::Operator::New, U ); U->next( V ); }
+            %type classblock { ast::expr::literal::Class::Member * }
+            classblock(A) ::= LBrace memberlist(U) RBrace. { A = U; }
 
-                                                        %type primaryexpression { ast::Expression * }
-                                                        primaryexpression(A) ::= variable(U). { A = U; }
-                                                        primaryexpression(A) ::= external(U). { A = U; }
-                                                        primaryexpression(A) ::= literal(U). { A = U; }
-                                                        primaryexpression(A) ::= LParenthesis expression(U) RParenthesis. { A = U; }
+                %type memberlist { ast::expr::literal::Class::Member * }
+                memberlist(A) ::= memberitem(U) memberlist(V). { A = U; U->next( V ); }
+                memberlist(A) ::= . { A = nullptr; }
 
-                                                            %type variable { ast::expr::Variable * }
-                                                            variable(A) ::= Identifier(U). { A = new ast::expr::Variable( U->as< std::string >( ) ); }
+                    %type memberitem { ast::expr::literal::Class::Member * }
+                    memberitem(A) ::= member(U). { A = U; }
 
-                                                            %type external { ast::expr::External * }
-                                                            external(A) ::= External(U). { A = ast::expr::External::createFromLiteral( U->as< std::string >( ) ); }
+                        %type member { ast::expr::literal::Class::Member * }
+                        member(A) ::= attribute(U). { A = U; }
+                        member(A) ::= method(U). { A = U; }
 
-                                                            %type literal { ast::Expression * }
-                                                            literal(A) ::= nullliteral(U). { A = U; }
-                                                            literal(A) ::= undefinedliteral(U). { A = U; }
-                                                            literal(A) ::= booleanliteral(U). { A = U; }
-                                                            literal(A) ::= numberliteral(U). { A = U; }
-                                                            literal(A) ::= functionliteral(U). { A = U; }
-                                                            literal(A) ::= stringliteral(U). { A = U; }
-                                                            literal(A) ::= dictliteral(U). { A = U; }
-                                                            literal(A) ::= listliteral(U). { A = U; }
-                                                            literal(A) ::= classliteral(U). { A = U; }
+                            %type attribute { ast::expr::literal::Class::Attribute * }
+                            attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Assignment expression(X) Semicolon. { A = new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ), X ); }
+                            attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Semicolon. { A = new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ) ); }
 
-                                                                %type nullliteral { ast::expr::Null * }
-                                                                nullliteral(A) ::= Null. { A = new ast::expr::Null( ); }
+                            %type method { ast::expr::literal::Class::Method * }
+                            method(A) ::= visibility(U) storage(V) Function Identifier(W) parameters(X) statementblock(Y). { A = new ast::expr::literal::Class::Method( U, V, W->as< std::string >( ), new ast::expr::literal::Function( X, Y ) ); }
+                            method(A) ::= visibility Operator parameters statementblock. { A = nullptr; }
+                            method(A) ::= visibility Constructor parameters statementblock. { A = nullptr; }
 
-                                                                %type undefinedliteral { ast::expr::Undefined * }
-                                                                undefinedliteral(A) ::= Undefined. { A = new ast::expr::Undefined( ); }
+                                %type visibility { ast::expr::literal::Class::Member::Visibility }
+                                visibility(A) ::= Public. { A = ast::expr::literal::Class::Member::Visibility::Public; }
+                                visibility(A) ::= Protected. { A = ast::expr::literal::Class::Member::Visibility::Protected; }
+                                visibility(A) ::= Private. { A = ast::expr::literal::Class::Member::Visibility::Private; }
 
-                                                                %type booleanliteral { ast::expr::Bool * }
-                                                                booleanliteral(A) ::= True. { A = new ast::expr::Bool( true ); }
-                                                                booleanliteral(A) ::= False. { A = new ast::expr::Bool( false ); }
+                                %type storage { ast::expr::literal::Class::Member::Host }
+                                storage(A) ::= Static. { A = ast::expr::literal::Class::Member::Host::Class; }
+                                storage(A) ::= . { A = ast::expr::literal::Class::Member::Host::Instance; }
 
-                                                                %type numberliteral { ast::expr::Number * }
-                                                                numberliteral(A) ::= Number(U). { A = new ast::expr::Number( U->as< ast::expr::Number::DataType >( ) ); }
+    %type operation { ast::Expression * }
+    operation(A) ::= unaryoperation(U). { A = U; }
+    operation(A) ::= binaryoperation(U). { A = U; }
+    operation(A) ::= multaryoperation(U). { A = U; }
 
-                                                                %type stringliteral { ast::expr::String * }
-                                                                stringliteral(A) ::= String(U). { A = ast::expr::String::createFromLiteral( U->as< std::string >( ) ); }
+        %type unaryoperation { ast::Expression * }
+        unaryoperation(A) ::= Not expression(U). { A = new ast::expr::Unary( ast::expr::Unary::Operator::Not, U ); }
 
-                                                                %type dictliteral { ast::expr::Dict * }
-                                                                dictliteral(A) ::= LParenthesis Dict RParenthesis. { A = new ast::expr::Dict( nullptr ); }
-                                                                dictliteral(A) ::= LParenthesis Dict Colon dictblock(U) RParenthesis. { A = new ast::expr::Dict( U ); }
+        unaryoperation(A) ::= BitwiseNot expression(U). { A = new ast::expr::Unary( ast::expr::Unary::Operator::BitwiseNot, U ); }
 
-                                                                    %type dictitem { ast::expr::Dict::Item * }
-                                                                    dictitem(A) ::= Identifier(U) Colon expression(V). { A = new ast::expr::Dict::Item( U->as< std::string >( ), V ); }
+        unaryoperation(A) ::= Plus expression(U). [Positive] { A = new ast::expr::Unary( ast::expr::Unary::Operator::Positive, U ); }
+        unaryoperation(A) ::= Minus expression(U). [Negative] { A = new ast::expr::Unary( ast::expr::Unary::Operator::Negative, U ); }
 
-                                                                    %type dictblock { ast::expr::Dict::Item * }
-                                                                    dictblock(A) ::= Indent dictblockiterator(U) Dedent. { A = U; }
+        unaryoperation(A) ::= Incrementation expression(U). [PreIncrementation] { A = new ast::expr::Unary( ast::expr::Unary::Operator::PreIncrementation, U ); }
+        unaryoperation(A) ::= Decrementation expression(U). [PreDecrementation] { A = new ast::expr::Unary( ast::expr::Unary::Operator::PreDecrementation, U ); }
 
-                                                                        %type dictblockiterator { ast::expr::Dict::Item * }
-                                                                        dictblockiterator(A) ::= dictitem(U). { A = U; }
-                                                                        dictblockiterator(A) ::= dictitem(U) Newline dictblockiterator(V). { A = U; A->next( V ); }
+        unaryoperation(A) ::= expression(U) Incrementation. [PostIncrementation] { A = new ast::expr::Unary( ast::expr::Unary::Operator::PostIncrementation, U ); }
+        unaryoperation(A) ::= expression(U) Decrementation. [PostDecrementation] { A = new ast::expr::Unary( ast::expr::Unary::Operator::PostDecrementation, U ); }
 
-                                                                %type listliteral { ast::expr::List * }
-                                                                listliteral(A) ::= LParenthesis List RParenthesis. { A = new ast::expr::List( nullptr ); }
-                                                                listliteral(A) ::= LParenthesis List Colon listblock(U) RParenthesis. { A = new ast::expr::List( U ); }
+        %type binaryoperation { ast::Expression * }
+        binaryoperation(A) ::= expression(U) Plus expression(V). [Addition] { A = new ast::expr::Binary( ast::expr::Binary::Operator::Addition, U, V ); }
+        binaryoperation(A) ::= expression(U) Minus expression(V). [Substraction] { A = new ast::expr::Binary( ast::expr::Binary::Operator::Substraction, U, V ); }
+        binaryoperation(A) ::= expression(U) Multiplication expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Multiplication, U, V ); }
+        binaryoperation(A) ::= expression(U) Division expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Division, U, V ); }
+        binaryoperation(A) ::= expression(U) Modulo expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Modulo, U, V ); }
 
-                                                                    %type listitem { ast::expr::List::Item * }
-                                                                    listitem(A) ::= NegativeSubstractionHyphen expression(U). { A = new ast::expr::List::Item( U ); }
+        binaryoperation(A) ::= expression(U) Lesser expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Lesser, U, V ); }
+        binaryoperation(A) ::= expression(U) Greater expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Greater, U, V ); }
+        binaryoperation(A) ::= expression(U) LesserOrEqual expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::LesserOrEqual, U, V ); }
+        binaryoperation(A) ::= expression(U) GreaterOrEqual expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::GreaterOrEqual, U, V ); }
+        binaryoperation(A) ::= expression(U) Equal expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Equal, U, V ); }
+        binaryoperation(A) ::= expression(U) NotEqual expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::NotEqual, U, V ); }
 
-                                                                    %type listblock { ast::expr::List::Item * }
-                                                                    listblock(A) ::= Indent listblockiterator(U) Dedent. { A = U; }
+        binaryoperation(A) ::= expression(U) LeftShift expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::LeftShift, U, V ); }
+        binaryoperation(A) ::= expression(U) RightShift expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::RightShift, U, V ); }
+        binaryoperation(A) ::= expression(U) BitwiseAnd expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseAnd, U, V ); }
+        binaryoperation(A) ::= expression(U) BitwiseOr expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseOr, U, V ); }
+        binaryoperation(A) ::= expression(U) BitwiseXOr expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseXOr, U, V ); }
 
-                                                                        %type listblockiterator { ast::expr::List::Item * }
-                                                                        listblockiterator(A) ::= listitem(U). { A = U; }
-                                                                        listblockiterator(A) ::= listitem(U) Newline listblockiterator(V). { A = U; A->next( V ); }
+        binaryoperation(A) ::= expression(U) Dot Identifier(V). [Member] { A = new ast::expr::Binary( ast::expr::Binary::Operator::Member, U, new ast::expr::literal::String( V->as< std::string >( ) ) ); }
 
-                                                                %type functionliteral { ast::expr::Function * }
-                                                                functionliteral(A) ::= LParenthesis Function parameterlist(U) Colon statementblock(V) RParenthesis. { A = new ast::expr::Function( U, V ); }
+        binaryoperation(A) ::= expression(U) Assignment expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Assignment, U, V ); }
 
-                                                                    %type parameterlist { ast::expr::Function::Parameter * }
-                                                                    parameterlist(A) ::= . { A = nullptr; }
-                                                                    parameterlist(A) ::= parameterlistiterator(U). { A = U; }
+        %type multaryoperation { ast::Expression * }
+        multaryoperation(A) ::= expression(U) LBracket expression(V) RBracket. [Subscript] { A = new ast::expr::Multary( ast::expr::Multary::Operator::Subscript, U ); U->next( V ); }
+        multaryoperation(A) ::= expression(U) arguments(V). [Call] { A = new ast::expr::Multary( ast::expr::Multary::Operator::Call, U ); U->next( V ); }
+        multaryoperation(A) ::= New expression(U) arguments(V). [New] { A = new ast::expr::Multary( ast::expr::Multary::Operator::New, U ); U->next( V ); }
+        multaryoperation(A) ::= Require expression(U) arguments(V). [Require] { A = new ast::expr::Multary( ast::expr::Multary::Operator::Require, U ); U->next( V ); }
 
-                                                                        %type parameterlistiterator { ast::expr::Function::Parameter * }
-                                                                        parameterlistiterator(A) ::= parameter(U). { A = U; }
-                                                                        parameterlistiterator(A) ::= parameter(U) Comma parameterlistiterator(V). { A = U; A->next( V ); }
+            %type arguments { ast::Expression * }
+            arguments(A) ::= LParenthesis argumentlist(U) RParenthesis. { A = U; }
 
-                                                                            %type parameter { ast::expr::Function::Parameter * }
-                                                                            parameter(A) ::= Identifier(U). { A = new ast::expr::Function::Parameter( U->as< std::string >( ) ); }
-
-                                                                %type classliteral { ast::expr::Class * }
-                                                                classliteral(A) ::= LParenthesis Class Colon classblock(U) RParenthesis. { A = new ast::expr::Class( U ); }
-                                                                classliteral(A) ::= LParenthesis Class Extending expression(U) Colon classblock(V) RParenthesis. { A = new ast::expr::Class( V, U ); }
-
-                                                                    %type classblock { ast::expr::Class::Member * }
-                                                                    classblock(A) ::= Indent classblockiterator(U) Dedent. { A = U; }
-
-                                                                        %type classblockiterator { ast::expr::Class::Member * }
-                                                                        classblockiterator(A) ::= member(U). { A = U; }
-                                                                        classblockiterator(A) ::= member(U) classblockiterator(V). { A = U; A->next( V ); }
-
-                                                                            %type member { ast::expr::Class::Member * }
-                                                                            member(A) ::= membervisibility(U) membertype(V) Var Identifier(W) Assignment expression(X) Newline. { A = new ast::expr::Class::Attribute( U, V, W->as< std::string >( ), X ); }
-                                                                            member(A) ::= membervisibility(U) membertype(V) Var Identifier(W) Newline. { A = new ast::expr::Class::Attribute( U, V, W->as< std::string >( ) ); }
-                                                                            member(A) ::= membervisibility(U) membertype(V) Function Identifier(W) parameterlist(X) Colon statementblock(Y). { A = new ast::expr::Class::Method( U, V, W->as< std::string >( ), new ast::expr::Function( X, Y ) ); }
-                                                                            member(A) ::= membervisibility membertype Function Operator Identifier parameterlist Colon statementblock. { A = nullptr; /* not implemented */ }
-
-                                                                                %type membertype { ast::expr::Class::Member::Type }
-                                                                                membertype(A) ::= Static. { A = ast::expr::Class::Member::Type::Static; }
-                                                                                membertype(A) ::= . { A = ast::expr::Class::Member::Type::Binded; }
-
-                                                                                %type membervisibility { ast::expr::Class::Member::Visibility }
-                                                                                membervisibility(A) ::= Public. { A = ast::expr::Class::Member::Visibility::Public; }
-                                                                                membervisibility(A) ::= Protected. { A = ast::expr::Class::Member::Visibility::Protected; }
-                                                                                membervisibility(A) ::= Private. { A = ast::expr::Class::Member::Visibility::Private; }
+                %type argumentlist { ast::Expression * }
+                argumentlist(A) ::= expression(U). { A = U; }

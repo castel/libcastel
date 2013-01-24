@@ -25,17 +25,19 @@ namespace castel
 
             public:
 
-                inline Require( std::string const & source, std::string const & target );
+                inline Require( ast::Expression * loader, ast::Expression * parameters );
 
             public:
 
-                inline std::string const & source( void ) const;
+                inline ast::Expression * loader( void ) const;
 
-                inline Require & source( std::string const & source );
+                inline Require & loader( ast::Expression * loader );
+
+                inline ast::Expression * takeLoader( void );
 
             public:
 
-                inline std::string const & target( void ) const;
+                inline ast::Exp
 
                 inline Require & target( std::string const & target );
 

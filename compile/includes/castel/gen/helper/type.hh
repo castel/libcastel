@@ -6,7 +6,7 @@
 #include <llvm/Type.h>
 
 #include "castel/runtime/boxes/Binding.hh"
-#include "castel/runtime/boxes/Bool.hh"
+#include "castel/runtime/boxes/Boolean.hh"
 #include "castel/runtime/boxes/Class.hh"
 #include "castel/runtime/boxes/Dict.hh"
 #include "castel/runtime/boxes/Function.hh"
@@ -42,7 +42,7 @@ namespace llvm
     { };
 
     template < bool XCompile >
-    struct TypeBuilder< castel::runtime::boxes::Bool, XCompile >
+    struct TypeBuilder< castel::runtime::boxes::Boolean, XCompile >
         : public llvm::TypeBuilder< castel::runtime::Box, XCompile >
     { };
 

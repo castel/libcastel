@@ -34,11 +34,11 @@ namespace castel
 
             public:
 
-                runtime::Box * instanciate( unsigned int argc, runtime::Box ** argv );
+                virtual bool operatorBoolCast( void );
 
             public:
 
-                virtual bool operatorBool( void );
+                runtime::Box * operatorNew( unsigned int argc, runtime::Box ** argv );
 
             private:
 

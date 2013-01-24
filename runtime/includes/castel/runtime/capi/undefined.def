@@ -1,1 +1,1 @@
-CASTEL_FUNCTION( castelUndefined_create, castel::runtime::boxes::Undefined *, ( void ) )
+CASTEL_FUNCTION( Castel_Undefined_create, castel::runtime::boxes::Undefined *, ( void ) )

@@ -16,31 +16,36 @@ namespace castel
         namespace expr
         {
 
+            namespace literal
+            {
+
+                class Boolean;
+
+                class Class;
+
+                class Dict;
+
+                class Function;
+
+                class List;
+
+                class Null;
+
+                class Number;
+
+                class String;
+
+                class Undefined;
+
+            }
+
             class Binary;
-
-            class Bool;
-
-            class Class;
-
-            class Dict;
 
             class External;
 
-            class Function;
-
-            class List;
-
             class Multary;
 
-            class Null;
-
-            class Number;
-
-            class String;
-
             class Unary;
-
-            class Undefined;
 
             class Variable;
 
@@ -74,33 +79,33 @@ namespace castel
 
         public:
 
-            virtual void visit( ast::expr::Bool & astBoolExpression );
+            virtual void visit( ast::expr::literal::Boolean & boolLiteralAst );
 
-            virtual void visit( ast::expr::Binary & astBinaryExpression );
+            virtual void visit( ast::expr::literal::Class & classLiteralAst );
 
-            virtual void visit( ast::expr::Class & astClassExpression );
+            virtual void visit( ast::expr::literal::Dict & dictLiteralAst );
 
-            virtual void visit( ast::expr::Dict & astDictExpression );
+            virtual void visit( ast::expr::literal::Function & functionLiteralAst );
 
-            virtual void visit( ast::expr::External & astExternalExpression );
+            virtual void visit( ast::expr::literal::List & listLiteralAst );
 
-            virtual void visit( ast::expr::Function & astFunctionExpression );
+            virtual void visit( ast::expr::literal::Null & nullLiteralAst );
 
-            virtual void visit( ast::expr::List & astListExpression );
+            virtual void visit( ast::expr::literal::Number & numberLiteralAst );
 
-            virtual void visit( ast::expr::Multary & astMultaryExpression );
+            virtual void visit( ast::expr::literal::String & stringLiteralAst );
 
-            virtual void visit( ast::expr::Null & astNullExpression );
+            virtual void visit( ast::expr::literal::Undefined & undefinedLiteralAst );
 
-            virtual void visit( ast::expr::Number & astNumberExpression );
+            virtual void visit( ast::expr::Binary & binaryExpressionAst );
 
-            virtual void visit( ast::expr::String & astStringExpression );
+            virtual void visit( ast::expr::External & externalExpressionAst );
 
-            virtual void visit( ast::expr::Unary & astUnaryExpression );
+            virtual void visit( ast::expr::Multary & multaryExpressionAst );
 
-            virtual void visit( ast::expr::Undefined & astUndefinedExpression );
+            virtual void visit( ast::expr::Unary & unaryExpressionAst );
 
-            virtual void visit( ast::expr::Variable & astVariableExpression );
+            virtual void visit( ast::expr::Variable & variableExpressionAst );
 
         private:
 
@@ -120,18 +125,19 @@ namespace castel
 
 }
 
+#include "castel/ast/expr/literal/Boolean.hh"
+#include "castel/ast/expr/literal/Class.hh"
+#include "castel/ast/expr/literal/Dict.hh"
+#include "castel/ast/expr/literal/Function.hh"
+#include "castel/ast/expr/literal/List.hh"
+#include "castel/ast/expr/literal/Null.hh"
+#include "castel/ast/expr/literal/Number.hh"
+#include "castel/ast/expr/literal/String.hh"
+#include "castel/ast/expr/literal/Undefined.hh"
 #include "castel/ast/expr/Binary.hh"
-#include "castel/ast/expr/Bool.hh"
-#include "castel/ast/expr/Class.hh"
-#include "castel/ast/expr/Dict.hh"
-#include "castel/ast/expr/Function.hh"
-#include "castel/ast/expr/List.hh"
+#include "castel/ast/expr/External.hh"
 #include "castel/ast/expr/Multary.hh"
-#include "castel/ast/expr/Null.hh"
-#include "castel/ast/expr/Number.hh"
-#include "castel/ast/expr/String.hh"
 #include "castel/ast/expr/Unary.hh"
-#include "castel/ast/expr/Undefined.hh"
 #include "castel/ast/expr/Variable.hh"
 #include "castel/ast/Expression.hh"
 #include "castel/ast/Token.hh"

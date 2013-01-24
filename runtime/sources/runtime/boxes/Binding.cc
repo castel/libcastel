@@ -6,7 +6,7 @@
 using namespace castel;
 using runtime::boxes::Binding;
 
-bool Binding::operatorBool( void )
+bool Binding::operatorBoolCast( void )
 {
     return true;
 }

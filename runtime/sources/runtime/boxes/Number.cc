@@ -1,4 +1,4 @@
-#include "castel/runtime/boxes/Bool.hh"
+#include "castel/runtime/boxes/Boolean.hh"
 #include "castel/runtime/boxes/Number.hh"
 #include "castel/runtime/helper/create.hh"
 #include "castel/runtime/Box.hh"
@@ -6,46 +6,46 @@
 using namespace castel;
 using runtime::boxes::Number;
 
-bool Number::operatorBool( void )
+bool Number::operatorBoolCast( void )
 {
     return mValue != 0;
 }
 
-runtime::Box * Number::operatorNumericPlus( void )
+runtime::Box * Number::operatorPositive( void )
 {
     return runtime::helper::create< runtime::boxes::Number >( + mValue );
 }
 
-runtime::Box * Number::operatorNumericMinus( void )
+runtime::Box * Number::operatorNegative( void )
 {
     return runtime::helper::create< runtime::boxes::Number >( - mValue );
 }
 
-runtime::Box * Number::operatorNumericPreIncrementation( void )
+runtime::Box * Number::operatorPreIncrementation( void )
 {
     mValue += 1;
 
     return this;
 }
 
-runtime::Box * Number::operatorNumericPreDecrementation( void )
+runtime::Box * Number::operatorPreDecrementation( void )
 {
     mValue -= 1;
 
     return this;
 }
 
-runtime::Box * Number::operatorNumericPostIncrementation( void )
+runtime::Box * Number::operatorPostIncrementation( void )
 {
     return runtime::helper::create< runtime::boxes::Number >( mValue ++ );
 }
 
-runtime::Box * Number::operatorNumericPostDecrementation( void )
+runtime::Box * Number::operatorPostDecrementation( void )
 {
     return runtime::helper::create< runtime::boxes::Number >( mValue -- );
 }
 
-runtime::Box * Number::operatorNumericAddition( runtime::Box * operand )
+runtime::Box * Number::operatorAddition( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -55,7 +55,7 @@ runtime::Box * Number::operatorNumericAddition( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( mValue + numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorNumericSubstraction( runtime::Box * operand )
+runtime::Box * Number::operatorSubstraction( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -65,7 +65,7 @@ runtime::Box * Number::operatorNumericSubstraction( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( mValue - numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorNumericMultiplication( runtime::Box * operand )
+runtime::Box * Number::operatorMultiplication( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -75,7 +75,7 @@ runtime::Box * Number::operatorNumericMultiplication( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( mValue * numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorNumericDivision( runtime::Box * operand )
+runtime::Box * Number::operatorDivision( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -85,7 +85,7 @@ runtime::Box * Number::operatorNumericDivision( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( mValue / numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorNumericModulo( runtime::Box * operand )
+runtime::Box * Number::operatorModulo( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -98,72 +98,14 @@ runtime::Box * Number::operatorNumericModulo( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( static_cast< double >( aInt % bInt ) );
 }
 
-runtime::Box * Number::operatorNumericAssignmentAddition( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    mValue += numberOperand->mValue;
-    return this;
-}
-
-runtime::Box * Number::operatorNumericAssignmentSubstraction( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    mValue -= numberOperand->mValue;
-    return this;
-}
-
-runtime::Box * Number::operatorNumericAssignmentMultiplication( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    mValue *= numberOperand->mValue;
-    return this;
-}
-
-runtime::Box * Number::operatorNumericAssignmentDivision( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    mValue /= numberOperand->mValue;
-    return this;
-}
-
-runtime::Box * Number::operatorNumericAssignmentModulo( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    auto aInt = static_cast< int >( mValue );
-    auto bInt = static_cast< int >( numberOperand->mValue );
-
-    mValue = static_cast< double >( aInt % bInt );
-    return this;
-}
-
-runtime::Box * Number::operatorBinaryNot( void )
+runtime::Box * Number::operatorBitwiseNot( void )
 {
     int aInt = static_cast< int >( mValue );
 
     return runtime::helper::create< runtime::boxes::Number >( static_cast< double >( ~ aInt ) );
 }
 
-runtime::Box * Number::operatorBinaryAnd( runtime::Box * operand )
+runtime::Box * Number::operatorBitwiseAnd( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -176,7 +118,7 @@ runtime::Box * Number::operatorBinaryAnd( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( static_cast< double >( aInt & bInt ) );
 }
 
-runtime::Box * Number::operatorBinaryOr( runtime::Box * operand )
+runtime::Box * Number::operatorBitwiseOr( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -189,7 +131,7 @@ runtime::Box * Number::operatorBinaryOr( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( static_cast< double >( aInt | bInt ) );
 }
 
-runtime::Box * Number::operatorBinaryXOr( runtime::Box * operand )
+runtime::Box * Number::operatorBitwiseXOr( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -202,7 +144,7 @@ runtime::Box * Number::operatorBinaryXOr( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( static_cast< double >( aInt ^ bInt ) );
 }
 
-runtime::Box * Number::operatorBinaryLShift( runtime::Box * operand )
+runtime::Box * Number::operatorLeftShift( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -215,7 +157,7 @@ runtime::Box * Number::operatorBinaryLShift( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( static_cast< double >( aInt << bInt ) );
 }
 
-runtime::Box * Number::operatorBinaryRShift( runtime::Box * operand )
+runtime::Box * Number::operatorRightShift( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
@@ -228,132 +170,62 @@ runtime::Box * Number::operatorBinaryRShift( runtime::Box * operand )
     return runtime::helper::create< runtime::boxes::Number >( static_cast< double >( aInt >> bInt ) );
 }
 
-runtime::Box * Number::operatorBinaryAssignmentAnd( runtime::Box * operand )
+runtime::Box * Number::operatorLesser( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
     if ( ! numberOperand )
         return nullptr;
 
-    int aInt = static_cast< int >( mValue );
-    int bInt = static_cast< int >( numberOperand->mValue );
-
-    mValue = static_cast< double >( aInt & bInt );
-    return this;
+    return runtime::helper::create< runtime::boxes::Boolean >( mValue < numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorBinaryAssignmentOr( runtime::Box * operand )
+runtime::Box * Number::operatorGreater( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
     if ( ! numberOperand )
         return nullptr;
 
-    int aInt = static_cast< int >( mValue );
-    int bInt = static_cast< int >( numberOperand->mValue );
-
-    mValue = static_cast< double >( aInt | bInt );
-    return this;
+    return runtime::helper::create< runtime::boxes::Boolean >( mValue > numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorBinaryAssignmentXOr( runtime::Box * operand )
+runtime::Box * Number::operatorLesserOrEqual( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
     if ( ! numberOperand )
         return nullptr;
 
-    int aInt = static_cast< int >( mValue );
-    int bInt = static_cast< int >( numberOperand->mValue );
-
-    mValue = static_cast< double >( aInt ^ bInt );
-    return this;
+    return runtime::helper::create< runtime::boxes::Boolean >( mValue <= numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorBinaryAssignmentLShift( runtime::Box * operand )
+runtime::Box * Number::operatorGreaterOrEqual( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
     if ( ! numberOperand )
         return nullptr;
 
-    int aInt = static_cast< int >( mValue );
-    int bInt = static_cast< int >( numberOperand->mValue );
-
-    mValue = static_cast< double >( aInt << bInt );
-    return this;
+    return runtime::helper::create< runtime::boxes::Boolean >( mValue >= numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorBinaryAssignmentRShift( runtime::Box * operand )
+runtime::Box * Number::operatorEqual( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
     if ( ! numberOperand )
         return nullptr;
 
-    int aInt = static_cast< int >( mValue );
-    int bInt = static_cast< int >( numberOperand->mValue );
-
-    mValue = static_cast< double >( aInt >> bInt );
-    return this;
+    return runtime::helper::create< runtime::boxes::Boolean >( mValue == numberOperand->mValue );
 }
 
-runtime::Box * Number::operatorComparisonLesser( runtime::Box * operand )
+runtime::Box * Number::operatorNotEqual( runtime::Box * operand )
 {
     auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
 
     if ( ! numberOperand )
         return nullptr;
 
-    return runtime::helper::create< runtime::boxes::Bool >( mValue < numberOperand->mValue );
-}
-
-runtime::Box * Number::operatorComparisonGreater( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    return runtime::helper::create< runtime::boxes::Bool >( mValue > numberOperand->mValue );
-}
-
-runtime::Box * Number::operatorComparisonLesserOrEqual( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    return runtime::helper::create< runtime::boxes::Bool >( mValue <= numberOperand->mValue );
-}
-
-runtime::Box * Number::operatorComparisonGreaterOrEqual( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    return runtime::helper::create< runtime::boxes::Bool >( mValue >= numberOperand->mValue );
-}
-
-runtime::Box * Number::operatorComparisonEqual( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    return runtime::helper::create< runtime::boxes::Bool >( mValue == numberOperand->mValue );
-}
-
-runtime::Box * Number::operatorComparisonNotEqual( runtime::Box * operand )
-{
-    auto numberOperand = dynamic_cast< runtime::boxes::Number * >( operand );
-
-    if ( ! numberOperand )
-        return nullptr;
-
-    return runtime::helper::create< runtime::boxes::Bool >( mValue != numberOperand->mValue );
+    return runtime::helper::create< runtime::boxes::Boolean >( mValue != numberOperand->mValue );
 }

@@ -7,7 +7,7 @@
 #include <llvm/Module.h>
 #include <llvm/Value.h>
 
-#include "castel/ast/expr/Function.hh"
+#include "castel/ast/expr/literal/Function.hh"
 
 namespace castel
 {
@@ -45,9 +45,9 @@ namespace castel
 
         public:
 
-            inline ast::expr::Function::Parameter * parameters( void ) const;
+            inline ast::expr::literal::Function::Parameter * parameters( void ) const;
 
-            inline FunctionBuilder & parameters( ast::expr::Function::Parameter * parameters );
+            inline FunctionBuilder & parameters( ast::expr::literal::Function::Parameter * parameters );
 
         public:
 
@@ -65,7 +65,7 @@ namespace castel
 
             bool mUseThis;
 
-            ast::expr::Function::Parameter * mParameters;
+            ast::expr::literal::Function::Parameter * mParameters;
 
             ast::Statement * mStatements;
 
@@ -116,12 +116,12 @@ namespace castel
             return * this;
         }
 
-        ast::expr::Function::Parameter * FunctionBuilder::parameters( void ) const
+        ast::expr::literal::Function::Parameter * FunctionBuilder::parameters( void ) const
         {
             return mParameters;
         }
 
-        FunctionBuilder & FunctionBuilder::parameters( ast::expr::Function::Parameter * parameters )
+        FunctionBuilder & FunctionBuilder::parameters( ast::expr::literal::Function::Parameter * parameters )
         {
             mParameters = parameters;
 

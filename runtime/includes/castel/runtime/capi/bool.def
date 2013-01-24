@@ -1,1 +1,0 @@
-CASTEL_FUNCTION( castelBool_create, castel::runtime::boxes::Bool *, ( bool value ) )
