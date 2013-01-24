@@ -13,11 +13,11 @@ bool Binding::operatorBoolCast( void )
 
 runtime::Box * Binding::operatorCall( unsigned int argc, runtime::Box ** argv )
 {
-    unsigned int newArgc = argc + mArgumentCount;
+    unsigned int newArgc = argc + mArgc;
     runtime::Box * newArgv[ newArgc ];
 
-    std::copy( mArguments, mArguments + mArgumentCount, newArgv );
-    std::copy( argv, argv + argc, newArgv + mArgumentCount );
+    std::copy( mArgv, mArgv + mArgc, newArgv );
+    std::copy( argv, argv + argc, newArgv + mArgc );
 
     return mCallable->operatorCall( newArgc, newArgv );
 }

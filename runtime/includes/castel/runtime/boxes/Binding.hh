@@ -16,7 +16,7 @@ namespace castel
 
             public:
 
-                inline Binding( runtime::Box * callable, unsigned int argumentCount, runtime::Box ** arguments );
+                inline Binding( runtime::Box * callable, unsigned int argc, runtime::Box ** argv );
 
             public:
 
@@ -30,9 +30,9 @@ namespace castel
 
                 runtime::Box * mCallable;
 
-                unsigned int mArgumentCount;
+                unsigned int mArgc;
 
-                runtime::Box ** mArguments;
+                runtime::Box ** mArgv;
 
             };
 
@@ -51,11 +51,11 @@ namespace castel
         namespace boxes
         {
 
-            Binding::Binding( runtime::Box * callable, unsigned int argumentCount, runtime::Box ** arguments )
+            Binding::Binding( runtime::Box * callable, unsigned int argc, runtime::Box ** argv )
                 : Box( )
                 , mCallable( callable )
-                , mArgumentCount( argumentCount )
-                , mArguments( arguments )
+                , mArgc( argc )
+                , mArgv( argv )
             {
             }
 
