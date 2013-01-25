@@ -20,7 +20,7 @@ foreach(CASTEL_SOURCE ${RUNTIME_CASTEL_SOURCES})
     add_custom_command(OUTPUT "${GENERATED_SOURCE}"
       COMMAND mkdir -p "${GENERATION_PATH}"
       COMMAND cat "${CASTEL_SOURCE}"
-            | "${MICROCASTEL_LOCATION}" "prototypeInitializer_${GENERATION_NAME}" | llc
+            | "${MICROCASTEL_LOCATION}" "Castel_${GENERATION_NAME}_initialize" | llc
             | clang -x assembler -c -o "${GENERATED_SOURCE}" -
       DEPENDS "${MICROCASTEL_LOCATION}" "${CASTEL_SOURCE}")
 endforeach(CASTEL_SOURCE)

@@ -1,1 +1,1 @@
-CASTEL_FUNCTION( Castel_Dict_create, castel::runtime::boxes::Dict *, ( void ) )
+CASTEL_TYPE( Dict, ( void ) )

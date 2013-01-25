@@ -32,7 +32,9 @@ llvm::Module * Compiler::build( toolchain::Source const & source, std::string co
     #define DECLARE( NAME ) llvm::Function::Create( gen::helper::type< decltype( NAME ) >( mContext ), llvm::GlobalValue::ExternalLinkage, TOSTRING( NAME ), module );
 
     #define CASTEL_FUNCTION( NAME, RETURN, PARAMETERS ) DECLARE( NAME )
-    #define CASTEL_EXTERNAL( NAME ) DECLARE( NAME )
+
+    #define CASTEL_TYPE( TYPE, CONSTRUCTOR ) DECLARE( Castel_##TYPE##_create )
+    #define CASTEL_SHIPPED_FUNCTION( TYPE, NAME ) DECLARE( Castel_##TYPE##_##NAME )
 
         #include <castel/runtime/capi.def>
 

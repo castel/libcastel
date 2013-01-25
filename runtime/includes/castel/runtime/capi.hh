@@ -18,7 +18,9 @@
 extern "C" {
 
     #define CASTEL_FUNCTION( NAME, RETURN, PARAMETERS ) RETURN NAME PARAMETERS;
-    #define CASTEL_EXTERNAL( NAME ) castel::runtime::Box * NAME( castel::runtime::Box ***, int argc, castel::runtime::Box ** argv );
+
+    #define CASTEL_TYPE( TYPE, CONSTRUCTOR ) castel::runtime::boxes::TYPE * Castel_##TYPE##_create CONSTRUCTOR; castel::runtime::Box * Castel_##TYPE##_initialize( void * );
+    #define CASTEL_SHIPPED_FUNCTION( TYPE, NAME ) castel::runtime::Box * Castel_##TYPE##_##NAME( castel::runtime::Box ***, int argc, castel::runtime::Box ** argv );
 
     #include "castel/runtime/capi/boolean.def"
     #include "castel/runtime/capi/class.def"
@@ -31,7 +33,9 @@ extern "C" {
     #include "castel/runtime/capi/undefined.def"
     #include "castel/runtime/capi.def"
 
-    #undef CASTEL_EXTERNAL
+    #undef CASTEL_SHIPPED_FUNCTION
+    #undef CASTEL_TYPE
+
     #undef CASTEL_FUNCTION
 
 }

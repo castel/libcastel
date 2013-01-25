@@ -1,7 +1,5 @@
 return extern Castel_Class_installPrototype( class {
-
 	public function parent( ) {
 		return extern Castel_Class_parent( this );
 	}
-
 } );

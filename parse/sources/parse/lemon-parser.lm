@@ -378,4 +378,12 @@ expression(A) ::= operation(U). { A = U; }
             arguments(A) ::= LParenthesis argumentlist(U) RParenthesis. { A = U; }
 
                 %type argumentlist { ast::Expression * }
-                argumentlist(A) ::= expression(U). { A = U; }
+                argumentlist(A) ::= argumentfirst(U) argumentnext(V). { A = U; U->next( V ); }
+                argumentlist(A) ::= argumentnext(U). { A = U; }
+
+                    %type argumentfirst { ast::Expression * }
+                    argumentfirst(A) ::= expression(U). { A = U; }
+
+                    %type argumentnext { ast::Expression * }
+                    argumentnext(A) ::= Comma expression(U) argumentnext(V). { A = U; U->next( V ); }
+                    argumentnext(A) ::= . { A = nullptr; }

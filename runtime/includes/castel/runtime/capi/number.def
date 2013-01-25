@@ -1,1 +1,1 @@
-CASTEL_FUNCTION( Castel_Number_create, castel::runtime::boxes::Number *, ( double value ) )
+CASTEL_TYPE( Number, ( double value ) )

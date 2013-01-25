@@ -40,5 +40,8 @@ runtime::Box * Castel_Class_parent( runtime::Box ***, int argc, runtime::Box ** 
 {
     auto classBox = dynamic_cast< runtime::boxes::Class * >( argv[ 0 ] );
 
-    return classBox->parent( );
+    return classBox->parent( )
+        ? static_cast< runtime::Box * >( classBox->parent( ) )
+        : runtime::helper::create< runtime::boxes::Undefined >( )
+    ;
 }

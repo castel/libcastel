@@ -1,3 +1,3 @@
-CASTEL_FUNCTION( Castel_Class_create, castel::runtime::boxes::Class *, ( castel::runtime::boxes::Class * parent, castel::runtime::boxes::Class::InitializerSignature * initializer, castel::runtime::Box *** environment ) )
-CASTEL_EXTERNAL( Castel_Class_installPrototype )
-CASTEL_EXTERNAL( Castel_Class_parent )
+CASTEL_TYPE( Class, ( castel::runtime::boxes::Class * parent, castel::runtime::boxes::Class::InitializerSignature * initializer, castel::runtime::Box *** environment ) )
+CASTEL_SHIPPED_FUNCTION( Class, installPrototype )
+CASTEL_SHIPPED_FUNCTION( Class, parent )
