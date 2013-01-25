@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <functional>
 #include <string>
 
 #include "castel/runtime/boxes/Binding.hh"
@@ -41,7 +42,7 @@ namespace castel
                 struct IndicesGenerator< 0, Rest ... > : Indices< Rest ... > { };
 
                 template < typename Return, typename ... Parameters, unsigned ... Indices >
-                runtime::Box * forward( Return ( * fn )( Parameters ... ), int argc, runtime::Box ** argv, runtime::helper::detail::Indices< Indices ... > )
+                runtime::Box * forward( std::function< Return ( Parameters ... ) > fn, int argc, runtime::Box ** argv, runtime::helper::detail::Indices< Indices ... > )
                 {
                     return runtime::helper::wrap( fn( runtime::helper::unwrap< Parameters >( argv[ Indices ] )... ) );
                 }
@@ -49,7 +50,7 @@ namespace castel
                 template < typename Return, typename ... Parameters >
                 runtime::Box * forward( runtime::Box ***, unsigned int argc, runtime::Box ** argv )
                 {
-                    Return ( * fn )( Parameters ... ) = static_cast< runtime::boxes::Resource< Return ( * )( Parameters ... ) > * >( argv[ 0 ] )->value( );
+                    std::function< Return ( Parameters ... ) > fn = static_cast< runtime::boxes::Resource< Return ( * )( Parameters ... ) > * >( argv[ 0 ] )->value( );
                     return runtime::helper::detail::forward( fn, argc - 1, argv + 1, runtime::helper::detail::IndicesGenerator< sizeof...( Parameters ) >( ) );
                 }
 
@@ -69,13 +70,19 @@ namespace castel
             }
 
             template < typename Return, typename ... Parameters >
-            runtime::boxes::Binding * wrap( Return ( * fn )( Parameters ... ) )
+            runtime::boxes::Binding * wrap( std::function< Return ( Parameters ... ) > fn )
             {
                 runtime::boxes::Function::Signature * forwarder = & runtime::helper::detail::forward< Return, Parameters ... >;
                 runtime::boxes::Function * accessor = runtime::helper::create< runtime::boxes::Function >( forwarder, sizeof...( Parameters ), nullptr );
                 return runtime::helper::create< runtime::boxes::Binding >( accessor, 1, runtime::helper::malloc< runtime::Box * >( {
-                    runtime::helper::create< runtime::boxes::Resource< Return ( * )( Parameters ... ) > >( fn )
+                    runtime::helper::create< runtime::boxes::Resource< std::function< Return ( Parameters ... ) > > >( fn )
                 } ) );
+            }
+
+            template < typename Return, typename ... Parameters >
+            runtime::boxes::Binding * wrap( Return ( * fn )( Parameters ... ) )
+            {
+                return runtime::helper::wrap( std::function< Return ( Parameters ... ) >( fn ) );
             }
 
         }
