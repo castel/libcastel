@@ -16,7 +16,7 @@ namespace castel
 
             public:
 
-                using InitializerSignature = void ( runtime::Box * instance, runtime::Box *** environment );
+                using InitializerSignature = void ( runtime::Box * instance, runtime::Box *** environment, int argc, runtime::Box ** argv );
 
             public:
 

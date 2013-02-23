@@ -79,6 +79,8 @@ namespace castel
 
             class Return;
 
+            class Throw;
+
         }
 
         class Token;
@@ -145,6 +147,8 @@ namespace castel
 
                 virtual inline void visit( ast::stmt::Return & returnStatementAst );
 
+                virtual inline void visit( ast::stmt::Throw & throwStatementAst );
+
             protected:
 
                 virtual inline void defaultAction( ast::Token & tokenAst );
@@ -183,6 +187,7 @@ namespace castel
 #include "castel/ast/stmt/decl/Variables.hh"
 #include "castel/ast/stmt/Expression.hh"
 #include "castel/ast/stmt/Return.hh"
+#include "castel/ast/stmt/Throw.hh"
 #include "castel/ast/Token.hh"
 
 namespace castel
@@ -316,6 +321,11 @@ namespace castel
             void Visitor::visit( ast::stmt::Return & returnStatementAst )
             {
                 this->defaultAction( returnStatementAst );
+            }
+
+            void Visitor::visit( ast::stmt::Throw & throwStatementAst )
+            {
+                this->defaultAction( throwStatementAst );
             }
 
             void Visitor::defaultAction( ast::Token & )

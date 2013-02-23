@@ -38,6 +38,10 @@ namespace castel
 
                     class Method;
 
+                    class Constructor;
+
+                    class Operator;
+
                 public:
 
                     inline Class( ast::expr::literal::Class::Member * members, ast::Expression * parent = nullptr );
@@ -168,6 +172,56 @@ namespace castel
 
                 };
 
+                class Class::Constructor : public Class::Member
+                {
+
+                public:
+
+                    inline Constructor( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Function * function );
+
+                public:
+
+                    inline ast::expr::literal::Function * function( void ) const;
+
+                    inline Constructor & function( ast::expr::literal::Function * function );
+
+                    inline ast::expr::literal::Function * takeFunction( void );
+
+                private:
+
+                    std::unique_ptr< ast::expr::literal::Function > mFunction;
+
+                };
+
+                class Class::Operator : public Class::Member
+                {
+
+                public:
+
+                    inline Operator( ast::expr::literal::Class::Member::Visibility visibility, int type, ast::expr::literal::Function * function );
+
+                public:
+
+                    inline int type( void ) const;
+
+                    inline Operator & type( int type );
+
+                public:
+
+                    inline ast::expr::literal::Function * function( void ) const;
+
+                    inline Operator & function( ast::expr::literal::Function * function );
+
+                    inline ast::expr::literal::Function * takeFunction( void );
+
+                private:
+
+                    int mType;
+
+                    std::unique_ptr< ast::expr::literal::Function > mFunction;
+
+                };
+
             }
 
         }
@@ -275,6 +329,65 @@ namespace castel
                 }
 
                 ast::expr::literal::Function * Class::Method::takeFunction( void )
+                {
+                    return mFunction.release( );
+                }
+
+                Class::Constructor::Constructor( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Function * function )
+                    : Member( visibility, ast::expr::literal::Class::Member::Host::Class, "constructor" )
+                    , mFunction( function )
+                {
+                }
+
+                ast::expr::literal::Function * Class::Constructor::function( void ) const
+                {
+                    return mFunction.get( );
+                }
+
+                Class::Constructor & Class::Constructor::function( ast::expr::literal::Function * function )
+                {
+                    mFunction.reset( function );
+
+                    return * this;
+                }
+
+                ast::expr::literal::Function * Class::Constructor::takeFunction( void )
+                {
+                    return mFunction.release( );
+                }
+
+                Class::Operator::Operator( ast::expr::literal::Class::Member::Visibility visibility, int type, ast::expr::literal::Function * function )
+                    : Member( visibility, ast::expr::literal::Class::Member::Host::Class, "operator" )
+                    , mType( type )
+                    , mFunction( function )
+                {
+                }
+
+                int Class::Operator::type( void ) const
+                {
+                    return mType;
+                }
+
+                Class::Operator & Class::Operator::type( int type )
+                {
+                    mType = type;
+
+                    return * this;
+                }
+
+                ast::expr::literal::Function * Class::Operator::function( void ) const
+                {
+                    return mFunction.get( );
+                }
+
+                Class::Operator & Class::Operator::function( ast::expr::literal::Function * function )
+                {
+                    mFunction.reset( function );
+
+                    return * this;
+                }
+
+                ast::expr::literal::Function * Class::Operator::takeFunction( void )
                 {
                     return mFunction.release( );
                 }

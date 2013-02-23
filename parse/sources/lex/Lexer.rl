@@ -45,6 +45,7 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
         Extern                     = 'extern';
         Return                     = 'return';
         Public                     = 'public';
+        Throw                      = 'throw';
         False                      = 'false';
         Class                      = 'class';
         While                      = 'while';
@@ -131,6 +132,7 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
             Var                        => { type = lex::Lexeme::Type::Var;                        fbreak; };
 
             Return                     => { type = lex::Lexeme::Type::Return;                     fbreak; };
+            Throw                      => { type = lex::Lexeme::Type::Throw;                      fbreak; };
 
             New                        => { type = lex::Lexeme::Type::New;                        fbreak; };
 

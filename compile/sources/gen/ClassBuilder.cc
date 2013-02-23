@@ -56,6 +56,8 @@ llvm::Value * ClassBuilder::createInitializer( llvm::LLVMContext & context, llvm
     llvm::Function::ArgumentListType::iterator runtimeArguments = function->getArgumentList( ).begin( );
     llvm::Value * runtimeArguments_instance = runtimeArguments ++;
     llvm::Value * runtimeArguments_parentEnvironmentTable = runtimeArguments ++;
+    llvm::Value * runtimeArguments_argc = runtimeArguments ++;
+    llvm::Value * runtimeArguments_argv = runtimeArguments ++;
 
     {{ gen::Scope scope( context, module, block, parentScope, runtimeArguments_parentEnvironmentTable );
 
@@ -73,6 +75,16 @@ llvm::Value * ClassBuilder::createInitializer( llvm::LLVMContext & context, llvm
                        )
                    );
                }
+           }
+       }
+
+       for ( auto & member : mMembers ) {
+           if ( auto constructor = dynamic_cast< ast::expr::literal::Class::Constructor * >( & member ) ) {
+               gen::helper::call( context, module, irBuilder, "Castel_Operator_call",
+                   gen::GPEVisitor( context, module, irBuilder, scope ).run( * ( constructor->function( ) ) ),
+                   runtimeArguments_argc,
+                   runtimeArguments_argv
+               );
            }
        }
 

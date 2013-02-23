@@ -31,6 +31,7 @@
     #include "castel/ast/stmt/decl/Variables.hh"
     #include "castel/ast/stmt/Expression.hh"
     #include "castel/ast/stmt/Return.hh"
+    #include "castel/ast/stmt/Throw.hh"
     #include "castel/ast/Expression.hh"
     #include "castel/ast/Statement.hh"
     #include "castel/lex/Lexeme.hh"
@@ -142,7 +143,6 @@ statement(A) ::= closedstatement(U). { A = U; }
         openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis statement(W). { A = new ast::stmt::ctrl::ForIn( U->as< std::string >( ), V, W ); }
         openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else openstatement(X). { A = new ast::stmt::ctrl::ForIn( U->as< std::string >( ), V, W, X ); }
 
-
     %type closedstatement { ast::Statement * }
     closedstatement(A) ::= simplestatement(U). { A = U; }
     closedstatement(A) ::= closedifstatement(U). { A = U; }
@@ -165,6 +165,7 @@ statement(A) ::= closedstatement(U). { A = U; }
     %type simplestatement { ast::Statement * }
     simplestatement(A) ::= expressionstatement(U). { A = U; }
     simplestatement(A) ::= returnstatement(U). { A = U; }
+    simplestatement(A) ::= throwstatement(U). { A = U; }
     simplestatement(A) ::= declarationstatement(U). { A = U; }
 
         %type expressionstatement { ast::stmt::Expression * }
@@ -173,6 +174,9 @@ statement(A) ::= closedstatement(U). { A = U; }
         %type returnstatement { ast::stmt::Return * }
         returnstatement(A) ::= Return expression(U) Semicolon. { A = new ast::stmt::Return( U ); }
         returnstatement(A) ::= Return Semicolon. { A = new ast::stmt::Return( ); }
+
+        %type throwstatement { ast::stmt::Throw * }
+        throwstatement(A) ::= Throw expression(U) Semicolon. { A = new ast::stmt::Throw( U ); }
 
         %type declarationstatement { ast::Statement * }
         declarationstatement(A) ::= variablesdeclaration(U). { A = U; }
@@ -306,6 +310,8 @@ expression(A) ::= operation(U). { A = U; }
                         %type member { ast::expr::literal::Class::Member * }
                         member(A) ::= attribute(U). { A = U; }
                         member(A) ::= method(U). { A = U; }
+                        member(A) ::= constructor(U). { A = U; }
+                        member(A) ::= operator(U). { A = U; }
 
                             %type attribute { ast::expr::literal::Class::Attribute * }
                             attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Assignment expression(X) Semicolon. { A = new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ), X ); }
@@ -313,8 +319,12 @@ expression(A) ::= operation(U). { A = U; }
 
                             %type method { ast::expr::literal::Class::Method * }
                             method(A) ::= visibility(U) storage(V) Function Identifier(W) parameters(X) statementblock(Y). { A = new ast::expr::literal::Class::Method( U, V, W->as< std::string >( ), new ast::expr::literal::Function( X, Y ) ); }
-                            method(A) ::= visibility Operator parameters statementblock. { A = nullptr; }
-                            method(A) ::= visibility Constructor parameters statementblock. { A = nullptr; }
+
+                            %type constructor { ast::expr::literal::Class::Constructor * }
+                            constructor(A) ::= visibility(U) Constructor parameters(V) statementblock(W). { A = new ast::expr::literal::Class::Constructor( U, new ast::expr::literal::Function( V, W ) ); }
+
+                            %type operator { ast::expr::literal::Class::Operator * }
+                            operator(A) ::= visibility Operator parameters statementblock. { A = nullptr; }
 
                                 %type visibility { ast::expr::literal::Class::Member::Visibility }
                                 visibility(A) ::= Public. { A = ast::expr::literal::Class::Member::Visibility::Public; }
