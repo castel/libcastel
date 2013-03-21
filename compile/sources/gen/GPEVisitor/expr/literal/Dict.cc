@@ -7,5 +7,5 @@ using gen::GPEVisitor;
 
 void GPEVisitor::visit( ast::expr::literal::Dict & dictLiteralAst )
 {
-    mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "CastelèDict_create" );
+    mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Dict_create" );
 }
