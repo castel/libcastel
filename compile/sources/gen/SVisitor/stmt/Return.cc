@@ -12,7 +12,7 @@ void SVisitor::visit( ast::stmt::Return & returnStatementAst )
     ast::Expression * expressionAst = returnStatementAst.expression( );
 
     if ( expressionAst == nullptr ) {
-        mIRBuilder.CreateRet( gen::helper::call( mContext, mModule, mIRBuilder, "castelUndefined_create" ) );
+        mIRBuilder.CreateRet( gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Undefined_create" ) );
     } else {
         mIRBuilder.CreateRet( gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * expressionAst ) );
     }

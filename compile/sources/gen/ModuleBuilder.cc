@@ -51,7 +51,7 @@ llvm::Module * ModuleBuilder::build( llvm::LLVMContext & context, llvm::Module *
        llvm::BasicBlock * lastBlock = & ( mainFunction->getBasicBlockList( ).back( ) );
        if ( lastBlock->empty( ) || ! lastBlock->back( ).isTerminator( ) ) {
            irBuilder.SetInsertPoint( lastBlock, lastBlock->end( ) );
-           irBuilder.CreateRet( gen::helper::call( context, module, irBuilder, "castelUndefined_create" ) );
+           irBuilder.CreateRet( gen::helper::call( context, module, irBuilder, "Castel_Undefined_create" ) );
        }
     }}
 
