@@ -25,7 +25,7 @@ namespace castel
             {
                 llvm::ConstantPointerNull * nullPointer = gen::helper::null( llvm::PointerType::getUnqual( type ) );
 
-                return irBuilder.CreatePtrToInt( irBuilder.CreateConstGEP1_32( nullPointer, 1 ), gen::helper::type< std::int32_t >( context ) );
+                return irBuilder.CreatePtrToInt( irBuilder.CreateConstGEP1_32( nullPointer, 1 ), gen::helper::type< std::int64_t >( context ) );
             }
 
             template < typename T >
