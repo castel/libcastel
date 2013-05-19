@@ -51,6 +51,21 @@ namespace castel
         namespace stmt
         {
 
+            namespace ctrl
+            {
+
+                class ForIn;
+
+                class If;
+
+                class Try;
+
+                class Until;
+
+                class While;
+
+            }
+
             namespace decl
             {
 
@@ -59,19 +74,6 @@ namespace castel
                 class Function;
 
                 class Variables;
-
-            }
-
-            namespace ctrl
-            {
-
-                class ForIn;
-
-                class If;
-
-                class Until;
-
-                class While;
 
             }
 
@@ -133,6 +135,8 @@ namespace castel
 
                 virtual inline void visit( ast::stmt::ctrl::If & ifControlAst );
 
+                virtual inline void visit( ast::stmt::ctrl::Try & tryControlAst );
+
                 virtual inline void visit( ast::stmt::ctrl::Until & untilControlAst );
 
                 virtual inline void visit( ast::stmt::ctrl::While & whileControlAst );
@@ -180,6 +184,7 @@ namespace castel
 #include "castel/ast/expr/Variable.hh"
 #include "castel/ast/stmt/ctrl/ForIn.hh"
 #include "castel/ast/stmt/ctrl/If.hh"
+#include "castel/ast/stmt/ctrl/Try.hh"
 #include "castel/ast/stmt/ctrl/Until.hh"
 #include "castel/ast/stmt/ctrl/While.hh"
 #include "castel/ast/stmt/decl/Class.hh"
@@ -286,6 +291,11 @@ namespace castel
             void Visitor::visit( ast::stmt::ctrl::If & ifControlAst )
             {
                 this->defaultAction( ifControlAst );
+            }
+
+            void Visitor::visit( ast::stmt::ctrl::Try & tryControlAst )
+            {
+                this->defaultAction( tryControlAst );
             }
 
             void Visitor::visit( ast::stmt::ctrl::Until & untilControlAst )

@@ -53,6 +53,7 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
         True                       = 'true';
         Else                       = 'else';
         Null                       = 'null';
+        Try                        = 'try';
         New                        = 'new';
         For                        = 'for';
         Var                        = 'var';
@@ -127,6 +128,7 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
             Until                      => { type = lex::Lexeme::Type::Until;                      fbreak; };
             For                        => { type = lex::Lexeme::Type::For;                        fbreak; };
             In                         => { type = lex::Lexeme::Type::In;                         fbreak; };
+            Try                        => { type = lex::Lexeme::Type::Try;                        fbreak; };
             Else                       => { type = lex::Lexeme::Type::Else;                       fbreak; };
 
             Var                        => { type = lex::Lexeme::Type::Var;                        fbreak; };

@@ -24,6 +24,7 @@
     #include "castel/ast/expr/Variable.hh"
     #include "castel/ast/stmt/ctrl/ForIn.hh"
     #include "castel/ast/stmt/ctrl/If.hh"
+    #include "castel/ast/stmt/ctrl/Try.hh"
     #include "castel/ast/stmt/ctrl/Until.hh"
     #include "castel/ast/stmt/ctrl/While.hh"
     #include "castel/ast/stmt/decl/Class.hh"
@@ -126,6 +127,10 @@ statement(A) ::= closedstatement(U). { A = U; }
     openstatement(A) ::= openwhilestatement(U). { A = U; }
     openstatement(A) ::= openuntilstatement(U). { A = U; }
     openstatement(A) ::= openforinstatement(U). { A = U; }
+    openstatement(A) ::= opentrystatement(U). { A = U; }
+
+        %type opentrystatement { ast::Statement * }
+        opentrystatement(A) ::= Try closedstatement(U) Else openstatement(V). { A = new ast::stmt::ctrl::Try( U, V ); }
 
         %type openifstatement { ast::Statement * }
         openifstatement(A) ::= If LParenthesis expression(U) RParenthesis statement(V). { A = new ast::stmt::ctrl::If( U, V ); }
@@ -146,6 +151,7 @@ statement(A) ::= closedstatement(U). { A = U; }
     %type closedstatement { ast::Statement * }
     closedstatement(A) ::= simplestatement(U). { A = U; }
     closedstatement(A) ::= closedifstatement(U). { A = U; }
+    closedstatement(A) ::= closedtrystatement(U). { A = U; }
     closedstatement(A) ::= closedwhilestatement(U). { A = U; }
     closedstatement(A) ::= closeduntilstatement(U). { A = U; }
     closedstatement(A) ::= closedforinstatement(U). { A = U; }
@@ -155,6 +161,9 @@ statement(A) ::= closedstatement(U). { A = U; }
 
         %type closedwhilestatement { ast::Statement * }
         closedwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W). { A = new ast::stmt::ctrl::While( U, V, W ); }
+
+        %type closedtrystatement { ast::Statement * }
+        closedtrystatement(A) ::= Try closedstatement(U) Else closedstatement(V). { A = new ast::stmt::ctrl::Try( U, V ); }
 
         %type closeduntilstatement { ast::Statement * }
         closeduntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W). { A = new ast::stmt::ctrl::Until( U, V, W ); }
