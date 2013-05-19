@@ -1,0 +1,1 @@
+CASTEL_FUNCTION( Castel_throw, void *, ( castel::runtime::Box * exception ) )

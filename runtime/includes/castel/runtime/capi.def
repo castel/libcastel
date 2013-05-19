@@ -50,3 +50,5 @@ CASTEL_FUNCTION( Castel_Operator_require, castel::runtime::Box *, ( castel::runt
 #include "castel/runtime/capi/number.def"
 #include "castel/runtime/capi/string.def"
 #include "castel/runtime/capi/undefined.def"
+
+#include "castel/runtime/stdcastel.def"

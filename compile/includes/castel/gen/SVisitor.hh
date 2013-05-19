@@ -40,6 +40,8 @@ namespace castel
 
             class Return;
 
+            class Throw;
+
         }
 
         class Statement;
@@ -79,6 +81,8 @@ namespace castel
             virtual void visit( ast::stmt::Expression & astExpressionStatement );
 
             virtual void visit( ast::stmt::Return & astReturnStatement );
+
+            virtual void visit( ast::stmt::Throw & astThrowStatement );
 
         private:
 

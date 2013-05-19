@@ -5,6 +5,7 @@
 #include <llvm/ExecutionEngine/JIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/Support/TargetSelect.h>
+#include <llvm/Target/TargetOptions.h>
 
 #include "castel/runtime/Box.hh"
 #include "castel/runtime/Module.hh"
@@ -40,8 +41,12 @@ runtime::Box * Runner::operator()( void )
 {
     std::string errString;
 
+    llvm::TargetOptions targetOptions;
+    targetOptions.JITExceptionHandling = true;
+
     llvm::ExecutionEngine * executionEngine = llvm::EngineBuilder( mModule )
         .setErrorStr( &( errString ) )
+        .setTargetOptions( targetOptions )
     .create( );
 
     if ( ! executionEngine )
