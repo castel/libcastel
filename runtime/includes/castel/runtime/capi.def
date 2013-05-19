@@ -1,4 +1,4 @@
-CASTEL_FUNCTION( Castel_malloc, void *, ( std::size_t size, unsigned int count ) )
+CASTEL_FUNCTION( Castel_malloc, void *, ( std::int32_t size, std::int32_t count ) )
 
 CASTEL_FUNCTION( Castel_addMember, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value ) )
 CASTEL_FUNCTION( Castel_addMethod, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function ) )

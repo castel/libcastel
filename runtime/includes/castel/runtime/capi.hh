@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstddef>
+#include <cstdint>
 
 #include "castel/runtime/boxes/Binding.hh"
 #include "castel/runtime/boxes/Boolean.hh"

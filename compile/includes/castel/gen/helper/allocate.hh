@@ -10,6 +10,7 @@
 #include <llvm/Value.h>
 
 #include "castel/gen/helper/call.hh"
+#include "castel/gen/helper/i32.hh"
 #include "castel/gen/helper/sizeOf.hh"
 #include "castel/gen/helper/type.hh"
 
@@ -35,7 +36,7 @@ namespace castel
 
             inline llvm::Value * allocate( llvm::LLVMContext & context, llvm::Module * module, llvm::IRBuilder< > & irBuilder, llvm::Type * type, unsigned int count, bool onTheStack = false )
             {
-                return gen::helper::allocate( context, module, irBuilder, type, llvm::ConstantInt::get( context, llvm::APInt( 32, count ) ), onTheStack );
+                return gen::helper::allocate( context, module, irBuilder, type, gen::helper::i32( context, count ), onTheStack );
             }
 
             template < typename T >

@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <vector>
 
 #include "castel/runtime/boxes/Class.hh"
@@ -23,7 +24,7 @@ runtime::boxes::Class * Castel_Class_create( runtime::boxes::Class * parent, run
     return instance;
 }
 
-runtime::Box * Castel_Class_installPrototype( runtime::Box ***, int argc, runtime::Box ** argv )
+runtime::Box * Castel_Class_installPrototype( runtime::Box ***, std::int32_t argc, runtime::Box ** argv )
 {
     auto prototype = dynamic_cast< runtime::boxes::Class * >( argv[ 0 ] );
 
@@ -36,7 +37,7 @@ runtime::Box * Castel_Class_installPrototype( runtime::Box ***, int argc, runtim
     return prototype;
 }
 
-runtime::Box * Castel_Class_parent( runtime::Box ***, int argc, runtime::Box ** argv )
+runtime::Box * Castel_Class_parent( runtime::Box ***, std::int32_t argc, runtime::Box ** argv )
 {
     auto classBox = dynamic_cast< runtime::boxes::Class * >( argv[ 0 ] );
 

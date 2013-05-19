@@ -1,4 +1,4 @@
-#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -25,7 +25,7 @@ static void binaryOperatorMissing( char const * name, castel::runtime::Box * ope
         << "Binary operator '" << name << "' is invalid with data types '" << "UNDEFINED" << "' and '" << "UNDEFINED" << "'" << std::endl;
 }
 
-void * Castel_malloc( std::size_t size, unsigned int count )
+void * Castel_malloc( std::int32_t size, std::int32_t count )
 {
     return malloc( size * count );
 }

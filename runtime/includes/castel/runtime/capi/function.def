@@ -1,1 +1,1 @@
-CASTEL_TYPE( Function, ( castel::runtime::boxes::Function::Signature * functionPtr, unsigned int argumentCount, castel::runtime::Box *** environment ) )
+CASTEL_TYPE( Function, ( castel::runtime::boxes::Function::Signature * functionPtr, std::int32_t argumentCount, castel::runtime::Box *** environment ) )
