@@ -23,6 +23,8 @@ namespace castel
 
                 class If;
 
+                class Try;
+
                 class Until;
 
                 class While;
@@ -72,6 +74,8 @@ namespace castel
 
             virtual void visit( ast::stmt::ctrl::If & astIfStatement );
 
+            virtual void visit( ast::stmt::ctrl::Try & astTryStatement );
+
             virtual void visit( ast::stmt::ctrl::Until & astUntilStatement );
 
             virtual void visit( ast::stmt::ctrl::While & astWhileStatement );
@@ -102,6 +106,7 @@ namespace castel
 
 #include "castel/ast/stmt/ctrl/ForIn.hh"
 #include "castel/ast/stmt/ctrl/If.hh"
+#include "castel/ast/stmt/ctrl/Try.hh"
 #include "castel/ast/stmt/ctrl/Until.hh"
 #include "castel/ast/stmt/ctrl/While.hh"
 #include "castel/ast/stmt/decl/Variables.hh"

@@ -28,7 +28,7 @@ namespace castel
 
                 public:
 
-                    inline Try( ast::Statement * tryBranch, ast::Statement * elsebranch );
+                    inline Try( ast::Statement * tryBranch, ast::Statement * elseBranch );
 
                 public:
 
@@ -40,9 +40,9 @@ namespace castel
 
                 public:
 
-                    inline ast::Statement * elsebranch( void ) const;
+                    inline ast::Statement * elseBranch( void ) const;
 
-                    inline Try & elsebranch( ast::Statement * elsebranch );
+                    inline Try & elseBranch( ast::Statement * elseBranch );
 
                     inline ast::Statement * takeElseBranch( void );
 
@@ -79,9 +79,9 @@ namespace castel
             namespace ctrl
             {
 
-                Try::Try( ast::Statement * tryBranch, ast::Statement * elsebranch )
+                Try::Try( ast::Statement * tryBranch, ast::Statement * elseBranch )
                     : mTryBranch( tryBranch )
-                    , mElseBranch( elsebranch )
+                    , mElseBranch( elseBranch )
                 {
                 }
 
@@ -102,14 +102,14 @@ namespace castel
                     return mTryBranch.release( );
                 }
 
-                ast::Statement * Try::elsebranch( void ) const
+                ast::Statement * Try::elseBranch( void ) const
                 {
                     return mElseBranch.get( );
                 }
 
-                Try & Try::elsebranch( ast::Statement * elsebranch )
+                Try & Try::elseBranch( ast::Statement * elseBranch )
                 {
-                    mElseBranch.reset( elsebranch );
+                    mElseBranch.reset( elseBranch );
 
                     return * this;
                 }

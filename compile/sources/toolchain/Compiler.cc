@@ -49,6 +49,7 @@ llvm::Module * Compiler::build( toolchain::Source const & source, std::string co
         .statements( source.parse( ) )
     .build( mContext, module );
 
+    module->dump( );
     llvm::verifyModule( * module );
 
     return module;
