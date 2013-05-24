@@ -1,0 +1,5 @@
+#ifndef CASTEL_RUNTIME_X_LIST_PRELUDE
+    #error "You must include castel/runtime/interfaces/list.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_TYPE( List, ( void ) )

@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cstdint>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -10,8 +10,8 @@
 
 #include "castel/gen/helper/type.hh"
 #include "castel/gen/ModuleBuilder.hh"
+#include "castel/runtime/interfaces/all.prelude.hh"
 #include "castel/runtime/Module.hh"
-#include "castel/runtime/capi.hh"
 #include "castel/toolchain/Compiler.hh"
 #include "castel/toolchain/Source.hh"
 
@@ -21,6 +21,9 @@ using toolchain::Compiler;
 Compiler::Compiler( void )
     : mContext( )
 {
+    llvm::StructType::create( mContext, "_Unwind_Context" );
+    llvm::StructType::create( mContext, "_Unwind_Exception" );
+
     llvm::StructType::create( mContext, "Box" );
 }
 
@@ -29,19 +32,24 @@ llvm::Module * Compiler::build( toolchain::Source const & source, std::string co
     llvm::Module * module = new llvm::Module( source.name( ), mContext );
 
     #define TOSTRING( X ) #X
-    #define DECLARE( NAME ) llvm::Function::Create( gen::helper::type< decltype( NAME ) >( mContext ), llvm::GlobalValue::ExternalLinkage, TOSTRING( NAME ), module );
 
-    #define CASTEL_FUNCTION( NAME, RETURN, PARAMETERS ) DECLARE( NAME )
+    #define CASTEL_FUNCTION( NAME, RETURN, PARAMETERS )                                                                                           \
+        llvm::Function::Create( gen::helper::type< RETURN PARAMETERS >( mContext ), llvm::GlobalValue::ExternalLinkage, TOSTRING( NAME ), module );
 
-    #define CASTEL_TYPE( TYPE, CONSTRUCTOR ) DECLARE( Castel_##TYPE##_create )
-    #define CASTEL_SHIPPED_FUNCTION( TYPE, NAME ) DECLARE( Castel_##TYPE##_##NAME )
+    #define CASTEL_TYPE( TYPE, CONSTRUCTOR )                                   \
+        CASTEL_FUNCTION( Castel_##TYPE##_create, runtime::Box *, CONSTRUCTOR )
 
-        #include <castel/runtime/capi.def>
+    #define CASTEL_SHIPPED_FUNCTION( TYPE, NAME )                                                                     \
+        CASTEL_FUNCTION( Castel_##TYPE##_##NAME, runtime::Box *, ( runtime::Box ***, std::uint8_t, runtime::Box * ) )
 
-    #undef CASTEL_EXTERNAL
+    #include "castel/runtime/interfaces/all.def"
+
+    #undef CASTEL_SHIPPED_FUNCTION
+
+    #undef CASTEL_TYPE
+
     #undef CASTEL_FUNCTION
 
-    #undef DECLARE
     #undef TOSTRING
 
     gen::ModuleBuilder( name )
@@ -49,7 +57,6 @@ llvm::Module * Compiler::build( toolchain::Source const & source, std::string co
         .statements( source.parse( ) )
     .build( mContext, module );
 
-    module->dump( );
     llvm::verifyModule( * module );
 
     return module;

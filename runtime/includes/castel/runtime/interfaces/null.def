@@ -1,0 +1,5 @@
+#ifndef CASTEL_RUNTIME_X_NULL_PRELUDE
+    #error "You must include castel/runtime/interfaces/null.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_TYPE( Null, ( void ) )

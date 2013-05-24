@@ -3,8 +3,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "castel/runtime/capi.hh"
-
 namespace castel
 {
 
@@ -28,6 +26,7 @@ namespace castel
                 template < typename T >
                 inline auto operator<<( T const & t ) -> decltype( std::cerr << t )
                 { return std::cerr << t; }
+
             };
 
         }

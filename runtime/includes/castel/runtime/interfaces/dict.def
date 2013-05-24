@@ -1,0 +1,5 @@
+#ifndef CASTEL_RUNTIME_X_DICT_PRELUDE
+    #error "You must include castel/runtime/interfaces/dict.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_TYPE( Dict, ( void ) )

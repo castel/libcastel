@@ -1,0 +1,5 @@
+#ifndef CASTEL_RUNTIME_X_FUNCTION_PRELUDE
+    #error "You must include castel/runtime/interfaces/function.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_TYPE( Function, ( castel::runtime::boxes::Function::Signature * functionPtr, std::int32_t argumentCount, castel::runtime::Box *** environment ) )

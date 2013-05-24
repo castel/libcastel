@@ -1,0 +1,6 @@
+#ifndef CASTEL_RUNTIME_X_EXCEPTIONS_PRELUDE
+    #error "You must include castel/runtime/interfaces/exceptions.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_FUNCTION( Castel_throw, void, ( castel::runtime::Box * exception ) )
+CASTEL_FUNCTION( Castel_personality, _Unwind_Reason_Code, ( int version, _Unwind_Action actions, std::uint64_t exceptionClass, _Unwind_Exception * exception, _Unwind_Context * context ) )

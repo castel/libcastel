@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unwind.h>
+
 #include <llvm/TypeBuilder.h>
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
@@ -33,6 +35,29 @@ namespace llvm
         static llvm::StructType * get( llvm::LLVMContext & context ) {
             llvm::Module tempModule( "", context );
             return tempModule.getTypeByName( "Box" );
+        }
+    };
+
+    template < bool XCompile >
+    struct TypeBuilder< _Unwind_Reason_Code, XCompile > {
+        static llvm::IntegerType * get( llvm::LLVMContext & context ) {
+            return llvm::IntegerType::get( context, sizeof ( _Unwind_Reason_Code ) * 8 );
+        }
+    };
+
+    template < bool XCompile >
+    struct TypeBuilder< _Unwind_Exception, XCompile > {
+        static llvm::StructType * get( llvm::LLVMContext & context ) {
+            llvm::Module tempModule( "", context );
+            return tempModule.getTypeByName( "_Unwind_Exception" );
+        }
+    };
+
+    template < bool XCompile >
+    struct TypeBuilder< _Unwind_Context, XCompile > {
+        static llvm::StructType * get( llvm::LLVMContext & context ) {
+            llvm::Module tempModule( "", context );
+            return tempModule.getTypeByName( "_Unwind_Context" );
         }
     };
 

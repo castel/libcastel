@@ -1,0 +1,5 @@
+#ifndef CASTEL_RUNTIME_X_UNDEFINED_PRELUDE
+    #error "You must include castel/runtime/interfaces/undefined.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_TYPE( Undefined, ( void ) )

@@ -1,0 +1,7 @@
+#ifndef CASTEL_RUNTIME_X_CLASS_PRELUDE
+    #error "You must include castel/runtime/interfaces/class.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_TYPE( Class, ( castel::runtime::boxes::Class * parent, castel::runtime::boxes::Class::InitializerSignature * initializer, castel::runtime::Box *** environment ) )
+CASTEL_SHIPPED_FUNCTION( Class, installPrototype )
+CASTEL_SHIPPED_FUNCTION( Class, parent )

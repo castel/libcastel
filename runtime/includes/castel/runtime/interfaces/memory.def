@@ -1,0 +1,5 @@
+#ifndef CASTEL_RUNTIME_X_MEMORY_PRELUDE
+    #error "You must include castel/runtime/interfaces/memory.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_FUNCTION( Castel_malloc, void *, ( std::int32_t size, std::int32_t count ) )

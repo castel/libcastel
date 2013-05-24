@@ -8,6 +8,8 @@ Bug reports should be reported on the bug tracker of the [castel compiler](https
 
 You will need LLVM 3.2, Ragel, Lemon, Clang and CMake.
 
+*Note: When compiling with Clang, you will probably need the `libunwind` package if you get errors about an `_Unwind_Exception` structure*
+
     $> git clone git@github.com:castel/libcastel
     $> mkdir libcastel/build
     $> cd libcastel/build
@@ -28,9 +30,7 @@ Contains the helper classes used to create LLVM data structure from Castel AST.
 
 ### CastelRuntime
 
-Contains the runtime primitives allowing to launch castel applications.
-
-An `extern C` API is available but should only be used for internal purpose; you will not be able to use it in a C program because it still uses C++ features.
+Contains the runtime symbols used by castel applications.
 
 ## License
 

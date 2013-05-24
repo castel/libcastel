@@ -1,0 +1,5 @@
+#ifndef CASTEL_RUNTIME_X_BOOLEAN_PRELUDE
+    #error "You must include castel/runtime/interfaces/boolean.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_TYPE( Boolean, ( bool value ) )

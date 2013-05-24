@@ -1,0 +1,5 @@
+#ifndef CASTEL_RUNTIME_X_NUMBER_PRELUDE
+    #error "You must include castel/runtime/interfaces/number.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_TYPE( Number, ( double value ) )

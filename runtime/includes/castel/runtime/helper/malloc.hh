@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <initializer_list>
 
-#include "castel/runtime/capi.hh"
+#include "castel/runtime/interface.hh"
 
 namespace castel
 {

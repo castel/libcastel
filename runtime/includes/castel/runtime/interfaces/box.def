@@ -1,0 +1,9 @@
+#ifndef CASTEL_RUNTIME_X_BOX_PRELUDE
+    #error "You must include castel/runtime/interfaces/box.prelude.hh prior to using this X-macro."
+#endif
+
+CASTEL_FUNCTION( Castel_addMember, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::Box * value ) )
+CASTEL_FUNCTION( Castel_addMethod, void, ( castel::runtime::Box * instance, char const * name, castel::runtime::boxes::Function * function ) )
+
+CASTEL_FUNCTION( Castel_getProperty, castel::runtime::Box *, ( castel::runtime::Box * instance, castel::runtime::Box * name ) )
+CASTEL_FUNCTION( Castel_setProperty, castel::runtime::Box *, ( castel::runtime::Box * instance, castel::runtime::Box * name, castel::runtime::Box * value ) )
