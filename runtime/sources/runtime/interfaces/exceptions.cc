@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <cstdlib>
-#include <iostream>
 
 #include <unwind.h>
 
@@ -39,8 +38,6 @@ _Unwind_Reason_Code Castel_personality( int version, _Unwind_Action request, std
     if ( version != 1 )
         return _URC_FATAL_PHASE1_ERROR;
 
-    std::cout << "Personality called" << std::endl;
-
     std::uint64_t throwIP = _Unwind_GetIP( context ) - 1;
     std::uint64_t functionStart = _Unwind_GetRegionStart( context );
 
@@ -50,31 +47,23 @@ _Unwind_Reason_Code Castel_personality( int version, _Unwind_Action request, std
 
     for ( auto callsite : lsda ) {
 
-        std::cout << "  callsite found" << std::endl;
-
         for ( auto action : callsite ) {
 
-            std::cout << "    action found" << std::endl;
+            // "The Castel exception handler always gets his exception"
+            if ( false ) continue ;
 
-            if ( false )
-                continue ;
-
-            if ( request & _UA_SEARCH_PHASE ) {
-                std::cout << "Handler found" << std::endl;
+            if ( request & _UA_SEARCH_PHASE )
                 return _URC_HANDLER_FOUND;
-            }
 
             _Unwind_SetGR( context, __builtin_eh_return_data_regno( 0 ), reinterpret_cast< std::uintptr_t >( exception ) );
             _Unwind_SetGR( context, __builtin_eh_return_data_regno( 1 ), action.type( ) );
             _Unwind_SetIP( context, functionStart + callsite.landingPad( ) );
 
-            std::cout << "Context installed" << std::endl;
             return _URC_INSTALL_CONTEXT;
 
         }
 
     }
 
-    std::cout << "Continue unwind" << std::endl;
     return _URC_CONTINUE_UNWIND;
 }
