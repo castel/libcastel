@@ -92,6 +92,8 @@ void SVisitor::visit( ast::stmt::ctrl::Try & tryControlAst )
 
     landingPad->addClause( gen::helper::null( gen::helper::type< void * >( mContext ) ) );
 
+    gen::CodeBuilder( ).statements( elseBranchAst )
+        .build( mContext, mModule, mIRBuilder, mScope );
     if ( catchBranch->empty( ) || ! catchBranch->back( ).isTerminator( ) )
         mIRBuilder.CreateBr( continueBranch );
 
