@@ -52,7 +52,7 @@ void SVisitor::visit( ast::stmt::ctrl::Try & tryControlAst )
 
     gen::CodeBuilder( ).statements( tryBranchAst )
         .build( mContext, mModule, mIRBuilder, mScope );
-    if ( tryBranch->empty( ) || ! tryBranch->back( ).isTerminator( ) )
+    if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
         mIRBuilder.CreateBr( continueBranch );
 
     for ( llvm::Function::iterator basicBlock = tryBranch; basicBlock != function->end( ); ++ basicBlock ) {
@@ -88,13 +88,13 @@ void SVisitor::visit( ast::stmt::ctrl::Try & tryControlAst )
 
     llvm::Type * exceptionType = llvm::StructType::get( gen::helper::type< std::int8_t >( mContext ), gen::helper::type< std::int32_t >( mContext ), nullptr );
     llvm::Function * personality = mModule->getFunction( "Castel_personality" );
-    llvm::LandingPadInst * landingPad = mIRBuilder.CreateLandingPad( exceptionType, personality, 1, "landingPad" );
+    llvm::LandingPadInst * landingPad = mIRBuilder.CreateLandingPad( exceptionType, personality, 0, "landingPad" );
 
     landingPad->addClause( gen::helper::null( gen::helper::type< void * >( mContext ) ) );
 
     gen::CodeBuilder( ).statements( elseBranchAst )
         .build( mContext, mModule, mIRBuilder, mScope );
-    if ( catchBranch->empty( ) || ! catchBranch->back( ).isTerminator( ) )
+    if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
         mIRBuilder.CreateBr( continueBranch );
 
     function->getBasicBlockList( ).push_back( continueBranch );

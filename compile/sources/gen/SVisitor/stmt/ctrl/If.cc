@@ -45,7 +45,7 @@ void SVisitor::visit( ast::stmt::ctrl::If & ifControlAst )
         mIRBuilder.SetInsertPoint( thenBranch );
         gen::CodeBuilder( ).statements( thenBranchAst )
             .build( mContext, mModule, mIRBuilder, mScope );
-        if ( thenBranch->empty( ) || ! thenBranch->back( ).isTerminator( ) )
+        if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
 
         function->getBasicBlockList( ).push_back( elseBranch );
@@ -53,7 +53,7 @@ void SVisitor::visit( ast::stmt::ctrl::If & ifControlAst )
         mIRBuilder.SetInsertPoint( elseBranch );
         gen::CodeBuilder( ).statements( elseBranchAst )
             .build( mContext, mModule, mIRBuilder, mScope );
-        if ( elseBranch->empty( ) || ! elseBranch->back( ).isTerminator( ) )
+        if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
 
         function->getBasicBlockList( ).push_back( finallyBranch );
@@ -70,7 +70,7 @@ void SVisitor::visit( ast::stmt::ctrl::If & ifControlAst )
         mIRBuilder.SetInsertPoint( thenBranch );
         gen::CodeBuilder( ).statements( thenBranchAst )
             .build( mContext, mModule, mIRBuilder, mScope );
-        if ( thenBranch->empty( ) || ! thenBranch->back( ).isTerminator( ) )
+        if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
 
         function->getBasicBlockList( ).push_back( finallyBranch );
