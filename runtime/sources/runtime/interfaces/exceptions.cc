@@ -1,7 +1,10 @@
 #include <cstdint>
 #include <cstdlib>
+#include <iostream>
+
 #include <unwind.h>
 
+#include "castel/runtime/helper/LSDA.hh"
 #include "castel/runtime/interface.hh"
 
 using namespace castel;
@@ -31,18 +34,45 @@ void Castel_throw( runtime::Box * exception )
     std::terminate( );
 }
 
-_Unwind_Reason_Code Castel_personality( int version, _Unwind_Action actions, std::uint64_t exceptionClass, _Unwind_Exception * exception, _Unwind_Context * context )
+_Unwind_Reason_Code Castel_personality( int version, _Unwind_Action request, std::uint64_t exceptionClass, _Unwind_Exception * exception, _Unwind_Context * context )
 {
     if ( version != 1 )
         return _URC_FATAL_PHASE1_ERROR;
 
-    if ( actions & _UA_SEARCH_PHASE ) {
-        return _URC_HANDLER_FOUND;
+    std::cout << "Personality called" << std::endl;
+
+    std::uint64_t throwIP = _Unwind_GetIP( context ) - 1;
+    std::uint64_t functionStart = _Unwind_GetRegionStart( context );
+
+    std::uint8_t const * rawLsda = reinterpret_cast< std::uint8_t const * >( _Unwind_GetLanguageSpecificData( context ) );
+
+    runtime::helper::LSDA lsda( rawLsda );
+
+    for ( auto callsiteIt = lsda.begin( ); callsiteIt != lsda.end( ); ++ callsiteIt ) {
+
+        std::cout << "  callsite found" << std::endl;
+
+        for ( auto actionIt = callsiteIt.begin( ); actionIt != callsiteIt.end( ); ++ actionIt ) {
+
+            std::cout << "    action found" << std::endl;
+
+            if ( false )
+                continue ;
+
+            if ( request & _UA_SEARCH_PHASE ) {
+                std::cout << "Handler found" << std::endl;
+                return _URC_HANDLER_FOUND;
+            }
+
+            _Unwind_SetIP( context, functionStart + callsiteIt.landingPad( ) );
+
+            std::cout << "Context installed" << std::endl;
+            return _URC_INSTALL_CONTEXT;
+
+        }
+
     }
 
-    if ( actions & _UA_CLEANUP_PHASE ) {
-        return _URC_INSTALL_CONTEXT;
-    }
-
-    return _URC_FATAL_PHASE1_ERROR;
+    std::cout << "Continue unwind" << std::endl;
+    return _URC_CONTINUE_UNWIND;
 }
