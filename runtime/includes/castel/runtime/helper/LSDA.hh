@@ -41,6 +41,12 @@ namespace castel
 
             public:
 
+                inline LSDAAction const & operator*( void ) const;
+
+                inline LSDAAction & operator*( void );
+
+            public:
+
                 inline bool operator==( LSDAAction const & other ) const;
 
                 inline bool operator!=( LSDAAction const & other ) const;
@@ -85,6 +91,12 @@ namespace castel
                 inline LSDACallsite::const_iterator begin( void ) const;
 
                 inline LSDACallsite::const_iterator end( void ) const;
+
+            public:
+
+                inline LSDACallsite const & operator*( void ) const;
+
+                inline LSDACallsite & operator*( void );
 
             public:
 
@@ -189,6 +201,16 @@ namespace castel
                 this->fetch( );
             }
 
+            LSDAAction const & LSDAAction::operator*( void ) const
+            {
+                return * this;
+            }
+
+            LSDAAction & LSDAAction::operator*( void )
+            {
+                return * this;
+            }
+
             bool LSDAAction::operator==( LSDAAction const & other ) const
             {
                 return mRaw == other.mRaw;
@@ -229,6 +251,16 @@ namespace castel
             LSDACallsite::const_iterator LSDACallsite::end( void ) const
             {
                 return LSDACallsite::const_iterator( * this, nullptr );
+            }
+
+            LSDACallsite const & LSDACallsite::operator*( void ) const
+            {
+                return * this;
+            }
+
+            LSDACallsite & LSDACallsite::operator*( void )
+            {
+                return * this;
             }
 
             bool LSDACallsite::operator==( LSDACallsite const & other ) const

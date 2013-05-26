@@ -48,11 +48,11 @@ _Unwind_Reason_Code Castel_personality( int version, _Unwind_Action request, std
 
     runtime::helper::LSDA lsda( rawLsda );
 
-    for ( auto callsiteIt = lsda.begin( ); callsiteIt != lsda.end( ); ++ callsiteIt ) {
+    for ( auto callsite : lsda ) {
 
         std::cout << "  callsite found" << std::endl;
 
-        for ( auto actionIt = callsiteIt.begin( ); actionIt != callsiteIt.end( ); ++ actionIt ) {
+        for ( auto action : callsite ) {
 
             std::cout << "    action found" << std::endl;
 
@@ -65,8 +65,8 @@ _Unwind_Reason_Code Castel_personality( int version, _Unwind_Action request, std
             }
 
             _Unwind_SetGR( context, __builtin_eh_return_data_regno( 0 ), reinterpret_cast< std::uintptr_t >( exception ) );
-            _Unwind_SetGR( context, __builtin_eh_return_data_regno( 1 ), actionIt.type( ) );
-            _Unwind_SetIP( context, functionStart + callsiteIt.landingPad( ) );
+            _Unwind_SetGR( context, __builtin_eh_return_data_regno( 1 ), action.type( ) );
+            _Unwind_SetIP( context, functionStart + callsite.landingPad( ) );
 
             std::cout << "Context installed" << std::endl;
             return _URC_INSTALL_CONTEXT;
