@@ -64,6 +64,8 @@ _Unwind_Reason_Code Castel_personality( int version, _Unwind_Action request, std
                 return _URC_HANDLER_FOUND;
             }
 
+            _Unwind_SetGR( context, __builtin_eh_return_data_regno( 0 ), reinterpret_cast< std::uintptr_t >( exception ) );
+            _Unwind_SetGR( context, __builtin_eh_return_data_regno( 1 ), actionIt.type( ) );
             _Unwind_SetIP( context, functionStart + callsiteIt.landingPad( ) );
 
             std::cout << "Context installed" << std::endl;
