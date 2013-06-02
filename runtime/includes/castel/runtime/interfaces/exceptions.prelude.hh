@@ -5,4 +5,14 @@
 #include <cstdint>
 #include <unwind.h>
 
-#include "castel/runtime/Box.hh"
+namespace castel
+{
+
+    namespace runtime
+    {
+
+        class Box;
+
+    }
+
+}

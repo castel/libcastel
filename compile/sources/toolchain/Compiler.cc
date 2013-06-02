@@ -8,6 +8,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Module.h>
 
+#include "castel/ast/Statement.hh"
 #include "castel/gen/helper/type.hh"
 #include "castel/gen/ModuleBuilder.hh"
 #include "castel/runtime/interfaces/all.prelude.hh"
@@ -27,9 +28,9 @@ Compiler::Compiler( void )
     llvm::StructType::create( mContext, "Box" );
 }
 
-llvm::Module * Compiler::build( toolchain::Source const & source, std::string const & name )
+llvm::Module * Compiler::build( ast::Statement * statements, std::string const & name )
 {
-    llvm::Module * module = new llvm::Module( source.name( ), mContext );
+    llvm::Module * module = new llvm::Module( name, mContext );
 
     #define TOSTRING( X ) #X
 
@@ -54,7 +55,7 @@ llvm::Module * Compiler::build( toolchain::Source const & source, std::string co
 
     gen::ModuleBuilder( name )
         .globals( mGlobals )
-        .statements( source.parse( ) )
+        .statements( statements )
     .build( mContext, module );
 
     llvm::verifyModule( * module );

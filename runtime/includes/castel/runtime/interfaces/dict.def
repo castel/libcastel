@@ -3,3 +3,5 @@
 #endif
 
 CASTEL_TYPE( Dict, ( void ) )
+CASTEL_FUNCTION( Castel_Dict_set, void, ( castel::runtime::boxes::Dict * dict, std::uint32_t argc, castel::runtime::Box ** argv, castel::runtime::Box * value ) )
+CASTEL_FUNCTION( Castel_Dict_get, castel::runtime::Box *, ( castel::runtime::boxes::Dict * dict, std::uint32_t argc, castel::runtime::Box ** argv ) )

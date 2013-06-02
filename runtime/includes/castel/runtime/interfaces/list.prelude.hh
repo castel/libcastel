@@ -2,4 +2,19 @@
 
 #define CASTEL_RUNTIME_X_LIST_PRELUDE
 
-#include "castel/runtime/boxes/List.hh"
+namespace castel
+{
+
+    namespace runtime
+    {
+
+        namespace boxes
+        {
+
+            class List;
+
+        }
+
+    }
+
+}

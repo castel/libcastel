@@ -3,6 +3,7 @@
 #include <functional>
 #include <map>
 #include <string>
+#include <vector>
 
 #include <llvm/Module.h>
 
@@ -32,7 +33,7 @@ namespace castel
 
         public:
 
-            Runner( llvm::Module * module, std::string const & name = "main" );
+            Runner( void );
 
         public:
 
@@ -42,13 +43,9 @@ namespace castel
 
         public:
 
-            castel::runtime::Box * operator()( void );
+            castel::runtime::Box * run( llvm::Module * module, std::string const & name = "main" );
 
         private:
-
-            llvm::Module * mModule;
-
-            std::string mName;
 
             std::map< std::string, std::function< castel::runtime::Box * ( void ) > > mGlobals;
 

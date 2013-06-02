@@ -2,6 +2,7 @@
 
 #include <list>
 #include <map>
+#include <string>
 
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
@@ -9,10 +10,15 @@
 namespace castel
 {
 
-    namespace toolchain
+    namespace ast
     {
 
-        class Source;
+        class Statement;
+
+    }
+
+    namespace toolchain
+    {
 
         class Compiler
         {
@@ -31,7 +37,7 @@ namespace castel
 
         public:
 
-            llvm::Module * build( Source const & source, std::string const & name = "main" );
+            llvm::Module * build( ast::Statement * statements, std::string const & name = "main" );
 
         private:
 
@@ -45,7 +51,7 @@ namespace castel
 
 }
 
-#include "castel/toolchain/Source.hh"
+#include "castel/ast/Statement.hh"
 
 namespace castel
 {

@@ -2,6 +2,7 @@
 #include "castel/runtime/attributes/Method.hh"
 #include "castel/runtime/boxes/Class.hh"
 #include "castel/runtime/boxes/Function.hh"
+#include "castel/runtime/boxes/String.hh"
 #include "castel/runtime/helper/Fatal.hh"
 #include "castel/runtime/helper/create.hh"
 #include "castel/runtime/Box.hh"

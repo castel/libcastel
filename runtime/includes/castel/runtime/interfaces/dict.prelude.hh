@@ -2,4 +2,23 @@
 
 #define CASTEL_RUNTIME_X_DICT_PRELUDE
 
-#include "castel/runtime/boxes/Dict.hh"
+#include <cstdint>
+
+namespace castel
+{
+
+    namespace runtime
+    {
+
+        class Box;
+
+        namespace boxes
+        {
+
+            class Dict;
+
+        }
+
+    }
+
+}

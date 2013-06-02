@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "castel/runtime/boxes/Class.hh"
+#include "castel/runtime/boxes/Undefined.hh"
 #include "castel/runtime/helper/create.hh"
 #include "castel/runtime/Box.hh"
 #include "castel/runtime/interface.hh"

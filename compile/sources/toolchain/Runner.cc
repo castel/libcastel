@@ -30,21 +30,19 @@ runtime::Box * Runner::staticDependencyInitializer( Runner * runner, char const 
     return runner->mGlobals[ global ]( );
 }
 
-Runner::Runner( llvm::Module * module, std::string const & name )
-    : mModule( module )
-    , mName( name )
+Runner::Runner( void )
 {
     Runner::staticInitializer( );
 }
 
-runtime::Box * Runner::operator()( void )
+runtime::Box * Runner::run( llvm::Module * module, std::string const & name )
 {
     std::string errString;
 
     llvm::TargetOptions targetOptions;
     targetOptions.JITExceptionHandling = true;
 
-    llvm::ExecutionEngine * executionEngine = llvm::EngineBuilder( mModule )
+    llvm::ExecutionEngine * executionEngine = llvm::EngineBuilder( module )
         .setErrorStr( &( errString ) )
         .setTargetOptions( targetOptions )
     .create( );
@@ -53,8 +51,8 @@ runtime::Box * Runner::operator()( void )
         throw std::runtime_error( errString );
 
     for ( auto & global : mGlobals )
-        executionEngine->addGlobalMapping( mModule->getFunction( global.first + "_generator" ), reinterpret_cast< void * >( & Runner::staticDependencyInitializer ) );
+        executionEngine->addGlobalMapping( module->getFunction( global.first + "_generator" ), reinterpret_cast< void * >( & Runner::staticDependencyInitializer ) );
 
-    void * programPtr = executionEngine->getPointerToFunction( mModule->getFunction( mName ) );
+    void * programPtr = executionEngine->getPointerToFunction( module->getFunction( name ) );
     return reinterpret_cast< runtime::Module::Signature * >( programPtr )( this );
 }

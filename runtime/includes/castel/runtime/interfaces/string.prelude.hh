@@ -2,4 +2,19 @@
 
 #define CASTEL_RUNTIME_X_STRING_PRELUDE
 
-#include "castel/runtime/boxes/String.hh"
+namespace castel
+{
+
+    namespace runtime
+    {
+
+        namespace boxes
+        {
+
+            class String;
+
+        }
+
+    }
+
+}
