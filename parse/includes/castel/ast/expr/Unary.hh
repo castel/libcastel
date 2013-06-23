@@ -47,6 +47,8 @@ namespace castel
 
             public:
 
+                inline Unary( ast::expr::Unary::Operator type );
+
                 inline Unary( ast::expr::Unary::Operator type, ast::tools::Hold< ast::Expression > && operand );
 
             public:
@@ -94,6 +96,12 @@ namespace castel
 
         namespace expr
         {
+
+            Unary::Unary( ast::expr::Unary::Operator type )
+                : mType( type )
+                , mOperand( )
+            {
+            }
 
             Unary::Unary( ast::expr::Unary::Operator type, ast::tools::Hold< ast::Expression > && operand )
                 : mType( type )

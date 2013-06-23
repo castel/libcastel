@@ -72,6 +72,8 @@ namespace castel
 
             public:
 
+                inline Binary( ast::expr::Binary::Operator type );
+
                 inline Binary( ast::expr::Binary::Operator type, ast::tools::Hold< ast::Expression > && leftOperand, ast::tools::Hold< ast::Expression > && rightOperand );
 
             public:
@@ -129,6 +131,13 @@ namespace castel
 
         namespace expr
         {
+
+            Binary::Binary( ast::expr::Binary::Operator type )
+                : mType( type )
+                , mLeftOperand( )
+                , mRightOperand( )
+            {
+            }
 
             Binary::Binary( ast::expr::Binary::Operator type, ast::tools::Hold< ast::Expression > && leftOperand, ast::tools::Hold< ast::Expression > && rightOperand )
                 : mType( type )
