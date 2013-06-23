@@ -4,7 +4,6 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 
-#include "castel/ast/tools/Linked.hh"
 #include "castel/gen/CodeBuilder.hh"
 #include "castel/gen/Scope.hh"
 #include "castel/gen/SVisitor.hh"

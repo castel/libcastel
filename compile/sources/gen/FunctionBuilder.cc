@@ -10,7 +10,6 @@
 #include <llvm/Module.h>
 #include <llvm/Value.h>
 
-#include "castel/ast/tools/Linked.hh"
 #include "castel/gen/helper/call.hh"
 #include "castel/gen/helper/i32.hh"
 #include "castel/gen/helper/type.hh"
