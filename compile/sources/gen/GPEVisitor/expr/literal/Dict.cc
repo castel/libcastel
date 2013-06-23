@@ -8,18 +8,18 @@
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::literal::Dict & dictLiteralAst )
+void GPEVisitor::visit( ast::expr::literal::Dict const & dictLiteralAst )
 {
     mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Dict_create" );
 
     for ( auto const & item : dictLiteralAst.items( ) ) {
 
-        llvm::Value * string = gen::helper::string( mIRBuilder, item.name( ) );
+        llvm::Value * string = gen::helper::string( mIRBuilder, item->name( ) );
         llvm::Value * box = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_String_create", string );
         llvm::Value * key = gen::helper::allocate< runtime::Box * >( mContext, mModule, mIRBuilder, 1 );
         mIRBuilder.CreateStore( box, key );
 
-        llvm::Value * value = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * ( item.value( ) ) );
+        llvm::Value * value = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * item->value( ) );
 
         gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Dict_set", mLastReturnedValue, gen::helper::i32( mContext, 1 ), key, value );
 

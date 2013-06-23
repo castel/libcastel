@@ -11,6 +11,8 @@ namespace castel
         namespace tools
         {
 
+            class ConstVisitor;
+
             class Visitor;
 
         }
@@ -40,6 +42,8 @@ namespace castel
 
                 public:
 
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
+
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
                 private:
@@ -56,6 +60,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -85,6 +90,11 @@ namespace castel
                     mValue = value;
 
                     return * this;
+                }
+
+                void Number::accept( ast::tools::ConstVisitor & visitor ) const
+                {
+                    visitor.visit( * this );
                 }
 
                 void Number::accept( ast::tools::Visitor & visitor )

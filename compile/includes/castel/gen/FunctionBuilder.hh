@@ -8,6 +8,7 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/literal/Function.hh"
+#include "castel/ast/tools/List.hh"
 
 namespace castel
 {
@@ -45,15 +46,15 @@ namespace castel
 
         public:
 
-            inline ast::expr::literal::Function::Parameter * parameters( void ) const;
+            inline ast::tools::List< ast::expr::literal::Function::Parameter > const * parameters( void ) const;
 
-            inline FunctionBuilder & parameters( ast::expr::literal::Function::Parameter * parameters );
+            inline FunctionBuilder & parameters( ast::tools::List< ast::expr::literal::Function::Parameter > const * parameters );
 
         public:
 
-            inline ast::Statement * statements( void ) const;
+            inline ast::tools::List< ast::Statement > const * statements( void ) const;
 
-            inline FunctionBuilder & statements( ast::Statement * statements );
+            inline FunctionBuilder & statements( ast::tools::List< ast::Statement > const * statements );
 
         public:
 
@@ -65,9 +66,9 @@ namespace castel
 
             bool mUseThis;
 
-            ast::expr::literal::Function::Parameter * mParameters;
+            ast::tools::List< ast::expr::literal::Function::Parameter > const * mParameters;
 
-            ast::Statement * mStatements;
+            ast::tools::List< ast::Statement > const * mStatements;
 
         };
 
@@ -116,24 +117,24 @@ namespace castel
             return * this;
         }
 
-        ast::expr::literal::Function::Parameter * FunctionBuilder::parameters( void ) const
+        ast::tools::List< ast::expr::literal::Function::Parameter > const * FunctionBuilder::parameters( void ) const
         {
             return mParameters;
         }
 
-        FunctionBuilder & FunctionBuilder::parameters( ast::expr::literal::Function::Parameter * parameters )
+        FunctionBuilder & FunctionBuilder::parameters( ast::tools::List< ast::expr::literal::Function::Parameter > const * parameters )
         {
             mParameters = parameters;
 
             return * this;
         }
 
-        ast::Statement * FunctionBuilder::statements( void ) const
+        ast::tools::List< ast::Statement > const * FunctionBuilder::statements( void ) const
         {
             return mStatements;
         }
 
-        FunctionBuilder & FunctionBuilder::statements( ast::Statement * statements )
+        FunctionBuilder & FunctionBuilder::statements( ast::tools::List< ast::Statement > const * statements )
         {
             mStatements = statements;
 

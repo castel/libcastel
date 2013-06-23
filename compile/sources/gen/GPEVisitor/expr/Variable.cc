@@ -4,7 +4,7 @@
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::Variable & variableExpressionAst )
+void GPEVisitor::visit( ast::expr::Variable const & variableExpressionAst )
 {
     mLastReturnedValue = mScope.get( mIRBuilder, variableExpressionAst.name( ) );
 }

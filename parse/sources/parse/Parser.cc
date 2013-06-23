@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <memory>
 
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Statement.hh"
 #include "castel/lex/Lexeme.hh"
 #include "castel/lex/Lexer.hh"
@@ -12,7 +13,7 @@ using parse::Parser;
 
 #include "sources/parse/lemon-parser.cc"
 
-ast::Statement * Parser::exec( void )
+ast::tools::List< ast::Statement > Parser::exec( void )
 {
     std::unique_ptr< lex::Lexeme > lexeme;
 
@@ -49,5 +50,5 @@ ast::Statement * Parser::exec( void )
 
     ParseFree( lemonParser, free );
 
-    return castelparserRootStatement;
+    return std::move( castelparserRootStatements );
 }

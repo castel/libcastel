@@ -8,6 +8,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Module.h>
 
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Statement.hh"
 #include "castel/gen/helper/type.hh"
 #include "castel/gen/ModuleBuilder.hh"
@@ -28,7 +29,7 @@ Compiler::Compiler( void )
     llvm::StructType::create( mContext, "Box" );
 }
 
-llvm::Module * Compiler::build( ast::Statement * statements, std::string const & name )
+llvm::Module * Compiler::build( ast::tools::List< ast::Statement > const & statements, std::string const & name )
 {
     llvm::Module * module = new llvm::Module( name, mContext );
 
@@ -55,7 +56,7 @@ llvm::Module * Compiler::build( ast::Statement * statements, std::string const &
 
     gen::ModuleBuilder( name )
         .globals( mGlobals )
-        .statements( statements )
+        .statements( & statements )
     .build( mContext, module );
 
     llvm::verifyModule( * module );

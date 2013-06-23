@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Expression.hh"
 
 namespace castel
@@ -9,6 +10,15 @@ namespace castel
 
     namespace ast
     {
+
+        namespace tools
+        {
+
+            class ConstVisitor;
+
+            class Visitor;
+
+        }
 
         namespace expr
         {
@@ -37,7 +47,7 @@ namespace castel
 
             public:
 
-                inline Unary( ast::expr::Unary::Operator type, ast::Expression * operand );
+                inline Unary( ast::expr::Unary::Operator type, ast::tools::Hold< ast::Expression > && operand );
 
             public:
 
@@ -47,20 +57,23 @@ namespace castel
 
             public:
 
-                inline ast::Expression * operand( void ) const;
+                inline ast::tools::Hold< ast::Expression > const & operand( void ) const;
 
-                inline Unary & operand( ast::Expression * operand );
+                inline ast::tools::Hold< ast::Expression > & operand( void );
 
-                inline ast::Expression * takeOperand( void );
+                inline Unary & operand( ast::tools::Hold< ast::Expression > && operand );
 
             public:
+
+                virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                 virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
                 ast::expr::Unary::Operator mType;
-                std::unique_ptr< ast::Expression > mOperand;
+
+                ast::tools::Hold< ast::Expression > mOperand;
 
             };
 
@@ -70,6 +83,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -81,9 +95,9 @@ namespace castel
         namespace expr
         {
 
-            Unary::Unary( ast::expr::Unary::Operator type, ast::Expression * operand )
+            Unary::Unary( ast::expr::Unary::Operator type, ast::tools::Hold< ast::Expression > && operand )
                 : mType( type )
-                , mOperand( operand )
+                , mOperand( std::move( operand ) )
             {
             }
 
@@ -99,21 +113,26 @@ namespace castel
                 return * this;
             }
 
-            ast::Expression * Unary::operand( void ) const
+            ast::tools::Hold< ast::Expression > const & Unary::operand( void ) const
             {
-                return mOperand.get( );
+                return mOperand;
             }
 
-            Unary & Unary::operand( ast::Expression * operand )
+            ast::tools::Hold< ast::Expression > & Unary::operand( void )
             {
-                mOperand.reset( operand );
+                return mOperand;
+            }
+
+            Unary & Unary::operand( ast::tools::Hold< ast::Expression > && operand )
+            {
+                mOperand = std::move( operand );
 
                 return * this;
             }
 
-            ast::Expression * Unary::takeOperand( void )
+            void Unary::accept( ast::tools::ConstVisitor & visitor ) const
             {
-                return mOperand.release( );
+                visitor.visit( * this );
             }
 
             void Unary::accept( ast::tools::Visitor & visitor )

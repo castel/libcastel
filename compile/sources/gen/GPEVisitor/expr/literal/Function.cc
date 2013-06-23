@@ -5,10 +5,10 @@
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::literal::Function & functionLiteralAst )
+void GPEVisitor::visit( ast::expr::literal::Function const & functionLiteralAst )
 {
     mLastReturnedValue = gen::FunctionBuilder( "literal" )
-        .parameters( functionLiteralAst.parameters( ) )
-        .statements( functionLiteralAst.statements( ) )
+        .parameters( & functionLiteralAst.parameters( ) )
+        .statements( & functionLiteralAst.statements( ) )
     .build( mContext, mModule, mIRBuilder, mScope );
 }

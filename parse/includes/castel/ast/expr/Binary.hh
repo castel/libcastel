@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Expression.hh"
 
 namespace castel
@@ -9,6 +10,15 @@ namespace castel
 
     namespace ast
     {
+
+        namespace tools
+        {
+
+            class ConstVisitor;
+
+            class Visitor;
+
+        }
 
         namespace expr
         {
@@ -62,7 +72,7 @@ namespace castel
 
             public:
 
-                inline Binary( ast::expr::Binary::Operator type, ast::Expression * leftOperand = nullptr, ast::Expression * rightOperand = nullptr );
+                inline Binary( ast::expr::Binary::Operator type, ast::tools::Hold< ast::Expression > && leftOperand, ast::tools::Hold< ast::Expression > && rightOperand );
 
             public:
 
@@ -72,21 +82,23 @@ namespace castel
 
             public:
 
-                inline ast::Expression * leftOperand( void ) const;
+                inline ast::tools::Hold< ast::Expression > const & leftOperand( void ) const;
 
-                inline Binary & leftOperand( ast::Expression * expression );
+                inline ast::tools::Hold< ast::Expression > & leftOperand( void );
 
-                inline ast::Expression * takeLeftOperand( void );
+                inline Binary & leftOperand( ast::tools::Hold< ast::Expression > && expression );
+
+            public:
+
+                inline ast::tools::Hold< ast::Expression > const & rightOperand( void ) const;
+
+                inline ast::tools::Hold< ast::Expression > & rightOperand( void );
+
+                inline Binary & rightOperand( ast::tools::Hold< ast::Expression > && expression );
 
             public:
 
-                inline ast::Expression * rightOperand( void ) const;
-
-                inline Binary & rightOperand( ast::Expression * expression );
-
-                inline ast::Expression * takeRightOperand( void );
-
-            public:
+                virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                 virtual inline void accept( ast::tools::Visitor & visitor );
 
@@ -94,8 +106,9 @@ namespace castel
 
                 ast::expr::Binary::Operator mType;
 
-                std::unique_ptr< ast::Expression > mLeftOperand;
-                std::unique_ptr< ast::Expression > mRightOperand;
+                ast::tools::Hold< ast::Expression > mLeftOperand;
+
+                ast::tools::Hold< ast::Expression > mRightOperand;
 
             };
 
@@ -105,6 +118,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -116,10 +130,10 @@ namespace castel
         namespace expr
         {
 
-            Binary::Binary( ast::expr::Binary::Operator type, ast::Expression * leftOperand, ast::Expression * rightOperand )
+            Binary::Binary( ast::expr::Binary::Operator type, ast::tools::Hold< ast::Expression > && leftOperand, ast::tools::Hold< ast::Expression > && rightOperand )
                 : mType( type )
-                , mLeftOperand( leftOperand )
-                , mRightOperand( rightOperand )
+                , mLeftOperand( std::move( leftOperand ) )
+                , mRightOperand( std::move( rightOperand ) )
             {
             }
 
@@ -135,38 +149,43 @@ namespace castel
                 return * this;
             }
 
-            ast::Expression * Binary::leftOperand( void ) const
+            ast::tools::Hold< ast::Expression > const & Binary::leftOperand( void ) const
             {
-                return mLeftOperand.get( );
+                return mLeftOperand;
             }
 
-            Binary & Binary::leftOperand( ast::Expression * leftOperand )
+            ast::tools::Hold< ast::Expression > & Binary::leftOperand( void )
             {
-                mLeftOperand.reset( leftOperand );
+                return mLeftOperand;
+            }
+
+            Binary & Binary::leftOperand( ast::tools::Hold< ast::Expression > && leftOperand )
+            {
+                mLeftOperand = std::move( leftOperand );
 
                 return * this;
             }
 
-            ast::Expression * Binary::takeLeftOperand( void )
+            ast::tools::Hold< ast::Expression > const & Binary::rightOperand( void ) const
             {
-                return mLeftOperand.release( );
+                return mRightOperand;
             }
 
-            ast::Expression * Binary::rightOperand( void ) const
+            ast::tools::Hold< ast::Expression > & Binary::rightOperand( void )
             {
-                return mRightOperand.get( );
+                return mRightOperand;
             }
 
-            Binary & Binary::rightOperand( ast::Expression * rightOperand )
+            Binary & Binary::rightOperand( ast::tools::Hold< ast::Expression > && rightOperand )
             {
-                mRightOperand.reset( rightOperand );
+                mRightOperand = std::move( rightOperand );
 
                 return * this;
             }
 
-            ast::Expression * Binary::takeRightOperand( void )
+            void Binary::accept( ast::tools::ConstVisitor & visitor ) const
             {
-                return mRightOperand.release( );
+                visitor.visit( * this );
             }
 
             void Binary::accept( ast::tools::Visitor & visitor )

@@ -4,10 +4,17 @@
 #include <iosfwd>
 #include <string>
 
-#include <castel/ast/Statement.hh>
+#include "castel/ast/tools/List.hh"
 
 namespace castel
 {
+
+    namespace ast
+    {
+
+        class Statement;
+
+    }
 
     namespace toolchain
     {
@@ -41,7 +48,7 @@ namespace castel
 
         public:
 
-            castel::ast::Statement * parse( void ) const;
+            ast::tools::List< ast::Statement > parse( void ) const;
 
         private:
 
@@ -56,6 +63,8 @@ namespace castel
     }
 
 }
+
+#include "castel/ast/Statement.hh"
 
 namespace castel
 {

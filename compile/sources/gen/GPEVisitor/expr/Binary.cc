@@ -4,6 +4,7 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/Binary.hh"
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Expression.hh"
 #include "castel/gen/helper/call.hh"
 #include "castel/gen/GPEVisitor.hh"
@@ -38,19 +39,19 @@ static std::map< ast::expr::Binary::Operator, char const * > const operatorsTabl
 
 };
 
-void GPEVisitor::visit( ast::expr::Binary & binaryExpressionAst )
+void GPEVisitor::visit( ast::expr::Binary const & binaryExpressionAst )
 {
-    ast::Expression * leftOperandAst = binaryExpressionAst.leftOperand( );
-    ast::Expression * rightOperandAst = binaryExpressionAst.rightOperand( );
+    ast::tools::Hold< ast::Expression > const & leftOperandAst = binaryExpressionAst.leftOperand( );
+    ast::tools::Hold< ast::Expression > const & rightOperandAst = binaryExpressionAst.rightOperand( );
 
-    if ( leftOperandAst == nullptr && rightOperandAst == nullptr )
-        throw std::runtime_error( "Both operands missing" );
+    if ( leftOperandAst && rightOperandAst )
+        throw std::runtime_error( "Binary operators must have both operands when built as general purpose expressions" );
 
-    if ( leftOperandAst == nullptr )
-        throw std::runtime_error( "Left operand missing" );
+    if ( leftOperandAst )
+        throw std::runtime_error( "Binary operators must have both operands when built as general purpose expressions (left missing)" );
 
-    if ( rightOperandAst == nullptr )
-        throw std::runtime_error( "Right operand missing" );
+    if ( rightOperandAst )
+        throw std::runtime_error( "Binary operators must have both operands when built as general purpose expressions (right missing)" );
 
     if ( binaryExpressionAst.type( ) == ast::expr::Binary::Operator::Assignment ) {
 

@@ -1,6 +1,7 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/stmt/decl/Variables.hh"
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Expression.hh"
 #include "castel/gen/GPEVisitor.hh"
 #include "castel/gen/SVisitor.hh"
@@ -8,17 +9,16 @@
 using namespace castel;
 using gen::SVisitor;
 
-void SVisitor::visit( ast::stmt::decl::Variables & variablesDeclarationStatementAst )
+void SVisitor::visit( ast::stmt::decl::Variables const & variablesDeclarationStatementAst )
 {
-    for ( auto & variable : variablesDeclarationStatementAst.variables( ) ) {
+    for ( auto const & variable : variablesDeclarationStatementAst.variables( ) ) {
 
-        ast::Expression * initializerAst = variable.initializer( );
+        mScope.declare( mIRBuilder, variable->name( ) );
 
-        mScope.declare( mIRBuilder, variable.name( ) );
-
-        if ( initializerAst != nullptr ) {
+        ast::tools::Hold< ast::Expression > const & initializerAst = variable->initializer( );
+        if ( initializerAst ) {
             llvm::Value * initializer = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * initializerAst );
-            mScope.set( mIRBuilder, variable.name( ), initializer );
+            mScope.set( mIRBuilder, variable->name( ), initializer );
         }
 
     }

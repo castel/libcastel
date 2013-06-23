@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <string>
+#include <utility>
 
-#include "castel/ast/tools/Linked.hh"
+#include "castel/ast/tools/Hold.hh"
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Expression.hh"
 
 namespace castel
@@ -14,6 +15,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -44,37 +47,41 @@ namespace castel
 
                 public:
 
-                    inline Class( ast::expr::literal::Class::Member * members, ast::Expression * parent = nullptr );
+                    inline Class( ast::tools::List< ast::expr::literal::Class::Member > && members );
+
+                    inline Class( ast::tools::List< ast::expr::literal::Class::Member > && members, ast::tools::Hold< ast::Expression > && parent );
 
                 public:
 
-                    inline ast::Expression * parent( void ) const;
+                    inline ast::tools::Hold< ast::Expression > const & parent( void ) const;
 
-                    inline Class & parent( ast::Expression * parent );
+                    inline ast::tools::Hold< ast::Expression > & parent( void );
 
-                    inline ast::Expression * takeParent( void );
+                    inline Class & parent( ast::tools::Hold< ast::Expression > && parent );
+
+                public:
+
+                    inline ast::tools::List< ast::expr::literal::Class::Member > const & members( void ) const;
+
+                    inline ast::tools::List< ast::expr::literal::Class::Member > & members( void );
+
+                    inline Class & members( ast::tools::List< ast::expr::literal::Class::Member > && members );
 
                 public:
 
-                    inline ast::expr::literal::Class::Member * members( void ) const;
-
-                    inline Class & members( ast::expr::literal::Class::Member * members );
-
-                    inline ast::expr::literal::Class::Member * takeMembers( void );
-
-                public:
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
                 private:
 
-                    std::unique_ptr< ast::Expression > mParent;
+                    ast::tools::Hold< ast::Expression > mParent;
 
-                    std::unique_ptr< ast::expr::literal::Class::Member > mMembers;
+                    ast::tools::List< ast::expr::literal::Class::Member > mMembers;
 
                 };
 
-                class Class::Member : public ast::tools::Linked< Class::Member >
+                class Class::Member
                 {
 
                 public:
@@ -135,19 +142,19 @@ namespace castel
 
                 public:
 
-                    inline Attribute( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Class::Member::Host host, std::string const & name, ast::Expression * initializer = nullptr );
+                    inline Attribute( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Class::Member::Host host, std::string const & name, ast::tools::Hold< ast::Expression > && initializer = ast::tools::Hold< ast::Expression >( ) );
 
                 public:
 
-                    inline ast::Expression * initializer( void ) const;
+                    inline ast::tools::Hold< ast::Expression > const & initializer( void ) const;
 
-                    inline Attribute & initializer( ast::Expression * initializer );
+                    inline ast::tools::Hold< ast::Expression > & initialize( void );
 
-                    inline ast::Expression * takeInitializer( void );
+                    inline Attribute & initializer( ast::tools::Hold< ast::Expression > && initializer );
 
                 private:
 
-                    std::unique_ptr< ast::Expression > mInitializer;
+                    ast::tools::Hold< ast::Expression > mInitializer;
 
                 };
 
@@ -156,19 +163,19 @@ namespace castel
 
                 public:
 
-                    inline Method( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Class::Member::Host host, std::string const & name, ast::expr::literal::Function * function );
+                    inline Method( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Class::Member::Host host, std::string const & name, ast::tools::Hold< ast::expr::literal::Function > && function );
 
                 public:
 
-                    inline ast::expr::literal::Function * function( void ) const;
+                    inline ast::tools::Hold< ast::expr::literal::Function > const & function( void ) const;
 
-                    inline Method & function( ast::expr::literal::Function * function );
+                    inline ast::tools::Hold< ast::expr::literal::Function > & function( void );
 
-                    inline ast::expr::literal::Function * takeFunction( void );
+                    inline Method & function( ast::tools::Hold< ast::expr::literal::Function > && function );
 
                 private:
 
-                    std::unique_ptr< ast::expr::literal::Function > mFunction;
+                    ast::tools::Hold< ast::expr::literal::Function > mFunction;
 
                 };
 
@@ -177,19 +184,19 @@ namespace castel
 
                 public:
 
-                    inline Constructor( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Function * function );
+                    inline Constructor( ast::expr::literal::Class::Member::Visibility visibility, ast::tools::Hold< ast::expr::literal::Function > && function );
 
                 public:
 
-                    inline ast::expr::literal::Function * function( void ) const;
+                    inline ast::tools::Hold< ast::expr::literal::Function > const & function( void ) const;
 
-                    inline Constructor & function( ast::expr::literal::Function * function );
+                    inline ast::tools::Hold< ast::expr::literal::Function > & function( void );
 
-                    inline ast::expr::literal::Function * takeFunction( void );
+                    inline Constructor & function( ast::tools::Hold< ast::expr::literal::Function > && function );
 
                 private:
 
-                    std::unique_ptr< ast::expr::literal::Function > mFunction;
+                    ast::tools::Hold< ast::expr::literal::Function > mFunction;
 
                 };
 
@@ -198,7 +205,7 @@ namespace castel
 
                 public:
 
-                    inline Operator( ast::expr::literal::Class::Member::Visibility visibility, int type, ast::expr::literal::Function * function );
+                    inline Operator( ast::expr::literal::Class::Member::Visibility visibility, int type, ast::tools::Hold< ast::expr::literal::Function > && function );
 
                 public:
 
@@ -208,17 +215,17 @@ namespace castel
 
                 public:
 
-                    inline ast::expr::literal::Function * function( void ) const;
+                    inline ast::tools::Hold< ast::expr::literal::Function > const & function( void ) const;
 
-                    inline Operator & function( ast::expr::literal::Function * function );
+                    inline ast::tools::Hold< ast::expr::literal::Function > & function( void );
 
-                    inline ast::expr::literal::Function * takeFunction( void );
+                    inline Operator & function( ast::tools::Hold< ast::expr::literal::Function > && function );
 
                 private:
 
                     int mType;
 
-                    std::unique_ptr< ast::expr::literal::Function > mFunction;
+                    ast::tools::Hold< ast::expr::literal::Function > mFunction;
 
                 };
 
@@ -230,6 +237,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -287,79 +295,79 @@ namespace castel
                     return * this;
                 }
 
-                Class::Attribute::Attribute( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Class::Member::Host host, std::string const & name, ast::Expression * initializer )
+                Class::Attribute::Attribute( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Class::Member::Host host, std::string const & name, ast::tools::Hold< ast::Expression > && initializer )
                     : Member( visibility, host, name )
-                    , mInitializer( initializer )
+                    , mInitializer( std::move( initializer ) )
                 {
                 }
 
-                ast::Expression * Class::Attribute::initializer( void ) const
+                ast::tools::Hold< ast::Expression > const & Class::Attribute::initializer( void ) const
                 {
-                    return mInitializer.get( );
+                    return mInitializer;
                 }
 
-                Class::Attribute & Class::Attribute::initializer( ast::Expression * initializer )
+                ast::tools::Hold< ast::Expression > & Class::Attribute::initialize( void )
                 {
-                    mInitializer.reset( initializer );
+                    return mInitializer;
+                }
+
+                Class::Attribute & Class::Attribute::initializer( ast::tools::Hold< ast::Expression > && initializer )
+                {
+                    mInitializer = std::move( initializer );
 
                     return * this;
                 }
 
-                ast::Expression * Class::Attribute::takeInitializer( void )
-                {
-                    return mInitializer.release( );
-                }
-
-                Class::Method::Method( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Class::Member::Host host, std::string const & name, ast::expr::literal::Function * function )
+                Class::Method::Method( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Class::Member::Host host, std::string const & name, ast::tools::Hold< ast::expr::literal::Function > && function )
                     : Member( visibility, host, name )
-                    , mFunction( function )
+                    , mFunction( std::move( function ) )
                 {
                 }
 
-                ast::expr::literal::Function * Class::Method::function( void ) const
+                ast::tools::Hold< ast::expr::literal::Function > const & Class::Method::function( void ) const
                 {
-                    return mFunction.get( );
+                    return mFunction;
                 }
 
-                Class::Method & Class::Method::function( ast::expr::literal::Function * function )
+                ast::tools::Hold< ast::expr::literal::Function > & Class::Method::function( void )
                 {
-                    mFunction.reset( function );
+                    return mFunction;
+                }
+
+                Class::Method & Class::Method::function( ast::tools::Hold< ast::expr::literal::Function > && function )
+                {
+                    mFunction = std::move( function );
 
                     return * this;
                 }
 
-                ast::expr::literal::Function * Class::Method::takeFunction( void )
-                {
-                    return mFunction.release( );
-                }
-
-                Class::Constructor::Constructor( ast::expr::literal::Class::Member::Visibility visibility, ast::expr::literal::Function * function )
+                Class::Constructor::Constructor( ast::expr::literal::Class::Member::Visibility visibility, ast::tools::Hold< ast::expr::literal::Function > && function )
                     : Member( visibility, ast::expr::literal::Class::Member::Host::Class, "constructor" )
-                    , mFunction( function )
+                    , mFunction( std::move( function ) )
                 {
                 }
 
-                ast::expr::literal::Function * Class::Constructor::function( void ) const
+                ast::tools::Hold< ast::expr::literal::Function > const & Class::Constructor::function( void ) const
                 {
-                    return mFunction.get( );
+                    return mFunction;
                 }
 
-                Class::Constructor & Class::Constructor::function( ast::expr::literal::Function * function )
+                ast::tools::Hold< ast::expr::literal::Function > & Class::Constructor::function( void )
                 {
-                    mFunction.reset( function );
+                    return mFunction;
+                }
+
+                Class::Constructor & Class::Constructor::function( ast::tools::Hold< ast::expr::literal::Function > && function )
+                {
+                    mFunction = std::move( function );
 
                     return * this;
                 }
 
-                ast::expr::literal::Function * Class::Constructor::takeFunction( void )
-                {
-                    return mFunction.release( );
-                }
-
-                Class::Operator::Operator( ast::expr::literal::Class::Member::Visibility visibility, int type, ast::expr::literal::Function * function )
+                Class::Operator::Operator( ast::expr::literal::Class::Member::Visibility visibility, int type, ast::tools::Hold< ast::expr::literal::Function > && function )
                     : Member( visibility, ast::expr::literal::Class::Member::Host::Class, "operator" )
                     , mType( type )
-                    , mFunction( function )
+                    , mFunction( std::move( function ) )
                 {
                 }
 
@@ -375,61 +383,71 @@ namespace castel
                     return * this;
                 }
 
-                ast::expr::literal::Function * Class::Operator::function( void ) const
+                ast::tools::Hold< ast::expr::literal::Function > const & Class::Operator::function( void ) const
                 {
-                    return mFunction.get( );
+                    return mFunction;
                 }
 
-                Class::Operator & Class::Operator::function( ast::expr::literal::Function * function )
+                ast::tools::Hold< ast::expr::literal::Function > & Class::Operator::function( void )
                 {
-                    mFunction.reset( function );
+                    return mFunction;
+                }
+
+                Class::Operator & Class::Operator::function( ast::tools::Hold< ast::expr::literal::Function > && function )
+                {
+                    mFunction = std::move( function );
 
                     return * this;
                 }
 
-                ast::expr::literal::Function * Class::Operator::takeFunction( void )
-                {
-                    return mFunction.release( );
-                }
-
-                Class::Class( ast::expr::literal::Class::Member * members, ast::Expression * parent )
-                    : mParent( parent )
-                    , mMembers( members )
+                Class::Class( ast::tools::List< ast::expr::literal::Class::Member > && members )
+                    : mMembers( std::move( members ) )
                 {
                 }
 
-                ast::Expression * Class::parent( void ) const
+                Class::Class( ast::tools::List< ast::expr::literal::Class::Member > && members, ast::tools::Hold< ast::Expression > && parent )
+                    : mParent( std::move( parent ) )
+                    , mMembers( std::move( members ) )
                 {
-                    return mParent.get( );
                 }
 
-                Class & Class::parent( ast::Expression * parent )
+                ast::tools::Hold< ast::Expression > const & Class::parent( void ) const
                 {
-                    mParent.reset( parent );
+                    return mParent;
+                }
+
+                ast::tools::Hold< ast::Expression > & Class::parent( void )
+                {
+                    return mParent;
+                }
+
+                Class & Class::parent( ast::tools::Hold< ast::Expression > && parent )
+                {
+                    mParent = std::move( parent );
 
                     return * this;
                 }
 
-                ast::Expression * Class::takeParent( void )
+                ast::tools::List< ast::expr::literal::Class::Member > const & Class::members( void ) const
                 {
-                    return mParent.release( );
+                    return mMembers;
                 }
 
-                ast::expr::literal::Class::Member * Class::members( void ) const
+                ast::tools::List< ast::expr::literal::Class::Member > & Class::members( void )
                 {
-                    return mMembers.get( );
+                    return mMembers;
                 }
 
-                Class & Class::members( ast::expr::literal::Class::Member * members )
+                Class & Class::members( ast::tools::List< ast::expr::literal::Class::Member > && members )
                 {
-                    mMembers.reset( members );
+                    mMembers = std::move( members );
 
                     return * this;
                 }
 
-                ast::expr::literal::Class::Member * Class::takeMembers( void )
+                void Class::accept( ast::tools::ConstVisitor & visitor ) const
                 {
-                    return mMembers.release( );
+                    visitor.visit( * this );
                 }
 
                 void Class::accept( ast::tools::Visitor & visitor )

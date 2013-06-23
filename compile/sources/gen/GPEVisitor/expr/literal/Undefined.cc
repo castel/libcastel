@@ -5,7 +5,7 @@
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::literal::Undefined & undefinedLiteralAst )
+void GPEVisitor::visit( ast::expr::literal::Undefined const & undefinedLiteralAst )
 {
     mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Undefined_create" );
 }

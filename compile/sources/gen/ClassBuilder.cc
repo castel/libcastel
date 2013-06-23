@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include <llvm/IRBuilder.h>
 #include <llvm/Constants.h>
 #include <llvm/LLVMContext.h>
@@ -5,6 +7,8 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/literal/Function.hh"
+#include "castel/ast/tools/Hold.hh"
+#include "castel/ast/tools/List.hh"
 #include "castel/gen/helper/call.hh"
 #include "castel/gen/helper/string.hh"
 #include "castel/gen/helper/type.hh"
@@ -19,22 +23,26 @@ using gen::ClassBuilder;
 
 llvm::Value * ClassBuilder::build( llvm::LLVMContext & context, llvm::Module * module, llvm::IRBuilder< > & irBuilder, gen::Scope & parentScope ) const
 {
+    if ( mMembers == nullptr )
+        throw std::runtime_error( "ClassBuilders must have a 'members' field when built" );
+
     llvm::Value * parent = mParent != nullptr ? mParent : gen::helper::null< runtime::Box * >( context );
     llvm::Value * initializer = this->createInitializer( context, module, parentScope );
 
     llvm::Value * classBox = gen::helper::call( context, module, irBuilder, "Castel_Class_create",
         parent, initializer, parentScope.environmentTable( ) );
 
-    for ( auto & member : mMembers ) {
-        if ( auto method = dynamic_cast< ast::expr::literal::Class::Method * >( & member ) ) {
+    for ( auto & member : * mMembers ) {
+        // @todo Maybe find a better way than using unique_ptr#get ?
+        if ( auto method = dynamic_cast< ast::expr::literal::Class::Method * >( member.get( ) ) ) {
             if ( method->host( ) == ast::expr::literal::Class::Member::Host::Instance ) {
 
-                ast::expr::literal::Function * functionAst = method->function( );
+                ast::tools::Hold< ast::expr::literal::Function > const & functionAst = method->function( );
 
                 llvm::Value * name = gen::helper::string( irBuilder, method->name( ) );
                 llvm::Value * function = gen::FunctionBuilder( ).useThis( true )
-                    .parameters( functionAst->parameters( ) )
-                    .statements( functionAst->statements( ) )
+                    .parameters( & functionAst->parameters( ) )
+                    .statements( & functionAst->statements( ) )
                 .build( context, module, irBuilder, parentScope );
 
                 gen::helper::call( context, module, irBuilder, "Castel_addMethod",
@@ -63,8 +71,9 @@ llvm::Value * ClassBuilder::createInitializer( llvm::LLVMContext & context, llvm
 
        scope.declare( irBuilder, "this", runtimeArguments_instance );
 
-       for ( auto & member : mMembers ) {
-           if ( auto attribute = dynamic_cast< ast::expr::literal::Class::Attribute * >( & member ) ) {
+       for ( auto & member : * mMembers ) {
+           // @todo Maybe find a better way than using unique_ptr#get ?
+           if ( auto attribute = dynamic_cast< ast::expr::literal::Class::Attribute * >( member.get( ) ) ) {
                if ( attribute->host( ) == ast::expr::literal::Class::Member::Host::Instance ) {
                    gen::helper::call( context, module, irBuilder, "Castel_addMember",
                        runtimeArguments_instance,
@@ -78,8 +87,9 @@ llvm::Value * ClassBuilder::createInitializer( llvm::LLVMContext & context, llvm
            }
        }
 
-       for ( auto & member : mMembers ) {
-           if ( auto constructor = dynamic_cast< ast::expr::literal::Class::Constructor * >( & member ) ) {
+       for ( auto & member : * mMembers ) {
+           // @todo Maybe find a better way than using unique_ptr#get ?
+           if ( auto constructor = dynamic_cast< ast::expr::literal::Class::Constructor * >( member.get( ) ) ) {
                gen::helper::call( context, module, irBuilder, "Castel_Operator_call",
                    gen::GPEVisitor( context, module, irBuilder, scope ).run( * ( constructor->function( ) ) ),
                    runtimeArguments_argc,

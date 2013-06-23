@@ -3,6 +3,7 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/Binary.hh"
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Expression.hh"
 #include "castel/gen/helper/call.hh"
 #include "castel/gen/GPEVisitor.hh"
@@ -11,21 +12,23 @@
 using namespace castel;
 using gen::LSEVisitor;
 
-void LSEVisitor::visit( ast::expr::Binary & binaryExpressionAst )
+void LSEVisitor::visit( ast::expr::Binary const & binaryExpressionAst )
 {
-    if ( binaryExpressionAst.type( ) != ast::expr::Binary::Operator::Member )
+    if ( binaryExpressionAst.type( ) != ast::expr::Binary::Operator::Member ) {
         this->defaultAction( binaryExpressionAst );
+        return ;
+    }
 
-    ast::Expression * leftOperandAst = binaryExpressionAst.leftOperand( );
-    ast::Expression * rightOperandAst = binaryExpressionAst.rightOperand( );
+    ast::tools::Hold< ast::Expression > const & leftOperandAst = binaryExpressionAst.leftOperand( );
+    ast::tools::Hold< ast::Expression > const & rightOperandAst = binaryExpressionAst.rightOperand( );
 
-    if ( leftOperandAst == nullptr && rightOperandAst == nullptr )
+    if ( leftOperandAst && rightOperandAst )
         throw std::runtime_error( "Both operands missing" );
 
-    if ( leftOperandAst == nullptr )
+    if ( leftOperandAst )
         throw std::runtime_error( "Missing left operand" );
 
-    if ( rightOperandAst == nullptr )
+    if ( rightOperandAst )
         throw std::runtime_error( "Missing right operand" );
 
     llvm::Value * object = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * leftOperandAst );

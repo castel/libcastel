@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <string>
+#include <utility>
 
-#include "castel/ast/tools/Linked.hh"
+#include "castel/ast/tools/Hold.hh"
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Expression.hh"
 
 namespace castel
@@ -11,6 +12,15 @@ namespace castel
 
     namespace ast
     {
+
+        namespace tools
+        {
+
+            class ConstVisitor;
+
+            class Visitor;
+
+        }
 
         namespace expr
         {
@@ -27,32 +37,36 @@ namespace castel
 
                 public:
 
-                    inline Dict( ast::expr::literal::Dict::Item * items );
+                    inline Dict( void );
+
+                    inline Dict( ast::tools::List< ast::expr::literal::Dict::Item > && items );
 
                 public:
 
-                    inline ast::expr::literal::Dict::Item * items( void ) const;
+                    inline ast::tools::List< ast::expr::literal::Dict::Item > const & items( void ) const;
 
-                    inline Dict & items( ast::expr::literal::Dict::Item * items );
+                    inline ast::tools::List< ast::expr::literal::Dict::Item > & items( void );
 
-                    inline ast::expr::literal::Dict::Item * takeItems( void );
+                    inline Dict & items( ast::tools::List< ast::expr::literal::Dict::Item > && items );
 
                 public:
+
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
                 private:
 
-                    std::unique_ptr< ast::expr::literal::Dict::Item > mItems;
+                    ast::tools::List< ast::expr::literal::Dict::Item > mItems;
 
                 };
 
-                class Dict::Item : public ast::tools::Linked< Dict::Item >
+                class Dict::Item
                 {
 
                 public:
 
-                    inline Item( std::string const & name, ast::Expression * value );
+                    inline Item( std::string const & name, ast::tools::Hold< ast::Expression > && value );
 
                 public:
 
@@ -62,17 +76,17 @@ namespace castel
 
                 public:
 
-                    inline ast::Expression * value( void ) const;
+                    inline ast::tools::Hold< ast::Expression > const & value( void ) const;
 
-                    inline Item & value( ast::Expression * value );
+                    inline ast::tools::Hold< ast::Expression > & value( void );
 
-                    inline ast::Expression * takeValue( void );
+                    inline Item & value( ast::tools::Hold< ast::Expression > && value );
 
                 private:
 
                     std::string mName;
 
-                    std::unique_ptr< ast::Expression > mValue;
+                    ast::tools::Hold< ast::Expression > mValue;
 
                 };
 
@@ -86,6 +100,7 @@ namespace castel
 
 #include <string>
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -100,9 +115,9 @@ namespace castel
             namespace literal
             {
 
-                Dict::Item::Item( std::string const & name, ast::Expression * value )
+                Dict::Item::Item( std::string const & name, ast::tools::Hold< ast::Expression > && value )
                     : mName( name )
-                    , mValue( value )
+                    , mValue( std::move( value ) )
                 {
                 }
 
@@ -118,43 +133,53 @@ namespace castel
                     return * this;
                 }
 
-                ast::Expression * Dict::Item::value( void ) const
+                ast::tools::Hold< ast::Expression > const & Dict::Item::value( void ) const
                 {
-                    return mValue.get( );
+                    return mValue;
                 }
 
-                Dict::Item & Dict::Item::value( ast::Expression * value )
+                ast::tools::Hold< ast::Expression > & Dict::Item::value( void )
                 {
-                    mValue.reset( value );
+                    return mValue;
+                }
+
+                Dict::Item & Dict::Item::value( ast::tools::Hold< ast::Expression > && value )
+                {
+                    mValue = std::move( value );
 
                     return * this;
                 }
 
-                ast::Expression * Dict::Item::takeValue( void )
-                {
-                    return mValue.release( );
-                }
-
-                Dict::Dict( ast::expr::literal::Dict::Item * items )
-                    : mItems( items )
+                Dict::Dict( void )
+                    : mItems( )
                 {
                 }
 
-                ast::expr::literal::Dict::Item * Dict::items( void ) const
+                Dict::Dict( ast::tools::List< ast::expr::literal::Dict::Item > && items )
+                    : mItems( std::move( items ) )
                 {
-                    return mItems.get( );
                 }
 
-                Dict & Dict::items( ast::expr::literal::Dict::Item * items )
+                ast::tools::List< ast::expr::literal::Dict::Item > const & Dict::items( void ) const
                 {
-                    mItems.reset( items );
+                    return mItems;
+                }
+
+                ast::tools::List< ast::expr::literal::Dict::Item > & Dict::items( void )
+                {
+                    return mItems;
+                }
+
+                Dict & Dict::items( ast::tools::List< ast::expr::literal::Dict::Item > && items )
+                {
+                    mItems = std::move( items );
 
                     return * this;
                 }
 
-                ast::expr::literal::Dict::Item * Dict::takeItems( void )
+                void Dict::accept( ast::tools::ConstVisitor & visitor ) const
                 {
-                    return mItems.release( );
+                    visitor.visit( * this );
                 }
 
                 void Dict::accept( ast::tools::Visitor & visitor )

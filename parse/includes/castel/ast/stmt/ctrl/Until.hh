@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Statement.hh"
 
 namespace castel
@@ -12,6 +13,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -30,42 +33,47 @@ namespace castel
 
                 public:
 
-                    inline Until( ast::Expression * condition, ast::Statement * thenBranch, ast::Statement * elseBranch = nullptr );
+                    inline Until( ast::tools::Hold< ast::Expression > && condition, ast::tools::Hold< ast::Statement > && thenBranch );
+
+                    inline Until( ast::tools::Hold< ast::Expression > && condition, ast::tools::Hold< ast::Statement > && thenBranch, ast::tools::Hold< ast::Statement > && elseBranch );
 
                 public:
 
-                    inline ast::Expression * condition( void ) const;
+                    inline ast::tools::Hold< ast::Expression > const & condition( void ) const;
 
-                    inline Until & condition( ast::Expression * condition );
+                    inline ast::tools::Hold< ast::Expression > & condition( void );
 
-                    inline ast::Expression * takeCondition( void );
-
-                public:
-
-                    inline ast::Statement * thenBranch( void ) const;
-
-                    inline Until & thenBranch( ast::Statement * thenBranch );
-
-                    inline ast::Statement * takeThenBranch( void );
+                    inline Until & condition( ast::tools::Hold< ast::Expression > && condition );
 
                 public:
 
-                    inline ast::Statement * elseBranch( void ) const;
+                    inline ast::tools::Hold< ast::Statement > const & thenBranch( void ) const;
 
-                    inline Until & elseBranch( ast::Statement * elseBranch );
+                    inline ast::tools::Hold< ast::Statement > & thenBranch( void );
 
-                    inline ast::Statement * takeElseBranch( void );
+                    inline Until & thenBranch( ast::tools::Hold< ast::Statement > && thenBranch );
 
                 public:
+
+                    inline ast::tools::Hold< ast::Statement > const & elseBranch( void ) const;
+
+                    inline ast::tools::Hold< ast::Statement > & elseBranch( void );
+
+                    inline Until & elseBranch( ast::tools::Hold< ast::Statement > && elseBranch );
+
+                public:
+
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
                 private:
 
-                    std::unique_ptr< ast::Expression > mCondition;
+                    ast::tools::Hold< ast::Expression > mCondition;
 
-                    std::unique_ptr< ast::Statement > mThenBranch;
-                    std::unique_ptr< ast::Statement > mElseBranch;
+                    ast::tools::Hold< ast::Statement > mThenBranch;
+
+                    ast::tools::Hold< ast::Statement > mElseBranch;
 
                 };
 
@@ -77,6 +85,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 #include "castel/ast/Expression.hh"
 
@@ -92,62 +101,73 @@ namespace castel
             namespace ctrl
             {
 
-                Until::Until( ast::Expression * condition, ast::Statement * thenBranch, ast::Statement * elseBranch )
-                    : mCondition( condition )
-                    , mThenBranch( thenBranch )
-                    , mElseBranch( elseBranch )
+                Until::Until( ast::tools::Hold< ast::Expression > && condition, ast::tools::Hold< ast::Statement > && thenBranch )
+                    : mCondition( std::move( condition ) )
+                    , mThenBranch( std::move( thenBranch ) )
                 {
                 }
 
-                ast::Expression * Until::condition( void ) const
+                Until::Until( ast::tools::Hold< ast::Expression > && condition, ast::tools::Hold< ast::Statement > && thenBranch, ast::tools::Hold< ast::Statement > && elseBranch )
+                    : mCondition( std::move( condition ) )
+                    , mThenBranch( std::move( thenBranch ) )
+                    , mElseBranch( std::move( elseBranch ) )
                 {
-                    return mCondition.get( );
                 }
 
-                Until & Until::condition( ast::Expression * condition )
+                ast::tools::Hold< ast::Expression > const & Until::condition( void ) const
                 {
-                    mCondition.reset( condition );
+                    return mCondition;
+                }
+
+                ast::tools::Hold< ast::Expression > & Until::condition( void )
+                {
+                    return mCondition;
+                }
+
+                Until & Until::condition( ast::tools::Hold< ast::Expression > && condition )
+                {
+                    mCondition = std::move( condition );
 
                     return * this;
                 }
 
-                ast::Expression * Until::takeCondition( void )
+                ast::tools::Hold< ast::Statement > const & Until::thenBranch( void ) const
                 {
-                    return mCondition.release( );
+                    return mThenBranch;
                 }
 
-                ast::Statement * Until::thenBranch( void ) const
+                ast::tools::Hold< ast::Statement > & Until::thenBranch( void )
                 {
-                    return mThenBranch.get( );
+                    return mThenBranch;
                 }
 
-                Until & Until::thenBranch( ast::Statement * thenBranch )
+                Until & Until::thenBranch( ast::tools::Hold< ast::Statement > && thenBranch )
                 {
-                    mThenBranch.reset( thenBranch );
+                    mThenBranch = std::move( thenBranch );
 
                     return * this;
                 }
 
-                ast::Statement * Until::takeThenBranch( void )
+                ast::tools::Hold< ast::Statement > const & Until::elseBranch( void ) const
                 {
-                    return mThenBranch.release( );
+                    return mElseBranch;
                 }
 
-                ast::Statement * Until::elseBranch( void ) const
+                ast::tools::Hold< ast::Statement > & Until::elseBranch( void )
                 {
-                    return mElseBranch.get( );
+                    return mElseBranch;
                 }
 
-                Until & Until::elseBranch( ast::Statement * elseBranch )
+                Until & Until::elseBranch( ast::tools::Hold< ast::Statement > && elseBranch )
                 {
-                    mElseBranch.reset( elseBranch );
+                    mElseBranch = std::move( elseBranch );
 
                     return * this;
                 }
 
-                ast::Statement * Until::takeElseBranch( void )
+                void Until::accept( ast::tools::ConstVisitor & visitor ) const
                 {
-                    return mElseBranch.release( );
+                    visitor.visit( * this );
                 }
 
                 void Until::accept( ast::tools::Visitor & visitor )

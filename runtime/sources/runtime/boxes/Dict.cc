@@ -35,7 +35,10 @@ bool Dict::operatorBoolCast( void )
 
 runtime::Box * Dict::item( std::vector< runtime::Box * > const & key ) const
 {
-    auto it = std::find_if( mItems.begin( ), mItems.end( ), Comparator( key ) );
+    auto begin = mItems.begin( );
+    auto end = mItems.end( );
+
+    auto it = std::find_if( begin, end, Comparator( key ) );
 
     if ( it == mItems.end( ) ) {
         return runtime::helper::create< runtime::boxes::Undefined >( );

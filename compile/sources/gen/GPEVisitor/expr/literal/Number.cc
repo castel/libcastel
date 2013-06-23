@@ -8,7 +8,7 @@
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::literal::Number & numberLiteralAst )
+void GPEVisitor::visit( ast::expr::literal::Number const & numberLiteralAst )
 {
     mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Number_create",
         llvm::ConstantFP::get( mContext, llvm::APFloat( numberLiteralAst.value( ) ) ) );

@@ -4,7 +4,7 @@
 using namespace castel;
 using gen::LSEVisitor;
 
-void LSEVisitor::visit( ast::expr::Variable & variableExpressionAst )
+void LSEVisitor::visit( ast::expr::Variable const & variableExpressionAst )
 {
     mScope.set( mIRBuilder, variableExpressionAst.name( ), mValue );
 }

@@ -5,7 +5,7 @@
 #include <llvm/Module.h>
 #include <llvm/Value.h>
 
-#include "castel/ast/tools/Visitor.hh"
+#include "castel/ast/tools/ConstVisitor.hh"
 
 namespace castel
 {
@@ -33,7 +33,7 @@ namespace castel
 
         class Scope;
 
-        class LSEVisitor : public ast::tools::Visitor
+        class LSEVisitor : public ast::tools::ConstVisitor
         {
 
         public:
@@ -42,13 +42,13 @@ namespace castel
 
         public:
 
-            inline void run( ast::Token & token );
+            inline void run( ast::Token const & token );
 
         public:
 
-            virtual void visit( ast::expr::Binary & astBinaryExpression );
+            virtual void visit( ast::expr::Binary const & astBinaryExpression );
 
-            virtual void visit( ast::expr::Variable & astVariableExpression );
+            virtual void visit( ast::expr::Variable const & astVariableExpression );
 
         private:
 
@@ -89,7 +89,7 @@ namespace castel
         {
         }
 
-        void LSEVisitor::run( ast::Token & token )
+        void LSEVisitor::run( ast::Token const & token )
         {
             token.accept( * this );
         }

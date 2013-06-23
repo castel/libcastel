@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Statement.hh"
 
 namespace castel
@@ -12,6 +13,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -30,7 +33,9 @@ namespace castel
 
                 public:
 
-                    inline ForIn( std::string const & target, ast::Expression * source, ast::Statement * thenBranch, ast::Statement * elseBranch = nullptr );
+                    inline ForIn( std::string const & target, ast::tools::Hold< ast::Expression > && source, ast::tools::Hold< ast::Statement > && thenBranch );
+
+                    inline ForIn( std::string const & target, ast::tools::Hold< ast::Expression > && source, ast::tools::Hold< ast::Statement > && thenBranch, ast::tools::Hold< ast::Statement > && elseBranch );
 
                 public:
 
@@ -40,29 +45,31 @@ namespace castel
 
                 public:
 
-                    inline ast::Expression * source( void ) const;
+                    inline ast::tools::Hold< ast::Expression > const & source( void ) const;
 
-                    inline ForIn & source( ast::Expression * source );
+                    inline ast::tools::Hold< ast::Expression > & source( void );
 
-                    inline ast::Expression * takeSource( void );
-
-                public:
-
-                    inline ast::Statement * thenBranch( void ) const;
-
-                    inline ForIn & thenBranch( ast::Statement * thenBranch );
-
-                    inline ast::Statement * takeThenBranch( void );
+                    inline ForIn & source( ast::tools::Hold< ast::Expression > && source );
 
                 public:
 
-                    inline ast::Statement * elseBranch( void ) const;
+                    inline ast::tools::Hold< ast::Statement > const & thenBranch( void ) const;
 
-                    inline ForIn & elseBranch( ast::Statement * elseBranch );
+                    inline ast::tools::Hold< ast::Statement > & thenBranch( void );
 
-                    inline ast::Statement * takeElseBranch( void );
+                    inline ForIn & thenBranch( ast::tools::Hold< ast::Statement > && thenBranch );
 
                 public:
+
+                    inline ast::tools::Hold< ast::Statement > const & elseBranch( void ) const;
+
+                    inline ast::tools::Hold< ast::Statement > & elseBranch( void );
+
+                    inline ForIn & elseBranch( ast::tools::Hold< ast::Statement > && elseBranch );
+
+                public:
+
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
@@ -70,10 +77,11 @@ namespace castel
 
                     std::string mTarget;
 
-                    std::unique_ptr< ast::Expression > mSource;
+                    ast::tools::Hold< ast::Expression > mSource;
 
-                    std::unique_ptr< ast::Statement > mThenBranch;
-                    std::unique_ptr< ast::Statement > mElseBranch;
+                    ast::tools::Hold< ast::Statement > mThenBranch;
+
+                    ast::tools::Hold< ast::Statement > mElseBranch;
 
                 };
 
@@ -85,6 +93,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 #include "castel/ast/Expression.hh"
 
@@ -100,11 +109,18 @@ namespace castel
             namespace ctrl
             {
 
-                ForIn::ForIn( std::string const & target, ast::Expression * source, ast::Statement * thenBranch, ast::Statement * elseBranch )
+                ForIn::ForIn( std::string const & target, ast::tools::Hold< ast::Expression > && source, ast::tools::Hold< ast::Statement > && thenBranch )
                     : mTarget( target )
-                    , mSource( source )
-                    , mThenBranch( thenBranch )
-                    , mElseBranch( elseBranch )
+                    , mSource( std::move( source ) )
+                    , mThenBranch( std::move( thenBranch ) )
+                {
+                }
+
+                ForIn::ForIn( std::string const & target, ast::tools::Hold< ast::Expression > && source, ast::tools::Hold< ast::Statement > && thenBranch, ast::tools::Hold< ast::Statement > && elseBranch )
+                    : mTarget( target )
+                    , mSource( std::move( source ) )
+                    , mThenBranch( std::move( thenBranch ) )
+                    , mElseBranch( std::move( elseBranch ) )
                 {
                 }
 
@@ -120,55 +136,60 @@ namespace castel
                     return * this;
                 }
 
-                ast::Expression * ForIn::source( void ) const
+                ast::tools::Hold< ast::Expression > const & ForIn::source( void ) const
                 {
-                    return mSource.get( );
+                    return mSource;
                 }
 
-                ForIn & ForIn::source( ast::Expression * source )
+                ast::tools::Hold< ast::Expression > & ForIn::source( void )
                 {
-                    mSource.reset( source );
+                    return mSource;
+                }
+
+                ForIn & ForIn::source( ast::tools::Hold< ast::Expression > && source )
+                {
+                    mSource = std::move( source );
 
                     return * this;
                 }
 
-                ast::Expression * ForIn::takeSource( void )
+                ast::tools::Hold< ast::Statement > const & ForIn::thenBranch( void ) const
                 {
-                    return mSource.release( );
+                    return mThenBranch;
                 }
 
-                ast::Statement * ForIn::thenBranch( void ) const
+                ast::tools::Hold< ast::Statement > & ForIn::thenBranch( void )
                 {
-                    return mThenBranch.get( );
+                    return mThenBranch;
                 }
 
-                ForIn & ForIn::thenBranch( ast::Statement * thenBranch )
+                ForIn & ForIn::thenBranch( ast::tools::Hold< ast::Statement > && thenBranch )
                 {
-                    mThenBranch.reset( thenBranch );
+                    mThenBranch = std::move( thenBranch );
 
                     return * this;
                 }
 
-                ast::Statement * ForIn::takeThenBranch( void )
+                ast::tools::Hold< ast::Statement > const & ForIn::elseBranch( void ) const
                 {
-                    return mThenBranch.release( );
+                    return mElseBranch;
                 }
 
-                ast::Statement * ForIn::elseBranch( void ) const
+                ast::tools::Hold< ast::Statement > & ForIn::elseBranch( void )
                 {
-                    return mElseBranch.get( );
+                    return mElseBranch;
                 }
 
-                ForIn & ForIn::elseBranch( ast::Statement * elseBranch )
+                ForIn & ForIn::elseBranch( ast::tools::Hold< ast::Statement > && elseBranch )
                 {
-                    mElseBranch.reset( elseBranch );
+                    mElseBranch = std::move( elseBranch );
 
                     return * this;
                 }
 
-                ast::Statement * ForIn::takeElseBranch( void )
+                void ForIn::accept( ast::tools::ConstVisitor & visitor ) const
                 {
-                    return mElseBranch.release( );
+                    visitor.visit( * this );
                 }
 
                 void ForIn::accept( ast::tools::Visitor & visitor )

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Statement.hh"
 
 namespace castel
@@ -12,6 +13,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -27,23 +30,27 @@ namespace castel
 
             public:
 
-                inline Return( ast::Expression * expression = nullptr );
+                inline Return( void );
+
+                inline Return( ast::tools::Hold< ast::Expression > && expression );
 
             public:
 
-                inline ast::Expression * expression( void ) const;
+                inline ast::tools::Hold< ast::Expression > const & expression( void ) const;
 
-                inline Return & expression( ast::Expression * expression );
+                inline ast::tools::Hold< ast::Expression > & expression( void );
 
-                inline ast::Expression * takeExpression( void );
+                inline Return & expression( ast::tools::Hold< ast::Expression > && expression );
 
             public:
+
+                virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                 virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
-                std::unique_ptr< ast::Expression > mExpression;
+                ast::tools::Hold< ast::Expression > mExpression;
 
             };
 
@@ -53,6 +60,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 #include "castel/ast/Expression.hh"
 
@@ -65,26 +73,36 @@ namespace castel
         namespace stmt
         {
 
-            Return::Return( ast::Expression * expression )
-                : mExpression( expression )
+            Return::Return( void )
+                : mExpression( )
             {
             }
 
-            ast::Expression * Return::expression( void ) const
+            Return::Return( ast::tools::Hold< ast::Expression > && expression )
+                : mExpression( std::move( expression ) )
             {
-                return mExpression.get( );
             }
 
-            Return & Return::expression( ast::Expression * expression )
+            ast::tools::Hold< ast::Expression > const & Return::expression( void ) const
             {
-                mExpression.reset( expression );
+                return mExpression;
+            }
+
+            ast::tools::Hold< ast::Expression > & Return::expression( void )
+            {
+                return mExpression;
+            }
+
+            Return & Return::expression( ast::tools::Hold< ast::Expression > && expression )
+            {
+                mExpression = std::move( expression );
 
                 return * this;
             }
 
-            ast::Expression * Return::takeExpression( void )
+            void Return::accept( ast::tools::ConstVisitor & visitor ) const
             {
-                return mExpression.release( );
+                visitor.visit( * this );
             }
 
             void Return::accept( ast::tools::Visitor & visitor )

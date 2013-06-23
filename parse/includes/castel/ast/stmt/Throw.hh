@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Statement.hh"
 
 namespace castel
@@ -12,6 +13,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -27,23 +30,25 @@ namespace castel
 
             public:
 
-                inline Throw( ast::Expression * expression );
+                inline Throw( ast::tools::Hold< ast::Expression > && expression );
 
             public:
 
-                inline ast::Expression * expression( void ) const;
+                inline ast::tools::Hold< ast::Expression > const & expression( void ) const;
 
-                inline Throw & expression( ast::Expression * expression );
+                inline ast::tools::Hold< ast::Expression > & expression( void );
 
-                inline ast::Expression * takeExpression( void );
+                inline Throw & expression( ast::tools::Hold< ast::Expression > && expression );
 
             public:
+
+                virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                 virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
-                std::unique_ptr< ast::Expression > mExpression;
+                ast::tools::Hold< ast::Expression > mExpression;
 
             };
 
@@ -53,6 +58,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 #include "castel/ast/Expression.hh"
 
@@ -65,26 +71,31 @@ namespace castel
         namespace stmt
         {
 
-            Throw::Throw( ast::Expression * expression )
-                : mExpression( expression )
+            Throw::Throw( ast::tools::Hold< ast::Expression > && expression )
+                : mExpression( std::move( expression ) )
             {
             }
 
-            ast::Expression * Throw::expression( void ) const
+            ast::tools::Hold< ast::Expression > const & Throw::expression( void ) const
             {
-                return mExpression.get( );
+                return mExpression;
             }
 
-            Throw & Throw::expression( ast::Expression * expression )
+            ast::tools::Hold< ast::Expression > & Throw::expression( void )
             {
-                mExpression.reset( expression );
+                return mExpression;
+            }
+
+            Throw & Throw::expression( ast::tools::Hold< ast::Expression > && expression )
+            {
+                mExpression = std::move( expression );
 
                 return * this;
             }
 
-            ast::Expression * Throw::takeExpression( void )
+            void Throw::accept( ast::tools::ConstVisitor & visitor ) const
             {
-                return mExpression.release( );
+                visitor.visit( * this );
             }
 
             void Throw::accept( ast::tools::Visitor & visitor )

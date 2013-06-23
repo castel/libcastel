@@ -5,7 +5,7 @@
 #include <llvm/Module.h>
 #include <llvm/Value.h>
 
-#include "castel/ast/tools/Visitor.hh"
+#include "castel/ast/tools/ConstVisitor.hh"
 
 namespace castel
 {
@@ -57,7 +57,7 @@ namespace castel
 
         class Scope;
 
-        class SVisitor : public ast::tools::Visitor
+        class SVisitor : public ast::tools::ConstVisitor
         {
 
         public:
@@ -66,27 +66,27 @@ namespace castel
 
         public:
 
-            inline void run( ast::Token & token );
+            inline void run( ast::Token const & token );
 
         public:
 
-            virtual void visit( ast::stmt::ctrl::ForIn & astForInStatement );
+            virtual void visit( ast::stmt::ctrl::ForIn const & astForInStatement );
 
-            virtual void visit( ast::stmt::ctrl::If & astIfStatement );
+            virtual void visit( ast::stmt::ctrl::If const & astIfStatement );
 
-            virtual void visit( ast::stmt::ctrl::Try & astTryStatement );
+            virtual void visit( ast::stmt::ctrl::Try const & astTryStatement );
 
-            virtual void visit( ast::stmt::ctrl::Until & astUntilStatement );
+            virtual void visit( ast::stmt::ctrl::Until const & astUntilStatement );
 
-            virtual void visit( ast::stmt::ctrl::While & astWhileStatement );
+            virtual void visit( ast::stmt::ctrl::While const & astWhileStatement );
 
-            virtual void visit( ast::stmt::decl::Variables & astVariableDeclaration );
+            virtual void visit( ast::stmt::decl::Variables const & astVariableDeclaration );
 
-            virtual void visit( ast::stmt::Expression & astExpressionStatement );
+            virtual void visit( ast::stmt::Expression const & astExpressionStatement );
 
-            virtual void visit( ast::stmt::Return & astReturnStatement );
+            virtual void visit( ast::stmt::Return const & astReturnStatement );
 
-            virtual void visit( ast::stmt::Throw & astThrowStatement );
+            virtual void visit( ast::stmt::Throw const & astThrowStatement );
 
         private:
 
@@ -130,7 +130,7 @@ namespace castel
         {
         }
 
-        void SVisitor::run( ast::Token & token )
+        void SVisitor::run( ast::Token const & token )
         {
             token.accept( * this );
         }

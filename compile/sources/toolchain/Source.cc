@@ -1,3 +1,4 @@
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Statement.hh"
 #include "castel/lex/Lexer.hh"
 #include "castel/parse/Parser.hh"
@@ -6,7 +7,7 @@
 using namespace castel;
 using toolchain::Source;
 
-ast::Statement * Source::parse( void ) const
+ast::tools::List< ast::Statement > Source::parse( void ) const
 {
     lex::Lexer lexer( mCode.c_str( ), mCode.length( ) );
     return parse::Parser( lexer ).exec( );

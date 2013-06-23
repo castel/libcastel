@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "castel/ast/tools/List.hh"
+
 namespace castel
 {
 
@@ -31,7 +33,7 @@ namespace castel
 
         public:
 
-            ast::Statement * exec( void );
+            ast::tools::List< ast::Statement > exec( void );
 
         private:
 

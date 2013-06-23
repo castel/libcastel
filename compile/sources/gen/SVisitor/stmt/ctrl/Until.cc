@@ -6,7 +6,7 @@
 using namespace castel;
 using gen::SVisitor;
 
-void SVisitor::visit( ast::stmt::ctrl::Until & untilControlAst )
+void SVisitor::visit( ast::stmt::ctrl::Until const & untilControlAst )
 {
     throw new std::runtime_error( "Unimplemented" );
 }

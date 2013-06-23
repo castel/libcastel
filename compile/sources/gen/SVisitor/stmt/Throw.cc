@@ -1,4 +1,5 @@
 #include "castel/ast/stmt/Throw.hh"
+#include "castel/ast/tools/Hold.hh"
 #include "castel/gen/helper/call.hh"
 #include "castel/gen/helper/null.hh"
 #include "castel/gen/GPEVisitor.hh"
@@ -8,9 +9,9 @@
 using namespace castel;
 using gen::SVisitor;
 
-void SVisitor::visit( ast::stmt::Throw & throwStatementAst )
+void SVisitor::visit( ast::stmt::Throw const & throwStatementAst )
 {
-    ast::Expression * expression = throwStatementAst.expression( );
+    ast::tools::Hold< ast::Expression > const & expression = throwStatementAst.expression( );
 
     gen::helper::call( mContext, mModule, mIRBuilder, "Castel_throw", expression
         ? gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * expression )

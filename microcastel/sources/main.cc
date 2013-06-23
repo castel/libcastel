@@ -4,10 +4,12 @@
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Module.h>
 
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Statement.hh"
 #include "castel/toolchain/Compiler.hh"
 #include "castel/toolchain/Source.hh"
 
+using castel::ast::tools::List;
 using castel::ast::Statement;
 using castel::toolchain::Compiler;
 using castel::toolchain::Source;
@@ -23,7 +25,7 @@ int main( int argc, char ** argv )
 
     Compiler compiler;
 
-    Statement * statements = Source::fromStream( std::cin ).parse( );
+    List< Statement > statements = Source::fromStream( std::cin ).parse( );
     llvm::Module * module = compiler.build( statements, argv[ 1 ] );
 
     module->print( llvm::outs( ), nullptr );

@@ -1,4 +1,4 @@
-#include <vector>
+#include <stdexcept>
 
 #include <llvm/IRBuilder.h>
 #include <llvm/TypeBuilder.h>
@@ -21,6 +21,9 @@ using gen::ModuleBuilder;
 
 llvm::Module * ModuleBuilder::build( llvm::LLVMContext & context, llvm::Module * module ) const
 {
+    if ( mStatements == nullptr )
+        throw std::runtime_error( "ModuleBuilders must have a 'statements' field when built" );
+
     llvm::Function * mainFunction = llvm::Function::Create( gen::helper::type< runtime::Module::Signature >( context ), llvm::GlobalVariable::ExternalLinkage, mName, module );
 
     llvm::BasicBlock * bootstrapBlock = llvm::BasicBlock::Create( context, "bootstrap" );

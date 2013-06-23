@@ -14,6 +14,8 @@ namespace castel
         namespace tools
         {
 
+            class ConstVisitor;
+
             class Visitor;
 
         }
@@ -58,6 +60,8 @@ namespace castel
                     inline ast::expr::literal::Function * takeLiteral( void );
 
                 public:
+
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
@@ -125,6 +129,11 @@ namespace castel
                 ast::expr::literal::Function * Function::takeLiteral( void )
                 {
                     return mLiteral.release( );
+                }
+
+                void Function::accept( ast::tools::ConstVisitor & visitor ) const
+                {
+                    visitor.visit( * this );
                 }
 
                 void Function::accept( ast::tools::Visitor & visitor )

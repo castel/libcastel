@@ -6,27 +6,27 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/stmt/ctrl/If.hh"
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Expression.hh"
 #include "castel/ast/Statement.hh"
 #include "castel/gen/helper/call.hh"
-#include "castel/gen/CodeBuilder.hh"
 #include "castel/gen/GPEVisitor.hh"
 #include "castel/gen/SVisitor.hh"
 
 using namespace castel;
 using gen::SVisitor;
 
-void SVisitor::visit( ast::stmt::ctrl::If & ifControlAst )
+void SVisitor::visit( ast::stmt::ctrl::If const & ifControlAst )
 {
-    ast::Expression * conditionAst = ifControlAst.condition( );
-    ast::Statement * thenBranchAst = ifControlAst.thenBranch( );
-    ast::Statement * elseBranchAst = ifControlAst.elseBranch( );
+    ast::tools::Hold< ast::Expression > const & conditionAst = ifControlAst.condition( );
+    ast::tools::Hold< ast::Statement > const & thenBranchAst = ifControlAst.thenBranch( );
+    ast::tools::Hold< ast::Statement > const & elseBranchAst = ifControlAst.elseBranch( );
 
-    if ( conditionAst == nullptr )
-        throw std::runtime_error( "Missing condition" );
+    if ( conditionAst )
+        throw std::runtime_error( "'If' statements must have a condition when built" );
 
-    if ( thenBranchAst == nullptr )
-        throw std::runtime_error( "Missing 'then' branch" );
+    if ( thenBranchAst )
+        throw std::runtime_error( "'If' statements must have a 'then' branch when built" );
 
     llvm::Value * condition = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * conditionAst );
     llvm::Value * booleanCast = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Operator_boolCast", condition );
@@ -43,16 +43,16 @@ void SVisitor::visit( ast::stmt::ctrl::If & ifControlAst )
         mIRBuilder.CreateCondBr( test, thenBranch, elseBranch );
 
         mIRBuilder.SetInsertPoint( thenBranch );
-        gen::CodeBuilder( ).statements( thenBranchAst )
-            .build( mContext, mModule, mIRBuilder, mScope );
+        gen::SVisitor( mContext, mModule, mIRBuilder, mScope )
+            .run( * thenBranchAst );
         if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
 
         function->getBasicBlockList( ).push_back( elseBranch );
 
         mIRBuilder.SetInsertPoint( elseBranch );
-        gen::CodeBuilder( ).statements( elseBranchAst )
-            .build( mContext, mModule, mIRBuilder, mScope );
+        gen::SVisitor( mContext, mModule, mIRBuilder, mScope )
+            .run( * elseBranchAst );
         if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
 
@@ -68,8 +68,8 @@ void SVisitor::visit( ast::stmt::ctrl::If & ifControlAst )
         mIRBuilder.CreateCondBr( test, thenBranch, finallyBranch );
 
         mIRBuilder.SetInsertPoint( thenBranch );
-        gen::CodeBuilder( ).statements( thenBranchAst )
-            .build( mContext, mModule, mIRBuilder, mScope );
+        gen::SVisitor( mContext, mModule, mIRBuilder, mScope )
+            .run( * thenBranchAst );
         if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
 

@@ -23,24 +23,23 @@ static std::map< ast::expr::Multary::Operator, char const * > const operatorsTab
 
 };
 
-void GPEVisitor::visit( ast::expr::Multary & multaryExpressionAst )
+void GPEVisitor::visit( ast::expr::Multary const & multaryExpressionAst )
 {
-    ast::Expression * leftMostOperandAst = multaryExpressionAst.operands( );
+    ast::tools::List< ast::Expression > const & operands = multaryExpressionAst.operands( );
 
-    if ( leftMostOperandAst == nullptr )
-        throw std::runtime_error( "Missing operands" );
+    if ( operands.empty( ) )
+        throw std::runtime_error( "Multary operators must have a least one operand when built as general purpose expressions" );
 
-    ast::Expression * restAst = leftMostOperandAst->next( );
+    ast::tools::List< ast::Expression >::const_iterator operandIterator = operands.begin( );
+    llvm::Value * leftMostOperand = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( ** operandIterator ++ );
 
-    llvm::Value * leftMostOperand = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * leftMostOperandAst );
-
-    llvm::Value * argc = gen::helper::i32( mContext, std::distance( ast::tools::begin( restAst ), ast::tools::end( restAst ) ) );
+    llvm::Value * argc = gen::helper::i32( mContext, operands.size( ) - 1 );
     llvm::Value * argv = gen::helper::allocate< runtime::Box * >( mContext, mModule, mIRBuilder, argc );
 
     int argumentIndex = 0;
-    for ( auto & argumentAst : restAst ) {
+    for ( ; operandIterator != operands.end( ); ++ operandIterator ) {
         mIRBuilder.CreateStore(
-            gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( argumentAst ),
+            gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( ** operandIterator ),
             mIRBuilder.CreateConstGEP1_64( argv, argumentIndex ++ )
         );
     }

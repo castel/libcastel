@@ -33,6 +33,8 @@
     #include "castel/ast/stmt/Expression.hh"
     #include "castel/ast/stmt/Return.hh"
     #include "castel/ast/stmt/Throw.hh"
+    #include "castel/ast/tools/Hold.hh"
+    #include "castel/ast/tools/List.hh"
     #include "castel/ast/Expression.hh"
     #include "castel/ast/Statement.hh"
     #include "castel/lex/Lexeme.hh"
@@ -40,7 +42,7 @@
     using namespace castel;
 
     static bool castelparserIsValid;
-    static ast::Statement * castelparserRootStatement;
+    static ast::tools::List< ast::Statement > castelparserRootStatements;
     static std::list< std::string > castelparserExpectedTokens;
 
 }
@@ -102,53 +104,68 @@
           LBrace LBracket LParenthesis
           QuestionMark.
 
-program ::= statementlist(U). { castelparserRootStatement = U; }
+program ::= statementlist(U). { castelparserRootStatements = std::move( * U ); delete U; }
 
-%type statementlist { ast::Statement * }
-statementlist(A) ::= emptystatementlist statementiterator(U). { A = U; }
+%type statementlist { ast::tools::List< ast::Statement > * }
+statementlist(A) ::= emptystatementlist statementiterator(U).
+    { A = U; }
 
-    %type statementiterator { ast::Statement * }
-    statementiterator(A) ::= statement(U) emptystatementlist statementiterator(V). { A = U; U->next( V ); }
-    statementiterator(A) ::= . { A = nullptr; }
+    %type statementiterator { ast::tools::List< ast::Statement > * }
+    statementiterator(A) ::= statement(U) emptystatementlist statementiterator(V).
+        { A = V; A->push_front( std::move( * U ) ); delete U; }
+    statementiterator(A) ::= .
+        { A = new ast::tools::List< ast::Statement >( ); }
 
-    %type emptystatementlist { ast::Statement * }
-    emptystatementlist(A) ::= Semicolon emptystatementlist. { A = nullptr; }
-    emptystatementlist(A) ::= . { A = nullptr; }
+    %type emptystatementlist { ast::tools::List< ast::Statement > * }
+    emptystatementlist ::= Semicolon emptystatementlist.
+    emptystatementlist ::= .
 
-%type statementblock { ast::Statement * }
-statementblock(A) ::= LBrace statementlist(U) RBrace. { A = U; }
+%type statementblock { ast::tools::List< ast::Statement > * }
+statementblock(A) ::= LBrace statementlist(U) RBrace.
+    { A = U; }
 
-%type statement { ast::Statement * }
-statement(A) ::= openstatement(U). { A = U; }
-statement(A) ::= closedstatement(U). { A = U; }
+%type statement { ast::tools::Hold< ast::Statement > * }
+statement(A) ::= openstatement(U).
+    { A = U; }
+statement(A) ::= closedstatement(U).
+    { A = U; }
 
-    %type openstatement { ast::Statement * }
+    %type openstatement { ast::tools::Hold< ast::Statement > * }
     openstatement(A) ::= openifstatement(U). { A = U; }
     openstatement(A) ::= openwhilestatement(U). { A = U; }
     openstatement(A) ::= openuntilstatement(U). { A = U; }
     openstatement(A) ::= openforinstatement(U). { A = U; }
     openstatement(A) ::= opentrystatement(U). { A = U; }
 
-        %type opentrystatement { ast::Statement * }
-        opentrystatement(A) ::= Try closedstatement(U) Else openstatement(V). { A = new ast::stmt::ctrl::Try( U, V ); }
+        %type opentrystatement { ast::tools::Hold< ast::Statement > * }
+        opentrystatement(A) ::= Try closedstatement(U) Else openstatement(V).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::Try( std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
 
-        %type openifstatement { ast::Statement * }
-        openifstatement(A) ::= If LParenthesis expression(U) RParenthesis statement(V). { A = new ast::stmt::ctrl::If( U, V ); }
-        openifstatement(A) ::= If LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W). { A = new ast::stmt::ctrl::If( U, V, W ); }
+        %type openifstatement { ast::tools::Hold< ast::Statement > * }
+        openifstatement(A) ::= If LParenthesis expression(U) RParenthesis statement(V).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::If( std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        openifstatement(A) ::= If LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::If( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
-        %type openwhilestatement { ast::Statement * }
-        openwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis statement(V). { A = new ast::stmt::ctrl::While( U, V ); }
-        openwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W). { A = new ast::stmt::ctrl::While( U, V, W ); }
+        %type openwhilestatement { ast::tools::Hold< ast::Statement > * }
+        openwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis statement(V).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::While( std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        openwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::While( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
-        %type openuntilstatement { ast::Statement * }
-        openuntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis statement(V). { A = new ast::stmt::ctrl::Until( U, V ); }
-        openuntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W). { A = new ast::stmt::ctrl::Until( U, V, W ); }
+        %type openuntilstatement { ast::tools::Hold< ast::Statement > * }
+        openuntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis statement(V).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::Until( std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        openuntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis closedstatement(V) Else openstatement(W).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::Until( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
-        %type openforinstatement { ast::Statement * }
-        openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis statement(W). { A = new ast::stmt::ctrl::ForIn( U->as< std::string >( ), V, W ); }
-        openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else openstatement(X). { A = new ast::stmt::ctrl::ForIn( U->as< std::string >( ), V, W, X ); }
+        %type openforinstatement { ast::tools::Hold< ast::Statement > * }
+        openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis statement(W).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::ForIn( U->as< std::string >( ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
+        openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else openstatement(X).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::ForIn( U->as< std::string >( ), std::move( * V ), std::move( * W ), std::move( * X ) ) ); delete U; delete V; delete W; delete X; }
 
-    %type closedstatement { ast::Statement * }
+    %type closedstatement { ast::tools::Hold< ast::Statement > * }
     closedstatement(A) ::= simplestatement(U). { A = U; }
     closedstatement(A) ::= closedifstatement(U). { A = U; }
     closedstatement(A) ::= closedtrystatement(U). { A = U; }
@@ -156,184 +173,271 @@ statement(A) ::= closedstatement(U). { A = U; }
     closedstatement(A) ::= closeduntilstatement(U). { A = U; }
     closedstatement(A) ::= closedforinstatement(U). { A = U; }
 
-        %type closedifstatement { ast::Statement * }
-        closedifstatement(A) ::= If LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W). { A = new ast::stmt::ctrl::If( U, V, W ); }
+        %type closedifstatement { ast::tools::Hold< ast::Statement > * }
+        closedifstatement(A) ::= If LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::If( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
-        %type closedwhilestatement { ast::Statement * }
-        closedwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W). { A = new ast::stmt::ctrl::While( U, V, W ); }
+        %type closedwhilestatement { ast::tools::Hold< ast::Statement > * }
+        closedwhilestatement(A) ::= While LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::While( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
-        %type closedtrystatement { ast::Statement * }
-        closedtrystatement(A) ::= Try closedstatement(U) Else closedstatement(V). { A = new ast::stmt::ctrl::Try( U, V ); }
+        %type closedtrystatement { ast::tools::Hold< ast::Statement > * }
+        closedtrystatement(A) ::= Try closedstatement(U) Else closedstatement(V).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::Try( std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
 
-        %type closeduntilstatement { ast::Statement * }
-        closeduntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W). { A = new ast::stmt::ctrl::Until( U, V, W ); }
+        %type closeduntilstatement { ast::tools::Hold< ast::Statement > * }
+        closeduntilstatement(A) ::= Until LParenthesis expression(U) RParenthesis closedstatement(V) Else closedstatement(W).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::Until( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
-        %type closedforinstatement { ast::Statement * }
-        closedforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else closedstatement(X). { A = new ast::stmt::ctrl::ForIn( U->as< std::string >( ), V, W, X ); }
+        %type closedforinstatement { ast::tools::Hold< ast::Statement > * }
+        closedforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else closedstatement(X).
+            { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::ForIn( U->as< std::string >( ), std::move( * V ), std::move( * W ), std::move( * X ) ) ); delete U; delete V; delete W; delete X; }
 
-    %type simplestatement { ast::Statement * }
-    simplestatement(A) ::= expressionstatement(U). { A = U; }
-    simplestatement(A) ::= returnstatement(U). { A = U; }
-    simplestatement(A) ::= throwstatement(U). { A = U; }
-    simplestatement(A) ::= declarationstatement(U). { A = U; }
+    %type simplestatement { ast::tools::Hold< ast::Statement > * }
+    simplestatement(A) ::= expressionstatement(U).
+        { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
+    simplestatement(A) ::= returnstatement(U).
+        { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
+    simplestatement(A) ::= throwstatement(U).
+        { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
+    simplestatement(A) ::= declarationstatement(U).
+        { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
 
-        %type expressionstatement { ast::stmt::Expression * }
-        expressionstatement(A) ::= expression(U) Semicolon. { A = new ast::stmt::Expression( U ); }
+        %type expressionstatement { ast::tools::Hold< ast::stmt::Expression > * }
+        expressionstatement(A) ::= expression(U) Semicolon.
+            { A = new ast::tools::Hold< ast::stmt::Expression >( new ast::stmt::Expression( std::move( * U ) ) ); delete U; }
 
-        %type returnstatement { ast::stmt::Return * }
-        returnstatement(A) ::= Return expression(U) Semicolon. { A = new ast::stmt::Return( U ); }
-        returnstatement(A) ::= Return Semicolon. { A = new ast::stmt::Return( ); }
+        %type returnstatement { ast::tools::Hold< ast::stmt::Return > * }
+        returnstatement(A) ::= Return expression(U) Semicolon.
+            { A = new ast::tools::Hold< ast::stmt::Return >( new ast::stmt::Return( std::move( * U ) ) ); delete U; }
+        returnstatement(A) ::= Return Semicolon.
+            { A = new ast::tools::Hold< ast::stmt::Return >( new ast::stmt::Return( ) ); }
 
-        %type throwstatement { ast::stmt::Throw * }
-        throwstatement(A) ::= Throw expression(U) Semicolon. { A = new ast::stmt::Throw( U ); }
+        %type throwstatement { ast::tools::Hold< ast::stmt::Throw > * }
+        throwstatement(A) ::= Throw expression(U) Semicolon.
+            { A = new ast::tools::Hold< ast::stmt::Throw >( new ast::stmt::Throw( std::move( * U ) ) ); delete U; }
 
-        %type declarationstatement { ast::Statement * }
-        declarationstatement(A) ::= variablesdeclaration(U). { A = U; }
-        declarationstatement(A) ::= functiondeclaration(U). { A = U; }
-        declarationstatement(A) ::= classdeclaration(U). { A = U; }
+        %type declarationstatement { ast::tools::Hold< ast::Statement > * }
+        declarationstatement(A) ::= variablesdeclaration(U).
+            { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
+        declarationstatement(A) ::= functiondeclaration(U).
+            { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
+        declarationstatement(A) ::= classdeclaration(U).
+            { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
 
-            %type variablesdeclaration { ast::stmt::decl::Variables * }
-            variablesdeclaration(A) ::= Var variabledeclarationlist(U) Semicolon. { A = new ast::stmt::decl::Variables( U ); }
+            %type variablesdeclaration { ast::tools::Hold< ast::stmt::decl::Variables > * }
+            variablesdeclaration(A) ::= Var variabledeclarationlist(U) Semicolon.
+                { A = new ast::tools::Hold< ast::stmt::decl::Variables >( new ast::stmt::decl::Variables( std::move( * U ) ) ); delete U; }
 
-                %type variabledeclarationlist { ast::stmt::decl::Variables::Variable * }
-                variabledeclarationlist(A) ::= variabledeclarationitem(U) Comma variabledeclarationlist(V). { A = U; U->next( V ); }
-                variabledeclarationlist(A) ::= variabledeclarationitem(U). { A = U; }
+                %type variabledeclarationlist { ast::tools::List< ast::stmt::decl::Variables::Item > * }
+                variabledeclarationlist(A) ::= variabledeclarationitem(U) Comma variabledeclarationlist(V).
+                    { A = V; A->push_front( std::move( * U ) ); delete U; }
+                variabledeclarationlist(A) ::= variabledeclarationitem(U).
+                    { A = new ast::tools::List< ast::stmt::decl::Variables::Item >( ); A->push_back( std::move( * U ) ); delete U; }
 
-                    %type variabledeclarationitem { ast::stmt::decl::Variables::Variable * }
+                    %type variabledeclarationitem { ast::tools::Hold< ast::stmt::decl::Variables::Item > * }
                     variabledeclarationitem(A) ::= variabledeclaration(U). { A = U; }
 
-                        %type variabledeclaration { ast::stmt::decl::Variables::Variable * }
-                        variabledeclaration(A) ::= Identifier(U) Assignment expression(V). { A = new ast::stmt::decl::Variables::Variable( U->as< std::string >( ), V ); }
-                        variabledeclaration(A) ::= Identifier(U). { A = new ast::stmt::decl::Variables::Variable( U->as< std::string >( ) ); }
+                        %type variabledeclaration { ast::tools::Hold< ast::stmt::decl::Variables::Item > * }
+                        variabledeclaration(A) ::= Identifier(U) Assignment expression(V).
+                            { A = new ast::tools::Hold< ast::stmt::decl::Variables::Item >( new ast::stmt::decl::Variables::Item( U->as< std::string >( ), std::move( * V ) ) ); delete U; delete V; }
+                        variabledeclaration(A) ::= Identifier(U).
+                            { A = new ast::tools::Hold< ast::stmt::decl::Variables::Item >( new ast::stmt::decl::Variables::Item( U->as< std::string >( ) ) ); delete U; }
 
-            %type functiondeclaration { ast::stmt::decl::Function * }
-            functiondeclaration(A) ::= Function Identifier(U) parameters(V) statementblock(W). { A = new ast::stmt::decl::Function( U->as< std::string >( ), new ast::expr::literal::Function( V, W ) ); }
+            %type functiondeclaration { ast::tools::Hold< ast::stmt::decl::Function > * }
+            functiondeclaration(A) ::= Function Identifier(U) parameters(V) statementblock(W).
+                { A = new ast::tools::Hold< ast::stmt::decl::Function >( new ast::stmt::decl::Function( U->as< std::string >( ), new ast::expr::literal::Function( std::move( * V ), std::move( * W ) ) ) ); delete U; delete V; delete W; }
 
-            %type classdeclaration { ast::stmt::decl::Class * }
-            classdeclaration(A) ::= Class Identifier(U) classblock(V). { A = new ast::stmt::decl::Class( U->as< std::string >( ), new ast::expr::literal::Class( V ) ); }
-            classdeclaration(A) ::= Class Identifier(U) Extending expression(V) classblock(W). { A = new ast::stmt::decl::Class( U->as< std::string >( ), new ast::expr::literal::Class( W, V ) ); }
+            %type classdeclaration { ast::tools::Hold< ast::stmt::decl::Class > * }
+            classdeclaration(A) ::= Class Identifier(U) classblock(V).
+                { A = new ast::tools::Hold< ast::stmt::decl::Class >( new ast::stmt::decl::Class( U->as< std::string >( ), new ast::expr::literal::Class( std::move( * V ) ) ) ); delete U; delete V; }
+            classdeclaration(A) ::= Class Identifier(U) Extending expression(V) classblock(W).
+                { A = new ast::tools::Hold< ast::stmt::decl::Class >( new ast::stmt::decl::Class( U->as< std::string >( ), new ast::expr::literal::Class( std::move( * W ), std::move( * V ) ) ) ); delete U; delete V; delete W; }
 
-%type expression { ast::Expression * }
-expression(A) ::= LParenthesis expression(U) RParenthesis. { A = U; }
-expression(A) ::= conditional(U). { A = U; }
-expression(A) ::= dynamic(U). { A = U; }
-expression(A) ::= literal(U). { A = U; }
-expression(A) ::= operation(U). { A = U; }
+%type expression { ast::tools::Hold< ast::Expression > * }
+expression(A) ::= LParenthesis expression(U) RParenthesis.
+    { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+expression(A) ::= conditional(U).
+    { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+expression(A) ::= dynamic(U).
+    { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+expression(A) ::= variable(U).
+    { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+expression(A) ::= literal(U).
+    { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+expression(A) ::= operation(U).
+    { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
 
-    %type conditional { ast::Expression * }
-    conditional(A) ::= expression(U) QuestionMark expression(V) Colon expression(W). [Conditional] { A = new ast::expr::Conditional( U, V, W ); }
+    %type conditional { ast::tools::Hold< ast::expr::Conditional > * }
+    conditional(A) ::= expression(U) QuestionMark expression(V) Colon expression(W). [Conditional]
+        { A = new ast::tools::Hold< ast::expr::Conditional >( new ast::expr::Conditional( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
-    %type dynamic { ast::Expression * }
-    dynamic(A) ::= Extern Identifier(U). { A = new ast::expr::External( U->as< std::string >( ) ); }
-    dynamic(A) ::= Identifier(U). { A = new ast::expr::Variable( U->as< std::string >( ) ); }
+    %type dynamic { ast::tools::Hold< ast::expr::External > * }
+    dynamic(A) ::= Extern Identifier(U).
+        { A = new ast::tools::Hold< ast::expr::External >( new ast::expr::External( U->as< std::string >( ) ) ); delete U; }
 
-    %type literal { ast::Expression * }
-    literal(A) ::= undefinedliteral(U). { A = U; }
-    literal(A) ::= nullliteral(U). { A = U; }
-    literal(A) ::= boolliteral(U). { A = U; }
-    literal(A) ::= stringliteral(U). { A = U; }
-    literal(A) ::= numberliteral(U). { A = U; }
-    literal(A) ::= listliteral(U). { A = U; }
-    literal(A) ::= dictliteral(U). { A = U; }
-    literal(A) ::= functionliteral(U). { A = U; }
-    literal(A) ::= classliteral(U). { A = U; }
+    %type variable { ast::tools::Hold< ast::expr::Variable > * }
+    variable(A) ::= Identifier(U).
+        { A = new ast::tools::Hold< ast::expr::Variable >( new ast::expr::Variable( U->as< std::string >( ) ) ); delete U; }
 
-        %type undefinedliteral { ast::expr::literal::Undefined * }
-        undefinedliteral(A) ::= Undefined. { A = new ast::expr::literal::Undefined( ); }
+    %type literal { ast::tools::Hold< ast::Expression > * }
+    literal(A) ::= undefinedliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    literal(A) ::= nullliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    literal(A) ::= boolliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    literal(A) ::= stringliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    literal(A) ::= numberliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    literal(A) ::= listliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    literal(A) ::= dictliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    literal(A) ::= functionliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    literal(A) ::= classliteral(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
 
-        %type nullliteral { ast::expr::literal::Null * }
-        nullliteral(A) ::= Null. { A = new ast::expr::literal::Null( ); }
+        %type undefinedliteral { ast::tools::Hold< ast::expr::literal::Undefined > * }
+        undefinedliteral(A) ::= Undefined.
+            { A = new ast::tools::Hold< ast::expr::literal::Undefined >( new ast::expr::literal::Undefined( ) ); }
 
-        %type boolliteral { ast::expr::literal::Boolean * }
-        boolliteral(A) ::= True. { A = new ast::expr::literal::Boolean( true ); }
-        boolliteral(A) ::= False. { A = new ast::expr::literal::Boolean( false ); }
+        %type nullliteral { ast::tools::Hold< ast::expr::literal::Null > * }
+        nullliteral(A) ::= Null.
+            { A = new ast::tools::Hold< ast::expr::literal::Null >( new ast::expr::literal::Null( ) ); }
 
-        %type stringliteral { ast::expr::literal::String * }
-        stringliteral(A) ::= String(U). { A = new ast::expr::literal::String( ast::expr::literal::String::parse( U->as< std::string >( ) ) ); }
+        %type boolliteral { ast::tools::Hold< ast::expr::literal::Boolean > * }
+        boolliteral(A) ::= True.
+            { A = new ast::tools::Hold< ast::expr::literal::Boolean >( new ast::expr::literal::Boolean( true ) ); }
+        boolliteral(A) ::= False.
+            { A = new ast::tools::Hold< ast::expr::literal::Boolean >( new ast::expr::literal::Boolean( false ) ); }
 
-        %type numberliteral { ast::expr::literal::Number * }
-        numberliteral(A) ::= Number(U). { A = new ast::expr::literal::Number( std::stod( U->as< std::string >( ) ) ); }
-        numberliteral(A) ::= Number2(U). { A = new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 2 ) ); }
-        numberliteral(A) ::= Number8(U). { A = new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 8 ) ); }
-        numberliteral(A) ::= Number10(U). { A = new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 10 ) ); }
-        numberliteral(A) ::= Number16(U). { A = new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 16 ) ); }
+        %type stringliteral { ast::tools::Hold< ast::expr::literal::String > * }
+        stringliteral(A) ::= String(U).
+            { A = new ast::tools::Hold< ast::expr::literal::String >( new ast::expr::literal::String( ast::expr::literal::String::parse( U->as< std::string >( ) ) ) ); }
 
-        %type listliteral { ast::expr::literal::List * }
-        listliteral(A) ::= LBracket listlist(U) RBracket. { A = new ast::expr::literal::List( U ); }
+        %type numberliteral { ast::tools::Hold< ast::expr::literal::Number > * }
+        numberliteral(A) ::= Number(U).
+            { A = new ast::tools::Hold< ast::expr::literal::Number >( new ast::expr::literal::Number( std::stod( U->as< std::string >( ) ) ) ); delete U; }
+        numberliteral(A) ::= Number2(U).
+            { A = new ast::tools::Hold< ast::expr::literal::Number >( new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 2 ) ) ); delete U; }
+        numberliteral(A) ::= Number8(U).
+            { A = new ast::tools::Hold< ast::expr::literal::Number >( new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 8 ) ) ); delete U; }
+        numberliteral(A) ::= Number10(U).
+            { A = new ast::tools::Hold< ast::expr::literal::Number >( new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 10 ) ) ); delete U; }
+        numberliteral(A) ::= Number16(U).
+            { A = new ast::tools::Hold< ast::expr::literal::Number >( new ast::expr::literal::Number( std::stoll( U->as< std::string >( ), nullptr, 16 ) ) ); delete U; }
 
-            %type listlist { ast::expr::literal::List::Item * }
-            listlist(A) ::= listitem(U) listnextitem(V). { A = U; U->next( V ); }
-            listlist(A) ::= . { A = nullptr; }
+        %type listliteral { ast::tools::Hold< ast::expr::literal::List > * }
+        listliteral(A) ::= LBracket listlist(U) RBracket.
+            { A = new ast::tools::Hold< ast::expr::literal::List >( new ast::expr::literal::List( std::move( * U ) ) ); delete U; }
 
-                %type listnextitem { ast::expr::literal::List::Item * }
-                listnextitem(A) ::= Comma listlist(U). { A = U; }
-                listnextitem(A) ::= . { A = nullptr; }
+            %type listlist { ast::tools::List< ast::expr::literal::List::Item > * }
+            listlist(A) ::= listitem(U) listnextitem(V).
+                { A = V; A->push_front( std::move( * U ) ); delete U; }
+            listlist(A) ::= .
+                { A = new ast::tools::List< ast::expr::literal::List::Item >( ); }
 
-                %type listitem { ast::expr::literal::List::Item * }
-                listitem(A) ::= expression(U). { A = new ast::expr::literal::List::Item( U ); }
+                %type listnextitem { ast::tools::List< ast::expr::literal::List::Item > * }
+                listnextitem(A) ::= Comma listlist(U).
+                    { A = U; }
+                listnextitem(A) ::= .
+                    { A = new ast::tools::List< ast::expr::literal::List::Item >( ); }
 
-        %type dictliteral { ast::expr::literal::Dict * }
-        dictliteral(A) ::= LBrace dictlist(U) RBrace. { A = new ast::expr::literal::Dict( U ); }
+                %type listitem { ast::tools::Hold< ast::expr::literal::List::Item > * }
+                listitem(A) ::= expression(U).
+                    { A = new ast::tools::Hold< ast::expr::literal::List::Item >( new ast::expr::literal::List::Item( std::move( * U ) ) ); delete U; }
 
-            %type dictlist { ast::expr::literal::Dict::Item * }
-            dictlist(A) ::= dictitem(U) dictnextitem(V). { A = U; U->next( V ); }
-            dictlist(A) ::= . { A = nullptr; }
+        %type dictliteral { ast::tools::Hold< ast::expr::literal::Dict > * }
+        dictliteral(A) ::= LBrace dictlist(U) RBrace.
+            { A = new ast::tools::Hold< ast::expr::literal::Dict >( new ast::expr::literal::Dict( std::move( * U ) ) ); delete U; }
 
-                %type dictnextitem { ast::expr::literal::Dict::Item * }
-                dictnextitem(A) ::= Comma dictlist(U). { A = U; }
-                dictnextitem(A) ::= . { A = nullptr; }
+            %type dictlist { ast::tools::List< ast::expr::literal::Dict::Item > * }
+            dictlist(A) ::= dictitem(U) dictnextitem(V).
+                { A = V; A->push_front( std::move( * U ) ); delete U; }
+            dictlist(A) ::= .
+                { A = new ast::tools::List< ast::expr::literal::Dict::Item >( ); }
 
-                %type dictitem { ast::expr::literal::Dict::Item * }
-                dictitem(A) ::= Identifer(U) Colon expression(V). { A = new ast::expr::literal::Dict::Item( U->as< std::string >( ), V ); }
+                %type dictnextitem { ast::tools::List< ast::expr::literal::Dict::Item > * }
+                dictnextitem(A) ::= Comma dictlist(U).
+                    { A = U; }
+                dictnextitem(A) ::= .
+                    { A = new ast::tools::List< ast::expr::literal::Dict::Item >( ); }
 
-        %type functionliteral { ast::expr::literal::Function * }
-        functionliteral(A) ::= Function parameters(U) statementblock(V). { A = new ast::expr::literal::Function( U, V ); }
+                %type dictitem { ast::tools::Hold< ast::expr::literal::Dict::Item > * }
+                dictitem(A) ::= Identifer(U) Colon expression(V).
+                    { A = new ast::tools::Hold< ast::expr::literal::Dict::Item >( new ast::expr::literal::Dict::Item( U->as< std::string >( ), std::move( * V ) ) ); delete U; delete V; }
 
-            %type parameters { ast::expr::literal::Function::Parameter * }
-            parameters(A) ::= LParenthesis parameterlist(U) RParenthesis. { A = U; }
+        %type functionliteral { ast::tools::Hold< ast::expr::literal::Function > * }
+        functionliteral(A) ::= Function parameters(U) statementblock(V).
+            { A = new ast::tools::Hold< ast::expr::literal::Function >( new ast::expr::literal::Function( std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
 
-                %type parameterlist { ast::expr::literal::Function::Parameter * }
-                parameterlist(A) ::= parameteritem(U) parameternextitem(V). { A = U; U->next( V ); }
-                parameterlist(A) ::= . { A = nullptr; }
+            %type parameters { ast::tools::List< ast::expr::literal::Function::Parameter > * }
+            parameters(A) ::= LParenthesis parameterlist(U) RParenthesis.
+                { A = U; }
 
-                    %type parameternextitem { ast::expr::literal::Function::Parameter * }
-                    parameternextitem(A) ::= Comma parameterlist(U). { A = U; }
-                    parameternextitem(A) ::= . { A = nullptr; }
+                %type parameterlist { ast::tools::List< ast::expr::literal::Function::Parameter > * }
+                parameterlist(A) ::= parameteritem(U) parameternextitem(V).
+                    { A = V; A->push_front( std::move( * U ) ); delete U; }
+                parameterlist(A) ::= .
+                    { A = new ast::tools::List< ast::expr::literal::Function::Parameter >( ); }
 
-                    %type parameteritem { ast::expr::literal::Function::Parameter * }
-                    parameteritem(A) ::= Identifier(U). { A = new ast::expr::literal::Function::Parameter( U->as< std::string >( ) ); }
+                    %type parameternextitem { ast::tools::List< ast::expr::literal::Function::Parameter > * }
+                    parameternextitem(A) ::= Comma parameterlist(U).
+                        { A = U; }
+                    parameternextitem(A) ::= .
+                        { A = new ast::tools::List< ast::expr::literal::Function::Parameter >( ); }
 
-        %type classliteral { ast::expr::literal::Class * }
-        classliteral(A) ::= Class classblock(U). { A = new ast::expr::literal::Class( U ); }
+                    %type parameteritem { ast::tools::Hold< ast::expr::literal::Function::Parameter > * }
+                    parameteritem(A) ::= Identifier(U).
+                        { A = new ast::tools::Hold< ast::expr::literal::Function::Parameter >( new ast::expr::literal::Function::Parameter( U->as< std::string >( ) ) ); delete U; }
 
-            %type classblock { ast::expr::literal::Class::Member * }
-            classblock(A) ::= LBrace memberlist(U) RBrace. { A = U; }
+        %type classliteral { ast::tools::Hold< ast::expr::literal::Class > * }
+        classliteral(A) ::= Class classblock(U).
+            { A = new ast::tools::Hold< ast::expr::literal::Class >( new ast::expr::literal::Class( std::move( * U ) ) ); delete U; }
 
-                %type memberlist { ast::expr::literal::Class::Member * }
-                memberlist(A) ::= memberitem(U) memberlist(V). { A = U; U->next( V ); }
-                memberlist(A) ::= . { A = nullptr; }
+            %type classblock { ast::tools::List< ast::expr::literal::Class::Member > * }
+            classblock(A) ::= LBrace memberlist(U) RBrace.
+                { A = U; }
 
-                    %type memberitem { ast::expr::literal::Class::Member * }
-                    memberitem(A) ::= member(U). { A = U; }
+                %type memberlist { ast::tools::List< ast::expr::literal::Class::Member > * }
+                memberlist(A) ::= memberitem(U) memberlist(V).
+                    { A = V; A->push_front( std::move( * U ) ); delete U; }
+                memberlist(A) ::= .
+                    { A = new ast::tools::List< ast::expr::literal::Class::Member >( ); }
 
-                        %type member { ast::expr::literal::Class::Member * }
-                        member(A) ::= attribute(U). { A = U; }
-                        member(A) ::= method(U). { A = U; }
-                        member(A) ::= constructor(U). { A = U; }
-                        member(A) ::= operator(U). { A = U; }
+                    %type memberitem { ast::tools::Hold< ast::expr::literal::Class::Member > * }
+                    memberitem(A) ::= member(U).
+                        { A = U; }
 
-                            %type attribute { ast::expr::literal::Class::Attribute * }
-                            attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Assignment expression(X) Semicolon. { A = new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ), X ); }
-                            attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Semicolon. { A = new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ) ); }
+                        %type member { ast::tools::Hold< ast::expr::literal::Class::Member > * }
+                        member(A) ::= attribute(U).
+                            { A = new ast::tools::Hold< ast::expr::literal::Class::Member >( std::move( * U ) ); delete U; }
+                        member(A) ::= method(U).
+                            { A = new ast::tools::Hold< ast::expr::literal::Class::Member >( std::move( * U ) ); delete U; }
+                        member(A) ::= constructor(U).
+                            { A = new ast::tools::Hold< ast::expr::literal::Class::Member >( std::move( * U ) ); delete U; }
+                        member(A) ::= operator(U).
+                            { A = new ast::tools::Hold< ast::expr::literal::Class::Member >( std::move( * U ) ); delete U; }
 
-                            %type method { ast::expr::literal::Class::Method * }
-                            method(A) ::= visibility(U) storage(V) Function Identifier(W) parameters(X) statementblock(Y). { A = new ast::expr::literal::Class::Method( U, V, W->as< std::string >( ), new ast::expr::literal::Function( X, Y ) ); }
+                            %type attribute { ast::tools::Hold< ast::expr::literal::Class::Attribute > * }
+                            attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Assignment expression(X) Semicolon.
+                                { A = new ast::tools::Hold< ast::expr::literal::Class::Attribute >( new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ), std::move( * X ) ) ); delete W; delete X; }
+                            attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Semicolon.
+                                { A = new ast::tools::Hold< ast::expr::literal::Class::Attribute >( new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ) ) ); delete W; }
 
-                            %type constructor { ast::expr::literal::Class::Constructor * }
-                            constructor(A) ::= visibility(U) Constructor parameters(V) statementblock(W). { A = new ast::expr::literal::Class::Constructor( U, new ast::expr::literal::Function( V, W ) ); }
+                            %type method { ast::tools::Hold< ast::expr::literal::Class::Method > * }
+                            method(A) ::= visibility(U) storage(V) Function Identifier(W) parameters(X) statementblock(Y).
+                                { A = new ast::tools::Hold< ast::expr::literal::Class::Method >( new ast::expr::literal::Class::Method( U, V, W->as< std::string >( ), ast::tools::Hold< ast::expr::literal::Function >( new ast::expr::literal::Function( std::move( * X ), std::move( * Y ) ) ) ) ); delete W; delete X; delete Y; }
 
-                            %type operator { ast::expr::literal::Class::Operator * }
-                            operator(A) ::= visibility Operator parameters statementblock. { A = nullptr; }
+                            %type constructor { ast::tools::Hold< ast::expr::literal::Class::Constructor > * }
+                            constructor(A) ::= visibility(U) Constructor parameters(V) statementblock(W).
+                                { A = new ast::tools::Hold< ast::expr::literal::Class::Constructor >( new ast::expr::literal::Class::Constructor( U, ast::tools::Hold< ast::expr::literal::Function >( new ast::expr::literal::Function( std::move( * V ), std::move( * W ) ) ) ) ); delete V; delete W; }
+
+                            %type operator { ast::tools::Hold< ast::expr::literal::Class::Operator > * }
+                            operator ::= visibility Operator parameters statementblock.
 
                                 %type visibility { ast::expr::literal::Class::Member::Visibility }
                                 visibility(A) ::= Public. { A = ast::expr::literal::Class::Member::Visibility::Public; }
@@ -344,65 +448,100 @@ expression(A) ::= operation(U). { A = U; }
                                 storage(A) ::= Static. { A = ast::expr::literal::Class::Member::Host::Class; }
                                 storage(A) ::= . { A = ast::expr::literal::Class::Member::Host::Instance; }
 
-    %type operation { ast::Expression * }
-    operation(A) ::= unaryoperation(U). { A = U; }
-    operation(A) ::= binaryoperation(U). { A = U; }
-    operation(A) ::= multaryoperation(U). { A = U; }
+    %type operation { ast::tools::Hold< ast::Expression > * }
+    operation(A) ::= unaryoperation(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    operation(A) ::= binaryoperation(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
+    operation(A) ::= multaryoperation(U).
+        { A = new ast::tools::Hold< ast::Expression >( std::move( * U ) ); delete U; }
 
-        %type unaryoperation { ast::Expression * }
-        unaryoperation(A) ::= Not expression(U). { A = new ast::expr::Unary( ast::expr::Unary::Operator::Not, U ); }
+        %type unaryoperation { ast::tools::Hold< ast::expr::Unary > * }
+        unaryoperation(A) ::= Not expression(U).
+            { A = new ast::tools::Hold< ast::expr::Unary >( new ast::expr::Unary( ast::expr::Unary::Operator::Not, std::move( * U ) ) ); delete U; }
 
-        unaryoperation(A) ::= BitwiseNot expression(U). { A = new ast::expr::Unary( ast::expr::Unary::Operator::BitwiseNot, U ); }
+        unaryoperation(A) ::= BitwiseNot expression(U).
+            { A = new ast::tools::Hold< ast::expr::Unary >( new ast::expr::Unary( ast::expr::Unary::Operator::BitwiseNot, std::move( * U ) ) ); delete U; }
 
-        unaryoperation(A) ::= Plus expression(U). [Positive] { A = new ast::expr::Unary( ast::expr::Unary::Operator::Positive, U ); }
-        unaryoperation(A) ::= Minus expression(U). [Negative] { A = new ast::expr::Unary( ast::expr::Unary::Operator::Negative, U ); }
+        unaryoperation(A) ::= Plus expression(U). [Positive]
+            { A = new ast::tools::Hold< ast::expr::Unary >( new ast::expr::Unary( ast::expr::Unary::Operator::Positive, std::move( * U ) ) ); delete U; }
+        unaryoperation(A) ::= Minus expression(U). [Negative]
+            { A = new ast::tools::Hold< ast::expr::Unary >( new ast::expr::Unary( ast::expr::Unary::Operator::Negative, std::move( * U ) ) ); delete U; }
 
-        unaryoperation(A) ::= Incrementation expression(U). [PreIncrementation] { A = new ast::expr::Unary( ast::expr::Unary::Operator::PreIncrementation, U ); }
-        unaryoperation(A) ::= Decrementation expression(U). [PreDecrementation] { A = new ast::expr::Unary( ast::expr::Unary::Operator::PreDecrementation, U ); }
+        unaryoperation(A) ::= Incrementation expression(U). [PreIncrementation]
+            { A = new ast::tools::Hold< ast::expr::Unary >( new ast::expr::Unary( ast::expr::Unary::Operator::PreIncrementation, std::move( * U ) ) ); delete U; }
+        unaryoperation(A) ::= Decrementation expression(U). [PreDecrementation]
+            { A = new ast::tools::Hold< ast::expr::Unary >( new ast::expr::Unary( ast::expr::Unary::Operator::PreDecrementation, std::move( * U ) ) ); delete U; }
 
-        unaryoperation(A) ::= expression(U) Incrementation. [PostIncrementation] { A = new ast::expr::Unary( ast::expr::Unary::Operator::PostIncrementation, U ); }
-        unaryoperation(A) ::= expression(U) Decrementation. [PostDecrementation] { A = new ast::expr::Unary( ast::expr::Unary::Operator::PostDecrementation, U ); }
+        unaryoperation(A) ::= expression(U) Incrementation. [PostIncrementation]
+            { A = new ast::tools::Hold< ast::expr::Unary >( new ast::expr::Unary( ast::expr::Unary::Operator::PostIncrementation, std::move( * U ) ) ); delete U; }
+        unaryoperation(A) ::= expression(U) Decrementation. [PostDecrementation]
+            { A = new ast::tools::Hold< ast::expr::Unary >( new ast::expr::Unary( ast::expr::Unary::Operator::PostDecrementation, std::move( * U ) ) ); delete U; }
 
-        %type binaryoperation { ast::Expression * }
-        binaryoperation(A) ::= expression(U) Plus expression(V). [Addition] { A = new ast::expr::Binary( ast::expr::Binary::Operator::Addition, U, V ); }
-        binaryoperation(A) ::= expression(U) Minus expression(V). [Substraction] { A = new ast::expr::Binary( ast::expr::Binary::Operator::Substraction, U, V ); }
-        binaryoperation(A) ::= expression(U) Multiplication expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Multiplication, U, V ); }
-        binaryoperation(A) ::= expression(U) Division expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Division, U, V ); }
-        binaryoperation(A) ::= expression(U) Modulo expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Modulo, U, V ); }
+        %type binaryoperation { ast::tools::Hold< ast::expr::Binary > * }
+        binaryoperation(A) ::= expression(U) Plus expression(V). [Addition]
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Addition, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) Minus expression(V). [Substraction]
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Substraction, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) Multiplication expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Multiplication, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) Division expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Division, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) Modulo expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Modulo, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
 
-        binaryoperation(A) ::= expression(U) Lesser expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Lesser, U, V ); }
-        binaryoperation(A) ::= expression(U) Greater expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Greater, U, V ); }
-        binaryoperation(A) ::= expression(U) LesserOrEqual expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::LesserOrEqual, U, V ); }
-        binaryoperation(A) ::= expression(U) GreaterOrEqual expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::GreaterOrEqual, U, V ); }
-        binaryoperation(A) ::= expression(U) Equal expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Equal, U, V ); }
-        binaryoperation(A) ::= expression(U) NotEqual expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::NotEqual, U, V ); }
+        binaryoperation(A) ::= expression(U) Lesser expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Lesser, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) Greater expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Greater, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) LesserOrEqual expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::LesserOrEqual, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) GreaterOrEqual expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::GreaterOrEqual, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) Equal expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Equal, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) NotEqual expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::NotEqual, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
 
-        binaryoperation(A) ::= expression(U) LeftShift expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::LeftShift, U, V ); }
-        binaryoperation(A) ::= expression(U) RightShift expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::RightShift, U, V ); }
-        binaryoperation(A) ::= expression(U) BitwiseAnd expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseAnd, U, V ); }
-        binaryoperation(A) ::= expression(U) BitwiseOr expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseOr, U, V ); }
-        binaryoperation(A) ::= expression(U) BitwiseXOr expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseXOr, U, V ); }
+        binaryoperation(A) ::= expression(U) LeftShift expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::LeftShift, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) RightShift expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::RightShift, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) BitwiseAnd expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseAnd, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) BitwiseOr expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseOr, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
+        binaryoperation(A) ::= expression(U) BitwiseXOr expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::BitwiseXOr, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
 
-        binaryoperation(A) ::= expression(U) Dot Identifier(V). [Member] { A = new ast::expr::Binary( ast::expr::Binary::Operator::Member, U, new ast::expr::literal::String( V->as< std::string >( ) ) ); }
+        binaryoperation(A) ::= expression(U) Dot Identifier(V). [Member]
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Member, std::move( * U ), ast::tools::Hold< ast::expr::literal::String >( new ast::expr::literal::String( V->as< std::string >( ) ) ) ) ); delete U; delete V; }
 
-        binaryoperation(A) ::= expression(U) Assignment expression(V). { A = new ast::expr::Binary( ast::expr::Binary::Operator::Assignment, U, V ); }
+        binaryoperation(A) ::= expression(U) Assignment expression(V).
+            { A = new ast::tools::Hold< ast::expr::Binary >( new ast::expr::Binary( ast::expr::Binary::Operator::Assignment, std::move( * U ), std::move( * V ) ) ); delete U; delete V; }
 
-        %type multaryoperation { ast::Expression * }
-        multaryoperation(A) ::= expression(U) LBracket expression(V) RBracket. [Subscript] { A = new ast::expr::Multary( ast::expr::Multary::Operator::Subscript, U ); U->next( V ); }
-        multaryoperation(A) ::= expression(U) arguments(V). [Call] { A = new ast::expr::Multary( ast::expr::Multary::Operator::Call, U ); U->next( V ); }
-        multaryoperation(A) ::= New expression(U) arguments(V). [New] { A = new ast::expr::Multary( ast::expr::Multary::Operator::New, U ); U->next( V ); }
-        multaryoperation(A) ::= Require expression(U) arguments(V). [Require] { A = new ast::expr::Multary( ast::expr::Multary::Operator::Require, U ); U->next( V ); }
+        %type multaryoperation { ast::tools::Hold< ast::expr::Multary > * }
+        multaryoperation(A) ::= expression(U) LBracket arguments(V) RBracket. [Subscript]
+            { A = new ast::tools::Hold< ast::expr::Multary >( new ast::expr::Multary( ast::expr::Multary::Operator::Call, std::move( * V ) ) ); ( * A )->operands( ).push_front( std::move( * U ) ); delete U; }
+        multaryoperation(A) ::= expression(U) LParenthesis arguments(V) RParenthesis. [Call]
+            { A = new ast::tools::Hold< ast::expr::Multary >( new ast::expr::Multary( ast::expr::Multary::Operator::Call, std::move( * V ) ) ); ( * A )->operands( ).push_front( std::move( * U ) ); delete U; }
+        multaryoperation(A) ::= New expression(U) LParenthesis arguments(V) RParenthesis. [New]
+            { A = new ast::tools::Hold< ast::expr::Multary >( new ast::expr::Multary( ast::expr::Multary::Operator::New, std::move( * V ) ) ); ( * A )->operands( ).push_front( std::move( * U ) ); delete U; }
+        multaryoperation(A) ::= Require expression(U) LParenthesis arguments(V) RParenthesis. [Require]
+            { A = new ast::tools::Hold< ast::expr::Multary >( new ast::expr::Multary( ast::expr::Multary::Operator::Require, std::move( * V ) ) ); ( * A )->operands( ).push_front( std::move( * U ) ); delete U; }
 
-            %type arguments { ast::Expression * }
-            arguments(A) ::= LParenthesis argumentlist(U) RParenthesis. { A = U; }
+            %type arguments { ast::tools::List< ast::Expression > * }
+            arguments(A) ::= argument(U) argumentnext(V).
+                { A = V; A->push_front( std::move( * U ) ); delete U; }
+            arguments(A) ::= .
+                { A = new ast::tools::List< ast::Expression >( ); }
 
-                %type argumentlist { ast::Expression * }
-                argumentlist(A) ::= argumentfirst(U) argumentnext(V). { A = U; U->next( V ); }
-                argumentlist(A) ::= argumentnext(U). { A = U; }
+                %type argumentnext { ast::tools::List< ast::Expression > * }
+                argumentnext(A) ::= Comma argument(U) argumentnext(V).
+                    { A = V; A->push_front( std::move( * U ) ); delete U; }
+                argumentnext(A) ::= .
+                    { A = new ast::tools::List< ast::Expression >( ); }
 
-                    %type argumentfirst { ast::Expression * }
-                    argumentfirst(A) ::= expression(U). { A = U; }
-
-                    %type argumentnext { ast::Expression * }
-                    argumentnext(A) ::= Comma expression(U) argumentnext(V). { A = U; U->next( V ); }
-                    argumentnext(A) ::= . { A = nullptr; }
+                %type argument { ast::tools::Hold< ast::Expression > * }
+                argument(A) ::= expression(U).
+                    { A = U; }

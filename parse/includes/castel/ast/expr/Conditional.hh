@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Expression.hh"
 
 namespace castel
@@ -9,6 +10,15 @@ namespace castel
 
     namespace ast
     {
+
+        namespace tools
+        {
+
+            class ConstVisitor;
+
+            class Visitor;
+
+        }
 
         namespace expr
         {
@@ -18,43 +28,45 @@ namespace castel
 
             public:
 
-                inline Conditional( ast::Expression * condition, ast::Expression * thenExpression, ast::Expression * elseExpression );
+                inline Conditional( ast::tools::Hold< ast::Expression > && condition, ast::tools::Hold< ast::Expression > && thenExpression, ast::tools::Hold< ast::Expression > && elseExpression );
 
             public:
 
-                inline ast::Expression * condition( void ) const;
+                inline ast::tools::Hold< ast::Expression > const & condition( void ) const;
 
-                inline Conditional & condition( ast::Expression * condition );
+                inline ast::tools::Hold< ast::Expression > & condition( void );
 
-                inline ast::Expression * takeCondition( void );
-
-            public:
-
-                inline ast::Expression * thenExpression( void ) const;
-
-                inline Conditional & thenExpression( ast::Expression * thenExpression );
-
-                inline ast::Expression * takeThenExpression( void );
+                inline Conditional & condition( ast::tools::Hold< ast::Expression > && condition );
 
             public:
 
-                inline ast::Expression * elseExpression( void ) const;
+                inline ast::tools::Hold< ast::Expression > const & thenExpression( void ) const;
 
-                inline Conditional & elseExpression( ast::Expression * elseExpression );
+                inline ast::tools::Hold< ast::Expression > & thenExpression( void );
 
-                inline ast::Expression * takeElseExpression( void );
+                inline Conditional & thenExpression( ast::tools::Hold< ast::Expression > && thenExpression );
 
             public:
+
+                inline ast::tools::Hold< ast::Expression > const & elseExpression( void ) const;
+
+                inline ast::tools::Hold< ast::Expression > & elseExpression( void );
+
+                inline Conditional & elseExpression( ast::tools::Hold< ast::Expression > && elseExpression );
+
+            public:
+
+                virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                 virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
-                std::unique_ptr< ast::Expression > mCondition;
+                ast::tools::Hold< ast::Expression > mCondition;
 
-                std::unique_ptr< ast::Expression > mThenExpression;
+                ast::tools::Hold< ast::Expression > mThenExpression;
 
-                std::unique_ptr< ast::Expression > mElseExpression;
+                ast::tools::Hold< ast::Expression > mElseExpression;
 
             };
 
@@ -64,6 +76,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -75,62 +88,67 @@ namespace castel
         namespace expr
         {
 
-            Conditional::Conditional( ast::Expression * condition, ast::Expression * thenExpression, ast::Expression * elseExpression )
-                : mCondition( condition )
-                , mThenExpression( thenExpression )
-                , mElseExpression( elseExpression )
+            Conditional::Conditional( ast::tools::Hold< ast::Expression > && condition, ast::tools::Hold< ast::Expression > && thenExpression, ast::tools::Hold< ast::Expression > && elseExpression )
+                : mCondition( std::move( condition ) )
+                , mThenExpression( std::move( thenExpression ) )
+                , mElseExpression( std::move( elseExpression ) )
             {
             }
 
-            ast::Expression * Conditional::condition( void ) const
+            ast::tools::Hold< ast::Expression > const & Conditional::condition( void ) const
             {
-                return mCondition.get( );
+                return mCondition;
             }
 
-            Conditional & Conditional::condition( ast::Expression * condition )
+            ast::tools::Hold< ast::Expression > & Conditional::condition( void )
             {
-                mCondition.reset( condition );
+                return mCondition;
+            }
+
+            Conditional & Conditional::condition( ast::tools::Hold< ast::Expression > && condition )
+            {
+                mCondition = std::move( condition );
 
                 return * this;
             }
 
-            ast::Expression * Conditional::takeCondition( void )
+            ast::tools::Hold< ast::Expression > const & Conditional::thenExpression( void ) const
             {
-                return mCondition.release( );
+                return mThenExpression;
             }
 
-            ast::Expression * Conditional::thenExpression( void ) const
+            ast::tools::Hold< ast::Expression > & Conditional::thenExpression( void )
             {
-                return mThenExpression.get( );
+                return mThenExpression;
             }
 
-            Conditional & Conditional::thenExpression( ast::Expression * thenExpression )
+            Conditional & Conditional::thenExpression( ast::tools::Hold< ast::Expression > && thenExpression )
             {
-                mThenExpression.reset( thenExpression );
+                mThenExpression = std::move( thenExpression );
 
                 return * this;
             }
 
-            ast::Expression * Conditional::takeThenExpression( void )
+            ast::tools::Hold< ast::Expression > const & Conditional::elseExpression( void ) const
             {
-                return mThenExpression.release( );
+                return mElseExpression;
             }
 
-            ast::Expression * Conditional::elseExpression( void ) const
+            ast::tools::Hold< ast::Expression > & Conditional::elseExpression( void )
             {
-                return mElseExpression.get( );
+                return mElseExpression;
             }
 
-            Conditional & Conditional::elseExpression( ast::Expression * elseExpression )
+            Conditional & Conditional::elseExpression( ast::tools::Hold< ast::Expression > && elseExpression )
             {
-                mElseExpression.reset( elseExpression );
+                mElseExpression = std::move( elseExpression );
 
                 return * this;
             }
 
-            ast::Expression * Conditional::takeElseExpression( void )
+            void Conditional::accept( ast::tools::ConstVisitor & visitor ) const
             {
-                return mElseExpression.release( );
+                visitor.visit( * this );
             }
 
             void Conditional::accept( ast::tools::Visitor & visitor )

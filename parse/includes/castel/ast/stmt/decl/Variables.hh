@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <string>
+#include <utility>
 
-#include "castel/ast/tools/Linked.hh"
+#include "castel/ast/tools/Hold.hh"
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Statement.hh"
 
 namespace castel
@@ -14,6 +15,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -32,56 +35,62 @@ namespace castel
 
                 public:
 
-                    class Variable;
+                    class Item;
 
                 public:
 
-                    inline Variables( ast::stmt::decl::Variables::Variable * variables );
+                    inline Variables( void );
+
+                    inline Variables( ast::tools::List< ast::stmt::decl::Variables::Item > && variables );
 
                 public:
 
-                    inline ast::stmt::decl::Variables::Variable * variables( void ) const;
+                    inline ast::tools::List< ast::stmt::decl::Variables::Item > const & variables( void ) const;
 
-                    inline Variables & variables( ast::stmt::decl::Variables::Variable * variables );
+                    inline ast::tools::List< ast::stmt::decl::Variables::Item > & variables( void );
 
-                    inline ast::stmt::decl::Variables::Variable * takeVariables( void );
+                    inline Variables & variables( ast::tools::List< ast::stmt::decl::Variables::Item > && variables );
 
                 public:
+
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
                 private:
 
-                    std::unique_ptr< ast::stmt::decl::Variables::Variable > mVariables;
+                    ast::tools::List< ast::stmt::decl::Variables::Item > mVariables;
 
                 };
 
-                class Variables::Variable : public ast::tools::Linked< Variable >
+                class Variables::Item
                 {
 
                 public:
 
-                    inline Variable( std::string const & name, ast::Expression * initializer = nullptr );
+                    inline Item( std::string const & name );
+
+                    inline Item( std::string const & name, ast::tools::Hold< ast::Expression > && initializer );
 
                 public:
 
                     inline std::string const & name( void ) const;
 
-                    inline Variable & name( std::string const & name );
+                    inline Item & name( std::string const & name );
 
                 public:
 
-                    inline ast::Expression * initializer( void ) const;
+                    inline ast::tools::Hold< ast::Expression > const & initializer( void ) const;
 
-                    inline Variable & initializer( ast::Expression * initializer );
+                    inline ast::tools::Hold< ast::Expression > & initializer( void );
 
-                    inline ast::Expression * takeInitializer( void );
+                    inline Item & initializer( ast::tools::Hold< ast::Expression > && initializer );
 
                 private:
 
                     std::string mName;
 
-                    std::unique_ptr< ast::Expression > mInitializer;
+                    ast::tools::Hold< ast::Expression > mInitializer;
 
                 };
 
@@ -93,6 +102,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 #include "castel/ast/Expression.hh"
 
@@ -108,61 +118,76 @@ namespace castel
             namespace decl
             {
 
-                Variables::Variable::Variable( std::string const & name, ast::Expression * initializer )
+                Variables::Item::Item( std::string const & name )
                     : mName( name )
-                    , mInitializer( initializer )
                 {
                 }
 
-                std::string const & Variables::Variable::name( void ) const
+                Variables::Item::Item( std::string const & name, ast::tools::Hold< ast::Expression > && initializer )
+                    : mName( name )
+                    , mInitializer( std::move( initializer ) )
+                {
+                }
+
+                std::string const & Variables::Item::name( void ) const
                 {
                     return mName;
                 }
 
-                Variables::Variable & Variables::Variable::name( std::string const & name )
+                Variables::Item & Variables::Item::name( std::string const & name )
                 {
                     mName = name;
 
                     return * this;
                 }
 
-                ast::Expression * Variables::Variable::initializer( void ) const
+                ast::tools::Hold< ast::Expression > const & Variables::Item::initializer( void ) const
                 {
-                    return mInitializer.get( );
+                    return mInitializer;
                 }
 
-                Variables::Variable & Variables::Variable::initializer( ast::Expression * initializer )
+                ast::tools::Hold< ast::Expression > & Variables::Item::initializer( void )
                 {
-                    mInitializer.reset( initializer );
+                    return mInitializer;
+                }
+
+                Variables::Item & Variables::Item::initializer( ast::tools::Hold< ast::Expression > && initializer )
+                {
+                    mInitializer = std::move( initializer );
 
                     return * this;
                 }
 
-                ast::Expression * Variables::Variable::takeInitializer( void )
-                {
-                    return mInitializer.release( );
-                }
-
-                Variables::Variables( ast::stmt::decl::Variables::Variable * variables )
-                    : mVariables( variables )
+                Variables::Variables( void )
+                    : mVariables( )
                 {
                 }
 
-                ast::stmt::decl::Variables::Variable * Variables::variables( void ) const
+                Variables::Variables( ast::tools::List< ast::stmt::decl::Variables::Item > && variables )
+                    : mVariables( std::move( variables ) )
                 {
-                    return mVariables.get( );
                 }
 
-                Variables & Variables::variables( ast::stmt::decl::Variables::Variable * variables )
+                ast::tools::List< ast::stmt::decl::Variables::Item > const & Variables::variables( void ) const
                 {
-                    mVariables.reset( variables );
+                    return mVariables;
+                }
+
+                ast::tools::List< ast::stmt::decl::Variables::Item > & Variables::variables( void )
+                {
+                    return mVariables;
+                }
+
+                Variables & Variables::variables( ast::tools::List< ast::stmt::decl::Variables::Item > && variables )
+                {
+                    mVariables = std::move( variables );
 
                     return * this;
                 }
 
-                ast::stmt::decl::Variables::Variable * Variables::takeVariables( void )
+                void Variables::accept( ast::tools::ConstVisitor & visitor ) const
                 {
-                    return mVariables.release( );
+                    visitor.visit( * this );
                 }
 
                 void Variables::accept( ast::tools::Visitor & visitor )

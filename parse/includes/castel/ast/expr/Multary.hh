@@ -1,8 +1,9 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
 #include "castel/ast/Expression.hh"
+#include "castel/ast/tools/List.hh"
 
 namespace castel
 {
@@ -12,6 +13,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -38,7 +41,9 @@ namespace castel
 
             public:
 
-                inline Multary( ast::expr::Multary::Operator type, ast::Expression * operands );
+                inline Multary( ast::expr::Multary::Operator type );
+
+                inline Multary( ast::expr::Multary::Operator type, ast::tools::List< ast::Expression > && container );
 
             public:
 
@@ -48,20 +53,23 @@ namespace castel
 
             public:
 
-                inline ast::Expression * operands( void ) const;
+                inline ast::tools::List< ast::Expression > const & operands( void ) const;
 
-                inline Multary & operands( ast::Expression * operands );
+                inline ast::tools::List< ast::Expression > & operands( void );
 
-                inline ast::Expression * takeOperands( void );
+                inline Multary & operands( ast::tools::List< ast::Expression > && operands );
 
             public:
+
+                virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                 virtual inline void accept( ast::tools::Visitor & visitor );
 
             private:
 
                 ast::expr::Multary::Operator mType;
-                std::unique_ptr< ast::Expression > mOperands;
+
+                ast::tools::List< ast::Expression > mOperands;
 
             };
 
@@ -71,6 +79,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -82,9 +91,15 @@ namespace castel
         namespace expr
         {
 
-            Multary::Multary( ast::expr::Multary::Operator type, ast::Expression * operands )
+            Multary::Multary( ast::expr::Multary::Operator type )
                 : mType( type )
-                , mOperands( operands )
+                , mOperands( )
+            {
+            }
+
+            Multary::Multary( ast::expr::Multary::Operator type, ast::tools::List< ast::Expression > && operands )
+                : mType( type )
+                , mOperands( std::move( operands ) )
             {
             }
 
@@ -100,21 +115,26 @@ namespace castel
                 return * this;
             }
 
-            ast::Expression * Multary::operands( void ) const
+            ast::tools::List< ast::Expression > const & Multary::operands( void ) const
             {
-                return mOperands.get( );
+                return mOperands;
             }
 
-            Multary & Multary::operands( ast::Expression * operands )
+            ast::tools::List< ast::Expression > & Multary::operands( void )
             {
-                mOperands.reset( operands );
+                return mOperands;
+            }
+
+            Multary & Multary::operands( ast::tools::List< ast::Expression > && operands )
+            {
+                mOperands = std::move( operands );
 
                 return * this;
             }
 
-            ast::Expression * Multary::takeOperands( void )
+            void Multary::accept( ast::tools::ConstVisitor & visitor ) const
             {
-                return mOperands.release( );
+                visitor.visit( * this );
             }
 
             void Multary::accept( ast::tools::Visitor & visitor )

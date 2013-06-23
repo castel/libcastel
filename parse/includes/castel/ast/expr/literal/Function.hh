@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "castel/ast/tools/Linked.hh"
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Expression.hh"
 
 namespace castel
@@ -14,6 +14,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -36,36 +38,39 @@ namespace castel
 
                 public:
 
-                    inline Function( ast::expr::literal::Function::Parameter * parameters, ast::Statement * statements );
+                    inline Function( ast::tools::List< ast::expr::literal::Function::Parameter > && parameters, ast::tools::List< ast::Statement > && statements );
 
                 public:
 
-                    inline ast::expr::literal::Function::Parameter * parameters( void ) const;
+                    inline ast::tools::List< ast::expr::literal::Function::Parameter > const & parameters( void ) const;
 
-                    inline Function & parameters( ast::expr::literal::Function::Parameter * parameters );
+                    inline ast::tools::List< ast::expr::literal::Function::Parameter > & parameters( void );
 
-                    inline ast::expr::literal::Function::Parameter * takeParameters( void );
+                    inline Function & parameters( ast::tools::List< ast::expr::literal::Function::Parameter > && parameters );
+
+                public:
+
+                    inline ast::tools::List< ast::Statement > const & statements( void ) const;
+
+                    inline ast::tools::List< ast::Statement > & statements( void );
+
+                    inline Function & statements( ast::tools::List< ast::Statement > && statements );
 
                 public:
 
-                    inline ast::Statement * statements( void ) const;
-
-                    inline Function & statements( ast::Statement * statements );
-
-                    inline ast::Statement * takeStatements( void );
-
-                public:
+                    inline virtual void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     inline virtual void accept( ast::tools::Visitor & visitor );
 
                 private:
 
-                    std::unique_ptr< ast::expr::literal::Function::Parameter > mParameters;
-                    std::unique_ptr< ast::Statement > mStatements;
+                    ast::tools::List< ast::expr::literal::Function::Parameter > mParameters;
+
+                    ast::tools::List< ast::Statement > mStatements;
 
                 };
 
-                class Function::Parameter : public ast::tools::Linked< Function::Parameter >
+                class Function::Parameter
                 {
 
                 public:
@@ -92,6 +97,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -123,44 +129,49 @@ namespace castel
                     return * this;
                 }
 
-                Function::Function( ast::expr::literal::Function::Parameter * parameters, ast::Statement * statements )
-                    : mParameters( parameters )
-                    , mStatements( statements )
+                Function::Function( ast::tools::List< ast::expr::literal::Function::Parameter > && parameters, ast::tools::List< ast::Statement > && statements )
+                    : mParameters( std::move( parameters ) )
+                    , mStatements( std::move( statements ) )
                 {
                 }
 
-                ast::expr::literal::Function::Parameter * Function::parameters( void ) const
+                ast::tools::List< ast::expr::literal::Function::Parameter > const & Function::parameters( void ) const
                 {
-                    return mParameters.get( );
+                    return mParameters;
                 }
 
-                Function & Function::parameters( ast::expr::literal::Function::Parameter * parameters )
+                ast::tools::List< ast::expr::literal::Function::Parameter > & Function::parameters( void )
                 {
-                    mParameters.reset( parameters );
+                    return mParameters;
+                }
+
+                Function & Function::parameters( ast::tools::List< ast::expr::literal::Function::Parameter > && parameters )
+                {
+                    mParameters = std::move( parameters );
 
                     return * this;
                 }
 
-                ast::expr::literal::Function::Parameter * Function::takeParameters( void )
+                ast::tools::List< ast::Statement > const & Function::statements( void ) const
                 {
-                    return mParameters.release( );
+                    return mStatements;
                 }
 
-                ast::Statement * Function::statements( void ) const
+                ast::tools::List< ast::Statement > & Function::statements( void )
                 {
-                    return mStatements.get( );
+                    return mStatements;
                 }
 
-                Function & Function::statements( ast::Statement * statements )
+                Function & Function::statements( ast::tools::List< ast::Statement > && statements )
                 {
-                    mStatements.reset( statements );
+                    mStatements = std::move( statements );
 
                     return * this;
                 }
 
-                ast::Statement * Function::takeStatements( void )
+                void Function::accept( ast::tools::ConstVisitor & visitor ) const
                 {
-                    return mStatements.release( );
+                    visitor.visit( * this );
                 }
 
                 void Function::accept( ast::tools::Visitor & visitor )

@@ -43,9 +43,9 @@ namespace castel
 
         public:
 
-            inline ast::Statement * statements( void ) const;
+            inline ast::tools::List< ast::Statement > const * statements( void ) const;
 
-            inline ModuleBuilder & statements( ast::Statement * statements );
+            inline ModuleBuilder & statements( ast::tools::List< ast::Statement > const * statements );
 
         public:
 
@@ -57,7 +57,7 @@ namespace castel
 
             std::list< std::string > mGlobals;
 
-            ast::Statement * mStatements;
+            ast::tools::List< ast::Statement > const * mStatements;
 
         };
 
@@ -109,12 +109,12 @@ namespace castel
             return * this;
         }
 
-        ast::Statement * ModuleBuilder::statements( void ) const
+        ast::tools::List< ast::Statement > const * ModuleBuilder::statements( void ) const
         {
             return mStatements;
         }
 
-        ModuleBuilder & ModuleBuilder::statements( ast::Statement * statements )
+        ModuleBuilder & ModuleBuilder::statements( ast::tools::List< ast::Statement > const * statements )
         {
             mStatements = statements;
 

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
-#include "castel/ast/tools/Linked.hh"
+#include "castel/ast/tools/Hold.hh"
+#include "castel/ast/tools/List.hh"
 #include "castel/ast/Expression.hh"
 
 namespace castel
@@ -13,6 +14,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -33,44 +36,48 @@ namespace castel
 
                 public:
 
-                    inline List( ast::expr::literal::List::Item * items );
+                    inline List( void );
+
+                    inline List( ast::tools::List< ast::expr::literal::List::Item > && items );
 
                 public:
 
-                    inline ast::expr::literal::List::Item * items( void ) const;
+                    inline ast::tools::List< ast::expr::literal::List::Item > const & items( void ) const;
 
-                    inline List & items( ast::expr::literal::List::Item * items );
+                    inline ast::tools::List< ast::expr::literal::List::Item > & items( void );
 
-                    inline ast::expr::literal::List::Item * takeItems( void );
+                    inline List & items( ast::tools::List< ast::expr::literal::List::Item > && items );
 
                 public:
+
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
                 private:
 
-                    std::unique_ptr< ast::expr::literal::List::Item > mItems;
+                    ast::tools::List< ast::expr::literal::List::Item > mItems;
 
                 };
 
-                class List::Item : public ast::tools::Linked< List::Item >
+                class List::Item
                 {
 
                 public:
 
-                    inline Item( ast::Expression * value );
+                    inline Item( ast::tools::Hold< ast::Expression > && value );
 
                 public:
 
-                    inline ast::Expression * value( void ) const;
+                    inline ast::tools::Hold< ast::Expression > const & value( void ) const;
 
-                    inline Item & value( ast::Expression * value );
+                    inline ast::tools::Hold< ast::Expression > & value( void );
 
-                    inline ast::Expression * takeValue( void );
+                    inline Item & value( ast::tools::Hold< ast::Expression > && value );
 
                 private:
 
-                    std::unique_ptr< ast::Expression > mValue;
+                    ast::tools::Hold< ast::Expression > mValue;
 
                 };
 
@@ -82,6 +89,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -96,48 +104,58 @@ namespace castel
             namespace literal
             {
 
-                List::Item::Item( ast::Expression * value )
-                    : mValue( value )
+                List::Item::Item( ast::tools::Hold< ast::Expression > && value )
+                    : mValue( std::move( value ) )
                 {
                 }
 
-                ast::Expression * List::Item::value( void ) const
+                ast::tools::Hold< ast::Expression > const & List::Item::value( void ) const
                 {
-                    return mValue.get( );
+                    return mValue;
                 }
 
-                List::Item & List::Item::value( ast::Expression * value )
+                ast::tools::Hold< ast::Expression > & List::Item::value( void )
                 {
-                    mValue.reset( value );
+                    return mValue;
+                }
+
+                List::Item & List::Item::value( ast::tools::Hold< ast::Expression > && value )
+                {
+                    mValue = std::move( value );
 
                     return * this;
                 }
 
-                ast::Expression * List::Item::takeValue( void )
-                {
-                    return mValue.release( );
-                }
-
-                List::List( ast::expr::literal::List::Item * items )
-                    : mItems( items )
+                List::List( void )
+                    : mItems( )
                 {
                 }
 
-                ast::expr::literal::List::Item * List::items( void ) const
+                List::List( ast::tools::List< ast::expr::literal::List::Item > && items )
+                    : mItems( std::move( items ) )
                 {
-                    return mItems.get( );
                 }
 
-                List & List::items( ast::expr::literal::List::Item * items )
+                ast::tools::List< ast::expr::literal::List::Item > const & List::items( void ) const
                 {
-                    mItems.reset( items );
+                    return mItems;
+                }
+
+                ast::tools::List< ast::expr::literal::List::Item > & List::items( void )
+                {
+                    return mItems;
+                }
+
+                List & List::items( ast::tools::List< ast::expr::literal::List::Item > && items )
+                {
+                    mItems = std::move( items );
 
                     return * this;
                 }
 
-                ast::expr::literal::List::Item * List::takeItems( void )
+                void List::accept( ast::tools::ConstVisitor & visitor ) const
                 {
-                    return mItems.release( );
+                    visitor.visit( * this );
                 }
 
                 void List::accept( ast::tools::Visitor & visitor )

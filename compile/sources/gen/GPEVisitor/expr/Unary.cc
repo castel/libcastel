@@ -3,6 +3,7 @@
 #include <llvm/Value.h>
 
 #include "castel/ast/expr/Unary.hh"
+#include "castel/ast/tools/Hold.hh"
 #include "castel/gen/helper/call.hh"
 #include "castel/gen/GPEVisitor.hh"
 
@@ -25,12 +26,12 @@ static std::map< ast::expr::Unary::Operator, char const * > const operatorsTable
 
 };
 
-void GPEVisitor::visit( ast::expr::Unary & unaryExpressionAst )
+void GPEVisitor::visit( ast::expr::Unary const & unaryExpressionAst )
 {
-    ast::Expression * operandAst = unaryExpressionAst.operand( );
+    ast::tools::Hold< ast::Expression > const & operandAst = unaryExpressionAst.operand( );
 
-    if ( operandAst == nullptr )
-        throw std::runtime_error( "Missing operand" );
+    if ( operandAst )
+        throw std::runtime_error( "Unary operators must have an operand when built as general purpose expressions" );
 
     llvm::Value * operand = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * operandAst );
     mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, operatorsTable.at( unaryExpressionAst.type( ) ), operand );

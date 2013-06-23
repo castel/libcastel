@@ -6,7 +6,7 @@
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::literal::String & stringLiteralAst )
+void GPEVisitor::visit( ast::expr::literal::String const & stringLiteralAst )
 {
     mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_String_create",
         gen::helper::string( mIRBuilder, stringLiteralAst.value( ) ) );

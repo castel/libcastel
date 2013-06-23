@@ -6,12 +6,12 @@
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::literal::Class & classLiteralAst )
+void GPEVisitor::visit( ast::expr::literal::Class const & classLiteralAst )
 {
-    ast::Expression * parent = classLiteralAst.parent( );
+    ast::tools::Hold< ast::Expression > const & parent = classLiteralAst.parent( );
 
     mLastReturnedValue = gen::ClassBuilder( "literal" )
-        .parent( parent != nullptr ? gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * parent ) : nullptr )
-        .members( classLiteralAst.members( ) )
+        .parent( parent ? gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * parent ) : nullptr )
+        .members( & classLiteralAst.members( ) )
     .build( mContext, mModule, mIRBuilder, mScope );
 }

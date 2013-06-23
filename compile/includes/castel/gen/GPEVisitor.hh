@@ -62,7 +62,7 @@ namespace castel
 
         class Scope;
 
-        class GPEVisitor : public ast::tools::Visitor
+        class GPEVisitor : public ast::tools::ConstVisitor
         {
 
         public:
@@ -75,37 +75,37 @@ namespace castel
 
         public:
 
-            inline llvm::Value * run( ast::Token & token );
+            inline llvm::Value * run( ast::Token const & token );
 
         public:
 
-            virtual void visit( ast::expr::literal::Boolean & boolLiteralAst );
+            virtual void visit( ast::expr::literal::Boolean const & boolLiteralAst );
 
-            virtual void visit( ast::expr::literal::Class & classLiteralAst );
+            virtual void visit( ast::expr::literal::Class const & classLiteralAst );
 
-            virtual void visit( ast::expr::literal::Dict & dictLiteralAst );
+            virtual void visit( ast::expr::literal::Dict const & dictLiteralAst );
 
-            virtual void visit( ast::expr::literal::Function & functionLiteralAst );
+            virtual void visit( ast::expr::literal::Function const & functionLiteralAst );
 
-            virtual void visit( ast::expr::literal::List & listLiteralAst );
+            virtual void visit( ast::expr::literal::List const & listLiteralAst );
 
-            virtual void visit( ast::expr::literal::Null & nullLiteralAst );
+            virtual void visit( ast::expr::literal::Null const & nullLiteralAst );
 
-            virtual void visit( ast::expr::literal::Number & numberLiteralAst );
+            virtual void visit( ast::expr::literal::Number const & numberLiteralAst );
 
-            virtual void visit( ast::expr::literal::String & stringLiteralAst );
+            virtual void visit( ast::expr::literal::String const & stringLiteralAst );
 
-            virtual void visit( ast::expr::literal::Undefined & undefinedLiteralAst );
+            virtual void visit( ast::expr::literal::Undefined const & undefinedLiteralAst );
 
-            virtual void visit( ast::expr::Binary & binaryExpressionAst );
+            virtual void visit( ast::expr::Binary const & binaryExpressionAst );
 
-            virtual void visit( ast::expr::External & externalExpressionAst );
+            virtual void visit( ast::expr::External const & externalExpressionAst );
 
-            virtual void visit( ast::expr::Multary & multaryExpressionAst );
+            virtual void visit( ast::expr::Multary const & multaryExpressionAst );
 
-            virtual void visit( ast::expr::Unary & unaryExpressionAst );
+            virtual void visit( ast::expr::Unary const & unaryExpressionAst );
 
-            virtual void visit( ast::expr::Variable & variableExpressionAst );
+            virtual void visit( ast::expr::Variable const & variableExpressionAst );
 
         private:
 
@@ -163,7 +163,7 @@ namespace castel
             return mLastReturnedValue;
         }
 
-        llvm::Value * GPEVisitor::run( ast::Token & token )
+        llvm::Value * GPEVisitor::run( ast::Token const & token )
         {
             token.accept( * this );
 

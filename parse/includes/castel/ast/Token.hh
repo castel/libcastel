@@ -9,6 +9,8 @@ namespace castel
         namespace tools
         {
 
+            class ConstVisitor;
+
             class Visitor;
 
         }
@@ -21,6 +23,8 @@ namespace castel
             virtual ~Token( void ) {}
 
         public:
+
+            virtual void accept( ast::tools::ConstVisitor & visitor ) const = 0;
 
             virtual void accept( ast::tools::Visitor & visitor ) = 0;
 

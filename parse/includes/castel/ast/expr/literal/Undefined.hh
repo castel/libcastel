@@ -8,6 +8,15 @@ namespace castel
     namespace ast
     {
 
+        namespace tools
+        {
+
+            class ConstVisitor;
+
+            class Visitor;
+
+        }
+
         namespace expr
         {
 
@@ -23,6 +32,8 @@ namespace castel
 
                 public:
 
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
+
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
                 };
@@ -35,6 +46,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -51,6 +63,11 @@ namespace castel
 
                 Undefined::Undefined( void )
                 {
+                }
+
+                void Undefined::accept( ast::tools::ConstVisitor & visitor ) const
+                {
+                    visitor.visit( * this );
                 }
 
                 void Undefined::accept( ast::tools::Visitor & visitor )

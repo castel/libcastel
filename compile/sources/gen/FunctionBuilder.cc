@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <vector>
 
 #include <llvm/IRBuilder.h>
@@ -23,8 +24,14 @@ using gen::FunctionBuilder;
 
 llvm::Value * FunctionBuilder::build( llvm::LLVMContext & context, llvm::Module * module, llvm::IRBuilder< > & parentIRBuilder, gen::Scope & parentScope )
 {
+    if ( ! mParameters )
+        throw std::runtime_error( "FunctionBuilders must have a 'parameters' field when built" );
+
+    if ( ! mStatements )
+        throw std::runtime_error( "FunctionBuilders must have a 'statements' field when built" );
+
     llvm::Function * function = llvm::Function::Create( gen::helper::type< runtime::boxes::Function::Signature >( context ), llvm::GlobalVariable::PrivateLinkage, mName, module );
-    llvm::Value * argumentCount = gen::helper::i32( context, std::distance( ast::tools::begin( mParameters ), ast::tools::end( mParameters ) ) + ( mUseThis ? 1 : 0 ) );
+    llvm::Value * argumentCount = gen::helper::i32( context, mParameters->size( ) + ( mUseThis ? 1 : 0 ) );
     llvm::Value * functionBox = gen::helper::call( context, module, parentIRBuilder, "Castel_Function_create", function, argumentCount, parentScope.environmentTable( ) );
 
     llvm::BasicBlock * bootstrapBlock = llvm::BasicBlock::Create( context, "bootstrap" );
@@ -50,8 +57,8 @@ llvm::Value * FunctionBuilder::build( llvm::LLVMContext & context, llvm::Module 
        if ( mUseThis )
            scope.declare( irBuilder, "this", irBuilder.CreateLoad( irBuilder.CreateConstGEP1_32( runtimeArguments_argumentArray, parameterIndex ++ ) ) );
 
-       for ( auto & parameter : mParameters )
-           scope.declare( irBuilder, parameter.name( ), irBuilder.CreateLoad( irBuilder.CreateConstGEP1_32( runtimeArguments_argumentArray, parameterIndex ++ ) ) );
+       for ( auto const & parameter : * mParameters )
+           scope.declare( irBuilder, parameter->name( ), irBuilder.CreateLoad( irBuilder.CreateConstGEP1_32( runtimeArguments_argumentArray, parameterIndex ++ ) ) );
 
        gen::CodeBuilder( )
            .statements( mStatements )

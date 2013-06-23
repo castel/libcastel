@@ -29,7 +29,7 @@ namespace castel
 
         private:
 
-            static castel::runtime::Box * staticDependencyInitializer( Runner * runner, char const * global );
+            static runtime::Box * staticDependencyInitializer( Runner * runner, char const * global );
 
         public:
 
@@ -37,17 +37,17 @@ namespace castel
 
         public:
 
-            inline std::map< std::string, std::function< castel::runtime::Box * ( void ) > > const & globals( void ) const;
+            inline std::map< std::string, std::function< runtime::Box * ( void ) > > const & globals( void ) const;
 
-            inline std::map< std::string, std::function< castel::runtime::Box * ( void ) > > & globals( void );
+            inline std::map< std::string, std::function< runtime::Box * ( void ) > > & globals( void );
 
         public:
 
-            castel::runtime::Box * run( llvm::Module * module, std::string const & name = "main" );
+            runtime::Box * run( llvm::Module * module, std::string const & name = "main" );
 
         private:
 
-            std::map< std::string, std::function< castel::runtime::Box * ( void ) > > mGlobals;
+            std::map< std::string, std::function< runtime::Box * ( void ) > > mGlobals;
 
         };
 
@@ -63,12 +63,12 @@ namespace castel
     namespace toolchain
     {
 
-        std::map< std::string, std::function< castel::runtime::Box * ( void ) > > const & Runner::globals( void ) const
+        std::map< std::string, std::function< runtime::Box * ( void ) > > const & Runner::globals( void ) const
         {
             return mGlobals;
         }
 
-        std::map< std::string, std::function< castel::runtime::Box * ( void ) > > & Runner::globals( void )
+        std::map< std::string, std::function< runtime::Box * ( void ) > > & Runner::globals( void )
         {
             return mGlobals;
         }

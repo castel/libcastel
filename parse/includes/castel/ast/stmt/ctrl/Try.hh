@@ -1,7 +1,8 @@
 #pragma once
 
-#include <memory>
+#include <utility>
 
+#include "castel/ast/tools/Hold.hh"
 #include "castel/ast/Statement.hh"
 
 namespace castel
@@ -12,6 +13,8 @@ namespace castel
 
         namespace tools
         {
+
+            class ConstVisitor;
 
             class Visitor;
 
@@ -28,32 +31,37 @@ namespace castel
 
                 public:
 
-                    inline Try( ast::Statement * tryBranch, ast::Statement * elseBranch );
+                    inline Try( ast::tools::Hold< ast::Statement > && tryBranch );
+
+                    inline Try( ast::tools::Hold< ast::Statement > && tryBranch, ast::tools::Hold< ast::Statement > && elseBranch );
 
                 public:
 
-                    inline ast::Statement * tryBranch( void ) const;
+                    inline ast::tools::Hold< ast::Statement > const & tryBranch( void ) const;
 
-                    inline Try & tryBranch( ast::Statement * tryBranch );
+                    inline ast::tools::Hold< ast::Statement > & tryBranch( void );
 
-                    inline ast::Statement * takeTryBranch( void );
+                    inline Try & tryBranch( ast::tools::Hold< ast::Statement > && tryBranch );
+
+                public:
+
+                    inline ast::tools::Hold< ast::Statement > const & elseBranch( void ) const;
+
+                    inline ast::tools::Hold< ast::Statement > & elseBranch( void );
+
+                    inline Try & elseBranch( ast::tools::Hold< ast::Statement > && elseBranch );
 
                 public:
 
-                    inline ast::Statement * elseBranch( void ) const;
-
-                    inline Try & elseBranch( ast::Statement * elseBranch );
-
-                    inline ast::Statement * takeElseBranch( void );
-
-                public:
+                    virtual inline void accept( ast::tools::ConstVisitor & visitor ) const;
 
                     virtual inline void accept( ast::tools::Visitor & visitor );
 
                 private:
 
-                    std::unique_ptr< ast::Statement > mTryBranch;
-                    std::unique_ptr< ast::Statement > mElseBranch;
+                    ast::tools::Hold< ast::Statement > mTryBranch;
+
+                    ast::tools::Hold< ast::Statement > mElseBranch;
 
                 };
 
@@ -65,6 +73,7 @@ namespace castel
 
 }
 
+#include "castel/ast/tools/ConstVisitor.hh"
 #include "castel/ast/tools/Visitor.hh"
 
 namespace castel
@@ -79,44 +88,54 @@ namespace castel
             namespace ctrl
             {
 
-                Try::Try( ast::Statement * tryBranch, ast::Statement * elseBranch )
-                    : mTryBranch( tryBranch )
-                    , mElseBranch( elseBranch )
+                Try::Try( ast::tools::Hold< ast::Statement > && tryBranch )
+                    : mTryBranch( std::move( tryBranch ) )
                 {
                 }
 
-                ast::Statement * Try::tryBranch( void ) const
+                Try::Try( ast::tools::Hold< ast::Statement > && tryBranch, ast::tools::Hold< ast::Statement > && elseBranch )
+                    : mTryBranch( std::move( tryBranch ) )
+                    , mElseBranch( std::move( elseBranch ) )
                 {
-                    return mTryBranch.get( );
                 }
 
-                Try & Try::tryBranch( ast::Statement * tryBranch )
+                ast::tools::Hold< ast::Statement > const & Try::tryBranch( void ) const
                 {
-                    mTryBranch.reset( tryBranch );
+                    return mTryBranch;
+                }
+
+                ast::tools::Hold< ast::Statement > & Try::tryBranch( void )
+                {
+                    return mTryBranch;
+                }
+
+                Try & Try::tryBranch( ast::tools::Hold< ast::Statement > && tryBranch )
+                {
+                    mTryBranch = std::move( tryBranch );
 
                     return * this;
                 }
 
-                ast::Statement * Try::takeTryBranch( void )
+                ast::tools::Hold< ast::Statement > const & Try::elseBranch( void ) const
                 {
-                    return mTryBranch.release( );
+                    return mElseBranch;
                 }
 
-                ast::Statement * Try::elseBranch( void ) const
+                ast::tools::Hold< ast::Statement > & Try::elseBranch( void )
                 {
-                    return mElseBranch.get( );
+                    return mElseBranch;
                 }
 
-                Try & Try::elseBranch( ast::Statement * elseBranch )
+                Try & Try::elseBranch( ast::tools::Hold< ast::Statement > && elseBranch )
                 {
-                    mElseBranch.reset( elseBranch );
+                    mElseBranch = std::move( elseBranch );
 
                     return * this;
                 }
 
-                ast::Statement * Try::takeElseBranch( void )
+                void Try::accept( ast::tools::ConstVisitor & visitor ) const
                 {
-                    return mElseBranch.release( );
+                    visitor.visit( * this );
                 }
 
                 void Try::accept( ast::tools::Visitor & visitor )

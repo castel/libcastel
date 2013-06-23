@@ -11,7 +11,6 @@
 #include "castel/ast/Statement.hh"
 #include "castel/gen/helper/null.hh"
 #include "castel/gen/helper/type.hh"
-#include "castel/gen/CodeBuilder.hh"
 #include "castel/gen/SVisitor.hh"
 
 using namespace castel;
@@ -28,16 +27,16 @@ static std::vector< llvm::Value * > fetchArguments( llvm::CallInst * callInstruc
     return argv;
 }
 
-void SVisitor::visit( ast::stmt::ctrl::Try & tryControlAst )
+void SVisitor::visit( ast::stmt::ctrl::Try const & tryControlAst )
 {
-    ast::Statement * tryBranchAst = tryControlAst.tryBranch( );
-    ast::Statement * elseBranchAst = tryControlAst.elseBranch( );
+    ast::tools::Hold< ast::Statement > const & tryBranchAst = tryControlAst.tryBranch( );
+    ast::tools::Hold< ast::Statement > const & elseBranchAst = tryControlAst.elseBranch( );
 
-    if ( tryBranchAst == nullptr )
-        throw std::runtime_error( "Missing 'try' branch" );
+    if ( tryBranchAst )
+        throw std::runtime_error( "'Try/Catch' statements must have a 'try' branch when built" );
 
-    if ( elseBranchAst == nullptr )
-        throw std::runtime_error( "Missing 'else' branch" );
+    if ( elseBranchAst )
+        throw std::runtime_error( "'Try/Catch' statements must have a 'catch' branch when built" );
 
     llvm::Function * function = mIRBuilder.GetInsertBlock( )->getParent( );
 
@@ -50,8 +49,8 @@ void SVisitor::visit( ast::stmt::ctrl::Try & tryControlAst )
     function->getBasicBlockList( ).push_back( tryBranch );
     mIRBuilder.SetInsertPoint( tryBranch );
 
-    gen::CodeBuilder( ).statements( tryBranchAst )
-        .build( mContext, mModule, mIRBuilder, mScope );
+    gen::SVisitor( mContext, mModule, mIRBuilder, mScope )
+        .run( * tryBranchAst );
     if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
         mIRBuilder.CreateBr( continueBranch );
 
@@ -92,8 +91,8 @@ void SVisitor::visit( ast::stmt::ctrl::Try & tryControlAst )
 
     landingPad->addClause( gen::helper::null( gen::helper::type< void * >( mContext ) ) );
 
-    gen::CodeBuilder( ).statements( elseBranchAst )
-        .build( mContext, mModule, mIRBuilder, mScope );
+    gen::SVisitor( mContext, mModule, mIRBuilder, mScope )
+        .run( * elseBranchAst );
     if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
         mIRBuilder.CreateBr( continueBranch );
 

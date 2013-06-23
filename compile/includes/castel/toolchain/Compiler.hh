@@ -7,6 +7,8 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 
+#include "castel/ast/tools/List.hh"
+
 namespace castel
 {
 
@@ -37,7 +39,7 @@ namespace castel
 
         public:
 
-            llvm::Module * build( ast::Statement * statements, std::string const & name = "main" );
+            llvm::Module * build( ast::tools::List< ast::Statement > const & statements, std::string const & name = "main" );
 
         private:
 

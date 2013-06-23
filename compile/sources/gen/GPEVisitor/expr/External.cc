@@ -12,7 +12,7 @@
 using namespace castel;
 using gen::GPEVisitor;
 
-void GPEVisitor::visit( ast::expr::External & externalExpressionAst )
+void GPEVisitor::visit( ast::expr::External const & externalExpressionAst )
 {
     mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Function_create",
         mModule->getOrInsertFunction(

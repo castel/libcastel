@@ -4,6 +4,8 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 
+#include "castel/ast/tools/List.hh"
+
 namespace castel
 {
 
@@ -28,9 +30,9 @@ namespace castel
 
         public:
 
-            inline ast::Statement * statements( void ) const;
+            inline ast::tools::List< ast::Statement > const * statements( void ) const;
 
-            inline CodeBuilder & statements( ast::Statement * statements );
+            inline CodeBuilder & statements( ast::tools::List< ast::Statement > const * statements );
 
         public:
 
@@ -38,7 +40,7 @@ namespace castel
 
         private:
 
-            ast::Statement * mStatements;
+            ast::tools::List< ast::Statement > const * mStatements;
 
         };
 
@@ -60,12 +62,12 @@ namespace castel
         {
         }
 
-        ast::Statement * CodeBuilder::statements( void ) const
+        ast::tools::List< ast::Statement > const * CodeBuilder::statements( void ) const
         {
             return mStatements;
         }
 
-        CodeBuilder & CodeBuilder::statements( ast::Statement * statement )
+        CodeBuilder & CodeBuilder::statements( ast::tools::List< ast::Statement > const * statement )
         {
             mStatements = statement;
 
