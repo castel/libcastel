@@ -16,9 +16,7 @@ void CodeBuilder::build( llvm::LLVMContext & context, llvm::Module * module, llv
     if ( mStatements == nullptr )
         throw std::runtime_error( "CodeBuilders must have a 'statements' field when built" );
 
-    gen::SVisitor visitor( context, module, irBuilder, scope );
-
-    for ( auto & statement : * mStatements ) {
-        statement->accept( visitor );
+    for ( auto const & statement : * mStatements ) {
+        gen::SVisitor( context, module, irBuilder, scope ).run( * statement );
     }
 }

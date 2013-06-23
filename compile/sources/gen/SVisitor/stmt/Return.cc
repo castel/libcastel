@@ -13,8 +13,8 @@ void SVisitor::visit( ast::stmt::Return const & returnStatementAst )
     ast::tools::Hold< ast::Expression > const & expressionAst = returnStatementAst.expression( );
 
     if ( expressionAst ) {
-        mIRBuilder.CreateRet( gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Undefined_create" ) );
-    } else {
         mIRBuilder.CreateRet( gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * expressionAst ) );
+    } else {
+        mIRBuilder.CreateRet( gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Undefined_create" ) );
     }
 }
