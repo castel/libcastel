@@ -44,14 +44,8 @@ void GPEVisitor::visit( ast::expr::Binary const & binaryExpressionAst )
     ast::tools::Hold< ast::Expression > const & leftOperandAst = binaryExpressionAst.leftOperand( );
     ast::tools::Hold< ast::Expression > const & rightOperandAst = binaryExpressionAst.rightOperand( );
 
-    if ( leftOperandAst && rightOperandAst )
+    if ( ! leftOperandAst || ! rightOperandAst )
         throw std::runtime_error( "Binary operators must have both operands when built as general purpose expressions" );
-
-    if ( leftOperandAst )
-        throw std::runtime_error( "Binary operators must have both operands when built as general purpose expressions (left missing)" );
-
-    if ( rightOperandAst )
-        throw std::runtime_error( "Binary operators must have both operands when built as general purpose expressions (right missing)" );
 
     if ( binaryExpressionAst.type( ) == ast::expr::Binary::Operator::Assignment ) {
 

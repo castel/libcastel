@@ -12,7 +12,7 @@ void SVisitor::visit( ast::stmt::Expression const & expressionStatementAst )
 {
     ast::tools::Hold< ast::Expression > const & expressionAst = expressionStatementAst.expression( );
 
-    if ( expressionAst )
+    if ( ! expressionAst )
         throw std::runtime_error( "Expression statements must have an expression when built" );
 
     gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * expressionAst );

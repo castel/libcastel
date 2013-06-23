@@ -22,14 +22,8 @@ void LSEVisitor::visit( ast::expr::Binary const & binaryExpressionAst )
     ast::tools::Hold< ast::Expression > const & leftOperandAst = binaryExpressionAst.leftOperand( );
     ast::tools::Hold< ast::Expression > const & rightOperandAst = binaryExpressionAst.rightOperand( );
 
-    if ( leftOperandAst && rightOperandAst )
-        throw std::runtime_error( "Both operands missing" );
-
-    if ( leftOperandAst )
-        throw std::runtime_error( "Missing left operand" );
-
-    if ( rightOperandAst )
-        throw std::runtime_error( "Missing right operand" );
+    if ( ! leftOperandAst || ! rightOperandAst )
+        throw std::runtime_error( "Binary operators must have both operands when built as left side expressions" );
 
     llvm::Value * object = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * leftOperandAst );
     llvm::Value * property = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * rightOperandAst );

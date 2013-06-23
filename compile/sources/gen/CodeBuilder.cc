@@ -13,7 +13,7 @@ using gen::CodeBuilder;
 
 void CodeBuilder::build( llvm::LLVMContext & context, llvm::Module * module, llvm::IRBuilder< > & irBuilder, gen::Scope & scope )
 {
-    if ( mStatements == nullptr )
+    if ( ! mStatements )
         throw std::runtime_error( "CodeBuilders must have a 'statements' field when built" );
 
     for ( auto const & statement : * mStatements ) {

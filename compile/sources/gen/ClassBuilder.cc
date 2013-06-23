@@ -23,7 +23,7 @@ using gen::ClassBuilder;
 
 llvm::Value * ClassBuilder::build( llvm::LLVMContext & context, llvm::Module * module, llvm::IRBuilder< > & irBuilder, gen::Scope & parentScope ) const
 {
-    if ( mMembers == nullptr )
+    if ( ! mMembers )
         throw std::runtime_error( "ClassBuilders must have a 'members' field when built" );
 
     llvm::Value * parent = mParent != nullptr ? mParent : gen::helper::null< runtime::Box * >( context );

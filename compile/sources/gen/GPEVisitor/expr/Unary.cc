@@ -30,7 +30,7 @@ void GPEVisitor::visit( ast::expr::Unary const & unaryExpressionAst )
 {
     ast::tools::Hold< ast::Expression > const & operandAst = unaryExpressionAst.operand( );
 
-    if ( operandAst )
+    if ( ! operandAst )
         throw std::runtime_error( "Unary operators must have an operand when built as general purpose expressions" );
 
     llvm::Value * operand = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * operandAst );
