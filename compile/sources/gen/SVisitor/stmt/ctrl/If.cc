@@ -28,27 +28,28 @@ void SVisitor::visit( ast::stmt::ctrl::If const & ifControlAst )
     if ( ! thenBranchAst )
         throw std::runtime_error( "'If' statements must have a 'then' branch when built" );
 
-    llvm::Value * condition = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * conditionAst );
-    llvm::Value * booleanCast = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Operator_boolCast", condition );
-    llvm::Value * test = mIRBuilder.CreateICmpEQ( booleanCast, llvm::ConstantInt::getTrue( mContext ) );
-
     llvm::Function * function = mIRBuilder.GetInsertBlock( )->getParent( );
 
     if ( elseBranchAst != nullptr ) {
 
-        llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mContext, "then", function );
-        llvm::BasicBlock * elseBranch = llvm::BasicBlock::Create( mContext, "else" );
-        llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mContext, "finally" );
+        llvm::BasicBlock * checkBranch = llvm::BasicBlock::Create( mContext, "if:check", function );
+        llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mContext, "if:then", function );
+        llvm::BasicBlock * elseBranch = llvm::BasicBlock::Create( mContext, "if:else", function );
+        llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mContext, "if:finally", function );
 
-        mIRBuilder.CreateCondBr( test, thenBranch, elseBranch );
+        mIRBuilder.CreateBr( checkBranch );
+
+        mIRBuilder.SetInsertPoint( checkBranch );
+        llvm::Value * check_condition = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * conditionAst );
+        llvm::Value * check_booleanCast = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Operator_boolCast", check_condition );
+        llvm::Value * check_test = mIRBuilder.CreateICmpEQ( check_booleanCast, llvm::ConstantInt::getTrue( mContext ) );
+        mIRBuilder.CreateCondBr( check_test, thenBranch, elseBranch );
 
         mIRBuilder.SetInsertPoint( thenBranch );
         gen::SVisitor( mContext, mModule, mIRBuilder, mScope )
             .run( * thenBranchAst );
         if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
-
-        function->getBasicBlockList( ).push_back( elseBranch );
 
         mIRBuilder.SetInsertPoint( elseBranch );
         gen::SVisitor( mContext, mModule, mIRBuilder, mScope )
@@ -56,24 +57,25 @@ void SVisitor::visit( ast::stmt::ctrl::If const & ifControlAst )
         if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
 
-        function->getBasicBlockList( ).push_back( finallyBranch );
-
         mIRBuilder.SetInsertPoint( finallyBranch );
 
     } else {
 
-        llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mContext, "then", function );
-        llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mContext, "finally" );
+        llvm::BasicBlock * checkBranch = llvm::BasicBlock::Create( mContext, "if:check", function );
+        llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mContext, "if:then", function );
+        llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mContext, "if:finally", function );
 
-        mIRBuilder.CreateCondBr( test, thenBranch, finallyBranch );
+        mIRBuilder.SetInsertPoint( checkBranch );
+        llvm::Value * check_condition = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * conditionAst );
+        llvm::Value * check_booleanCast = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_Operator_boolCast", check_condition );
+        llvm::Value * check_test = mIRBuilder.CreateICmpEQ( check_booleanCast, llvm::ConstantInt::getTrue( mContext ) );
+        mIRBuilder.CreateCondBr( check_test, thenBranch, finallyBranch );
 
         mIRBuilder.SetInsertPoint( thenBranch );
         gen::SVisitor( mContext, mModule, mIRBuilder, mScope )
             .run( * thenBranchAst );
         if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
             mIRBuilder.CreateBr( finallyBranch );
-
-        function->getBasicBlockList( ).push_back( finallyBranch );
 
         mIRBuilder.SetInsertPoint( finallyBranch );
 

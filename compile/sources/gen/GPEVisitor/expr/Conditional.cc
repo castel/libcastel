@@ -65,5 +65,4 @@ void GPEVisitor::visit( ast::expr::Conditional const & conditionalAst )
     phiNode->addIncoming( elseValue, elseBranch );
 
     mLastReturnedValue = phiNode;
-
 }
