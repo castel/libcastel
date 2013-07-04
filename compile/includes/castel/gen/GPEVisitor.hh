@@ -41,6 +41,8 @@ namespace castel
 
             class Binary;
 
+            class Conditional;
+
             class External;
 
             class Multary;
@@ -99,6 +101,8 @@ namespace castel
 
             virtual void visit( ast::expr::Binary const & binaryExpressionAst );
 
+            virtual void visit( ast::expr::Conditional const & conditionalExpressionAst );
+
             virtual void visit( ast::expr::External const & externalExpressionAst );
 
             virtual void visit( ast::expr::Multary const & multaryExpressionAst );
@@ -135,6 +139,7 @@ namespace castel
 #include "castel/ast/expr/literal/String.hh"
 #include "castel/ast/expr/literal/Undefined.hh"
 #include "castel/ast/expr/Binary.hh"
+#include "castel/ast/expr/Conditional.hh"
 #include "castel/ast/expr/External.hh"
 #include "castel/ast/expr/Multary.hh"
 #include "castel/ast/expr/Unary.hh"

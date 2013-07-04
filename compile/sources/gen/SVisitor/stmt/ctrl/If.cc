@@ -22,10 +22,10 @@ void SVisitor::visit( ast::stmt::ctrl::If const & ifControlAst )
     ast::tools::Hold< ast::Statement > const & thenBranchAst = ifControlAst.thenBranch( );
     ast::tools::Hold< ast::Statement > const & elseBranchAst = ifControlAst.elseBranch( );
 
-    if ( conditionAst )
+    if ( ! conditionAst )
         throw std::runtime_error( "'If' statements must have a condition when built" );
 
-    if ( thenBranchAst )
+    if ( ! thenBranchAst )
         throw std::runtime_error( "'If' statements must have a 'then' branch when built" );
 
     llvm::Value * condition = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * conditionAst );
