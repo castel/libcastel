@@ -4,12 +4,12 @@
 #include <memory>
 #include <string>
 
-#include <llvm/IRBuilder.h>
-#include <llvm/LLVMContext.h>
-#include <llvm/BasicBlock.h>
-#include <llvm/Constants.h>
-#include <llvm/Instructions.h>
-#include <llvm/Value.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/Value.h>
 
 #include "castel/gen/helper/null.hh"
 

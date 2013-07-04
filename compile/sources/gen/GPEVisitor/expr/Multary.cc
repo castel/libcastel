@@ -1,7 +1,7 @@
 #include <iterator>
 #include <stdexcept>
 
-#include <llvm/Value.h>
+#include <llvm/IR/Value.h>
 
 #include "castel/ast/expr/Multary.hh"
 #include "castel/gen/helper/allocate.hh"

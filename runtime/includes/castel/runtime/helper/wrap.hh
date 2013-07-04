@@ -22,6 +22,8 @@ namespace castel
         namespace helper
         {
 
+            runtime::Box * wrap( runtime::Box * box );
+
             runtime::boxes::Number * wrap( double value );
 
             runtime::boxes::String * wrap( std::string const & value );
@@ -54,6 +56,11 @@ namespace castel
                     return runtime::helper::detail::forward( fn, argc - 1, argv + 1, runtime::helper::detail::IndicesGenerator< sizeof...( Parameters ) >( ) );
                 }
 
+            }
+
+            runtime::Box * wrap( runtime::Box * box )
+            {
+                return box;
             }
 
             runtime::boxes::Number * wrap( double value )

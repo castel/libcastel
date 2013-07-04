@@ -2,10 +2,10 @@
 
 #include <unwind.h>
 
-#include <llvm/TypeBuilder.h>
-#include <llvm/LLVMContext.h>
-#include <llvm/Module.h>
-#include <llvm/Type.h>
+#include <llvm/IR/TypeBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Type.h>
 
 #include "castel/runtime/boxes/Binding.hh"
 #include "castel/runtime/boxes/Boolean.hh"

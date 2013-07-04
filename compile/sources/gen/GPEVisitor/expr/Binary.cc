@@ -1,7 +1,7 @@
 #include <map>
 #include <stdexcept>
 
-#include <llvm/Value.h>
+#include <llvm/IR/Value.h>
 
 #include "castel/ast/expr/Binary.hh"
 #include "castel/ast/tools/Hold.hh"

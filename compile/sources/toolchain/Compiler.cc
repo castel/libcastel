@@ -4,9 +4,8 @@
 #include <string>
 #include <utility>
 
-#include <llvm/Analysis/Verifier.h>
+#include <llvm/IR/Module.h>
 #include <llvm/Support/raw_ostream.h>
-#include <llvm/Module.h>
 
 #include "castel/ast/tools/List.hh"
 #include "castel/ast/Statement.hh"
@@ -58,8 +57,6 @@ llvm::Module * Compiler::build( ast::tools::List< ast::Statement > const & state
         .globals( mGlobals )
         .statements( & statements )
     .build( mContext, module );
-
-    llvm::verifyModule( * module );
 
     return module;
 }

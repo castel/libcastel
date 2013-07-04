@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include <llvm/Support/raw_ostream.h>
-#include <llvm/Module.h>
+#include <llvm/IR/Module.h>
 
 #include "castel/ast/tools/List.hh"
 #include "castel/ast/Statement.hh"

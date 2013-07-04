@@ -1,12 +1,12 @@
 #include <stdexcept>
 
-#include <llvm/IRBuilder.h>
-#include <llvm/TypeBuilder.h>
-#include <llvm/BasicBlock.h>
-#include <llvm/Function.h>
-#include <llvm/LLVMContext.h>
-#include <llvm/Module.h>
-#include <llvm/Value.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/TypeBuilder.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Value.h>
 
 #include "castel/gen/helper/call.hh"
 #include "castel/gen/helper/string.hh"

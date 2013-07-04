@@ -1,9 +1,9 @@
 #include <stdexcept>
 
-#include <llvm/BasicBlock.h>
-#include <llvm/Constants.h>
-#include <llvm/Function.h>
-#include <llvm/Value.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/Value.h>
 
 #include "castel/ast/stmt/ctrl/If.hh"
 #include "castel/ast/tools/Hold.hh"
@@ -64,6 +64,8 @@ void SVisitor::visit( ast::stmt::ctrl::If const & ifControlAst )
         llvm::BasicBlock * checkBranch = llvm::BasicBlock::Create( mContext, "if:check", function );
         llvm::BasicBlock * thenBranch = llvm::BasicBlock::Create( mContext, "if:then", function );
         llvm::BasicBlock * finallyBranch = llvm::BasicBlock::Create( mContext, "if:finally", function );
+
+        mIRBuilder.CreateBr( checkBranch );
 
         mIRBuilder.SetInsertPoint( checkBranch );
         llvm::Value * check_condition = gen::GPEVisitor( mContext, mModule, mIRBuilder, mScope ).run( * conditionAst );

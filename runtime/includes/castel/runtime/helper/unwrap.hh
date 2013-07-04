@@ -53,7 +53,7 @@ namespace castel
             };
 
             template < >
-            class unwrap< std::string >
+            class unwrap< char const * >
             {
                 private: runtime::Box * box;
                 public: unwrap( runtime::Box * box ) : box( box ) { }
@@ -68,6 +68,27 @@ namespace castel
                     return stringBox->value( );
                 }
             };
+
+            template < >
+            class unwrap< std::string >
+            {
+                private: runtime::Box * box;
+                public: unwrap( runtime::Box * box ) : box( box ) { }
+                public: operator std::string( void )
+                {
+                    auto stringBox = dynamic_cast< runtime::boxes::String * >( box );
+
+                    if ( stringBox == nullptr )
+                        runtime::helper::Fatal( )
+                            << "Parameter type mismatch" << std::endl;
+
+                    return stringBox->value( );
+                }
+            };
+
+            template < >
+            class unwrap< std::string const & > : public unwrap< std::string >
+            { using unwrap< std::string >::unwrap; };
 
         }
 

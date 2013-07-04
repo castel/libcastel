@@ -1,9 +1,9 @@
 #include <stdexcept>
 
-#include <llvm/BasicBlock.h>
-#include <llvm/Constants.h>
-#include <llvm/Function.h>
-#include <llvm/Value.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/Value.h>
 
 #include "castel/ast/stmt/ctrl/While.hh"
 #include "castel/ast/tools/Hold.hh"

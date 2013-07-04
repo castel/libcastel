@@ -1,5 +1,5 @@
 #include <llvm/ADT/APFloat.h>
-#include <llvm/Constants.h>
+#include <llvm/IR/Constants.h>
 
 #include "castel/ast/expr/literal/Number.hh"
 #include "castel/gen/helper/call.hh"

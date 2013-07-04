@@ -3,11 +3,11 @@
 #include <string>
 
 #include <llvm/ADT/APInt.h>
-#include <llvm/TypeBuilder.h>
-#include <llvm/BasicBlock.h>
-#include <llvm/Constants.h>
-#include <llvm/Type.h>
-#include <llvm/Value.h>
+#include <llvm/IR/TypeBuilder.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Value.h>
 
 #include "castel/runtime/Box.hh"
 #include "castel/gen/helper/allocate.hh"

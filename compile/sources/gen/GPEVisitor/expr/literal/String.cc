@@ -9,5 +9,5 @@ using gen::GPEVisitor;
 void GPEVisitor::visit( ast::expr::literal::String const & stringLiteralAst )
 {
     mLastReturnedValue = gen::helper::call( mContext, mModule, mIRBuilder, "Castel_String_create",
-        gen::helper::string( mIRBuilder, stringLiteralAst.value( ) ) );
+        gen::helper::string( mIRBuilder, stringLiteralAst.value( ).substr( 1, stringLiteralAst.value( ).size( ) - 2 ) ) );
 }

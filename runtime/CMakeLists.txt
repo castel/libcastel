@@ -42,6 +42,14 @@ foreach(CPP_HEADER ${RUNTIME_CPP_HEADERS})
         DEPENDS "${CPP_HEADER}")
 endforeach(CPP_HEADER)
 
+######################
+## Build configuration
+
+execute_process(COMMAND llvm-config --cppflags COMMAND tr -d "\\n" OUTPUT_VARIABLE LLVM_CPP_FLAGS)
+
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_FLAGS "-std=c++11 ${LLVM_CPP_FLAGS}")
+
 ############################
 ## Final library description
 

@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include <llvm/Module.h>
+#include <llvm/IR/Module.h>
 
 namespace castel
 {

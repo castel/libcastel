@@ -1,5 +1,5 @@
-#include <llvm/Constants.h>
-#include <llvm/Value.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/Value.h>
 
 #include "castel/ast/expr/literal/Boolean.hh"
 #include "castel/gen/helper/call.hh"

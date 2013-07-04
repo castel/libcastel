@@ -1,8 +1,8 @@
 #pragma once
 
-#include <llvm/Constants.h>
-#include <llvm/LLVMContext.h>
-#include <llvm/Type.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Type.h>
 
 namespace castel
 {
