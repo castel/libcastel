@@ -58,6 +58,8 @@ llvm::Value * ClassBuilder::build( llvm::LLVMContext & context, llvm::Module * m
 llvm::Value * ClassBuilder::createInitializer( llvm::LLVMContext & context, llvm::Module * module, gen::Scope & parentScope ) const
 {
     llvm::Function * function = llvm::Function::Create( gen::helper::type< runtime::boxes::Class::InitializerSignature >( context ), llvm::GlobalVariable::ExternalLinkage, mName + "_initializer", module );
+    function->setPersonalityFn( module->getFunction( "Castel_personality" ) );
+
     llvm::BasicBlock * block = llvm::BasicBlock::Create( context, "", function );
     llvm::IRBuilder< > irBuilder( block, block->begin( ) );
 

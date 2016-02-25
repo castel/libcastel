@@ -16,13 +16,12 @@ foreach(CASTEL_SOURCE ${RUNTIME_CASTEL_SOURCES})
     get_filename_component(GENERATION_PATH "${GENERATED_SOURCE}" PATH)
     list(APPEND RUNTIME_SOURCES "${GENERATED_SOURCE}")
 
-    get_property(MICROCASTEL_LOCATION TARGET microcastel PROPERTY LOCATION)
     add_custom_command(OUTPUT "${GENERATED_SOURCE}"
       COMMAND mkdir -p "${GENERATION_PATH}"
       COMMAND cat "${CASTEL_SOURCE}"
-            | "${MICROCASTEL_LOCATION}" "Castel_${GENERATION_NAME}_initialize" | llc
+            | "$<TARGET_FILE:microcastel>" "Castel_${GENERATION_NAME}_initialize" | "${LLVM_LLC}"
             | clang -x assembler -c -o "${GENERATED_SOURCE}" -
-      DEPENDS "${MICROCASTEL_LOCATION}" "${CASTEL_SOURCE}")
+      DEPENDS "$<TARGET_FILE:microcastel>" "${CASTEL_SOURCE}")
 endforeach(CASTEL_SOURCE)
 
 ###############################################################

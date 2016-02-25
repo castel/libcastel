@@ -25,6 +25,7 @@ llvm::Module * ModuleBuilder::build( llvm::LLVMContext & context, llvm::Module *
         throw std::runtime_error( "ModuleBuilders must have a 'statements' field when built" );
 
     llvm::Function * mainFunction = llvm::Function::Create( gen::helper::type< runtime::Module::Signature >( context ), llvm::GlobalVariable::ExternalLinkage, mName, module );
+    mainFunction->setPersonalityFn( module->getFunction( "Castel_personality" ) );
 
     llvm::BasicBlock * bootstrapBlock = llvm::BasicBlock::Create( context, "bootstrap" );
     llvm::BasicBlock * entryBlock = llvm::BasicBlock::Create( context, "entry" );

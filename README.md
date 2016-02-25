@@ -6,7 +6,7 @@ Bug reports should be reported on the bug tracker of the [castel compiler](https
 
 ## Compilation
 
-You will need LLVM 3.2, Ragel, Lemon, Clang and CMake.
+You will need LLVM 3.7, Ragel, Lemon, Clang and CMake.
 
 *Note: When compiling with Clang, you will probably need the `libunwind` package if you get errors about an `_Unwind_Exception` structure*
 
@@ -22,23 +22,22 @@ The libraries will be generated in the `lib/` directory, and their headers will 
 
 ### CastelParse
 
-Contains the classes allowing to convert a castel source code into an AST. Includes a lexer, a parser and AST headers.
+Contains the utilities allowing to convert a castel source code into an AST. Includes a lexer, a parser, the AST headers, and various utilities such as visitors.
 
 ### CastelCompile
 
-Contains the helper classes used to create LLVM data structure from Castel AST.
+Contains the compiler engine itself, that will take a Castel AST and produce an actual LLVM module. Also provides some utilities to easily run these modules.
 
 ### CastelRuntime
 
-Contains the runtime symbols used by castel applications.
+Contains the Castel runtime, required to run Castel applications.
 
 ## License
 
-```
-* -------------------------------------------------------------------------------
-* "THE BEER/PIZZA-WARE LICENSE" (Revision 42):
-* <nison.mael@gmail.com> wrote these files. As long as you retain this notice you
-* can do whatever you want with this stuff. If we meet some day, and you think
-* this stuff is worth it, you can buy me a beer or a pizza in return Maël Nison
-* -------------------------------------------------------------------------------
-```
+> **Copyright © 2016 Castel Project**
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

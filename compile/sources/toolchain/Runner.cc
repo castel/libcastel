@@ -1,8 +1,10 @@
+#include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
-#include <llvm/ExecutionEngine/JIT.h>
+#include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/ExecutionEngine/Interpreter.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Target/TargetOptions.h>
@@ -22,6 +24,8 @@ void Runner::staticInitializer( void )
         return ;
 
     llvm::InitializeNativeTarget( );
+    llvm::InitializeNativeTargetAsmPrinter( );
+
     initialized = true;
 }
 
@@ -39,12 +43,8 @@ runtime::Box * Runner::run( llvm::Module * module, std::string const & name )
 {
     std::string errString;
 
-    llvm::TargetOptions targetOptions;
-    targetOptions.JITExceptionHandling = true;
-
-    llvm::ExecutionEngine * executionEngine = llvm::EngineBuilder( module )
+    llvm::ExecutionEngine * executionEngine = llvm::EngineBuilder( std::unique_ptr< llvm::Module >( module ) )
         .setErrorStr( &( errString ) )
-        .setTargetOptions( targetOptions )
     .create( );
 
     if ( ! executionEngine )
@@ -52,6 +52,8 @@ runtime::Box * Runner::run( llvm::Module * module, std::string const & name )
 
     for ( auto & global : mGlobals )
         executionEngine->addGlobalMapping( module->getFunction( global.first + "_generator" ), reinterpret_cast< void * >( & Runner::staticDependencyInitializer ) );
+
+    executionEngine->finalizeObject( );
 
     void * programPtr = executionEngine->getPointerToFunction( module->getFunction( name ) );
     return reinterpret_cast< runtime::Module::Signature * >( programPtr )( this );

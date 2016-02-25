@@ -34,8 +34,10 @@ llvm::Module * Compiler::build( ast::tools::List< ast::Statement > const & state
 
     #define TOSTRING( X ) #X
 
-    #define CASTEL_FUNCTION( NAME, RETURN, PARAMETERS )                                                                                           \
-        llvm::Function::Create( gen::helper::type< RETURN PARAMETERS >( mContext ), llvm::GlobalValue::ExternalLinkage, TOSTRING( NAME ), module );
+    #define CASTEL_FUNCTION( NAME, RETURN, PARAMETERS ) {                                                                                           \
+        llvm::Function::Create( gen::helper::type< RETURN PARAMETERS >( mContext ), llvm::GlobalValue::ExternalLinkage, TOSTRING( NAME ), module ); \
+        /*function->setPersonalityFn( module->getFunction( "Castel_personality" ) );*/ \
+    }
 
     #define CASTEL_TYPE( TYPE, CONSTRUCTOR )                                   \
         CASTEL_FUNCTION( Castel_##TYPE##_create, runtime::Box *, CONSTRUCTOR )

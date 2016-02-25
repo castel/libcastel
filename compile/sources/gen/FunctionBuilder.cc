@@ -30,6 +30,8 @@ llvm::Value * FunctionBuilder::build( llvm::LLVMContext & context, llvm::Module 
         throw std::runtime_error( "FunctionBuilders must have a 'statements' field when built" );
 
     llvm::Function * function = llvm::Function::Create( gen::helper::type< runtime::boxes::Function::Signature >( context ), llvm::GlobalVariable::PrivateLinkage, mName, module );
+    function->setPersonalityFn( module->getFunction( "Castel_personality" ) );
+
     llvm::Value * argumentCount = gen::helper::i32( context, mParameters->size( ) + ( mUseThis ? 1 : 0 ) );
     llvm::Value * functionBox = gen::helper::call( context, module, parentIRBuilder, "Castel_Function_create", function, argumentCount, parentScope.environmentTable( ) );
 

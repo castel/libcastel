@@ -46,6 +46,13 @@ namespace llvm
     };
 
     template < bool XCompile >
+    struct TypeBuilder< _Unwind_Action, XCompile > {
+        static llvm::IntegerType * get( llvm::LLVMContext & context ) {
+            return llvm::IntegerType::get( context, sizeof ( _Unwind_Action ) * 8 );
+        }
+    };
+
+    template < bool XCompile >
     struct TypeBuilder< _Unwind_Exception, XCompile > {
         static llvm::StructType * get( llvm::LLVMContext & context ) {
             llvm::Module tempModule( "", context );

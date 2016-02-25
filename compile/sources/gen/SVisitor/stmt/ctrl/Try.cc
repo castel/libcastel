@@ -86,8 +86,7 @@ void SVisitor::visit( ast::stmt::ctrl::Try const & tryControlAst )
     mIRBuilder.SetInsertPoint( catchBranch );
 
     llvm::Type * exceptionType = llvm::StructType::get( gen::helper::type< std::int8_t >( mContext ), gen::helper::type< std::int32_t >( mContext ), nullptr );
-    llvm::Function * personality = mModule->getFunction( "Castel_personality" );
-    llvm::LandingPadInst * landingPad = mIRBuilder.CreateLandingPad( exceptionType, personality, 0, "landingPad" );
+    llvm::LandingPadInst * landingPad = mIRBuilder.CreateLandingPad( exceptionType, 0, "landingPad" );
 
     landingPad->addClause( gen::helper::null( gen::helper::type< void * >( mContext ) ) );
 

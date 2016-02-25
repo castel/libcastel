@@ -14,12 +14,9 @@ namespace castel
         class Lexeme
         {
 
-        private:
-
-            enum class AutoType : int;
-
         public:
 
+            enum class AutoType : int;
             enum class Type : int;
 
         public:
