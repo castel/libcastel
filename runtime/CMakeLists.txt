@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
+find_package(LLVM)
+
 file(GLOB_RECURSE RUNTIME_STATIC_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cc")
 set(RUNTIME_SOURCES ${RUNTIME_STATIC_SOURCES})
 
@@ -16,11 +18,12 @@ foreach(CASTEL_SOURCE ${RUNTIME_CASTEL_SOURCES})
     get_filename_component(GENERATION_PATH "${GENERATED_SOURCE}" PATH)
     list(APPEND RUNTIME_SOURCES "${GENERATED_SOURCE}")
 
+    message(STATUS "fooo")
+    message(STATUS "${CASTEL_SOURCE}")
+    message(STATUS "${LLVM_LLC}")
     add_custom_command(OUTPUT "${GENERATED_SOURCE}"
       COMMAND mkdir -p "${GENERATION_PATH}"
-      COMMAND cat "${CASTEL_SOURCE}"
-            | "$<TARGET_FILE:microcastel>" "Castel_${GENERATION_NAME}_initialize" | "${LLVM_LLC}"
-            | clang -x assembler -c -o "${GENERATED_SOURCE}" -
+      COMMAND cat "${CASTEL_SOURCE}" | "$<TARGET_FILE:microcastel>" "Castel_${GENERATION_NAME}_initialize" | "${LLVM_LLC}" | clang-5.0 -x assembler -c -o "${GENERATED_SOURCE}" -
       DEPENDS "$<TARGET_FILE:microcastel>" "${CASTEL_SOURCE}")
 endforeach(CASTEL_SOURCE)
 
@@ -41,16 +44,9 @@ foreach(CPP_HEADER ${RUNTIME_CPP_HEADERS})
         DEPENDS "${CPP_HEADER}")
 endforeach(CPP_HEADER)
 
-######################
-## Build configuration
-
-execute_process(COMMAND llvm-config --cppflags COMMAND tr -d "\\n" OUTPUT_VARIABLE LLVM_CPP_FLAGS)
-
-set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_CXX_FLAGS "-std=c++11 ${LLVM_CPP_FLAGS}")
-
 ############################
 ## Final library description
 
 add_library(CastelRuntime STATIC ${RUNTIME_HEADERS} ${RUNTIME_SOURCES})
+set_property(TARGET CastelRuntime APPEND_STRING PROPERTY COMPILE_FLAGS "${LLVM_CXX_FLAGS}")
 add_dependencies(CastelRuntime CastelParse CastelCompile microcastel)

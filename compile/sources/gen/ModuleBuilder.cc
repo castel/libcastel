@@ -38,7 +38,7 @@ llvm::Module * ModuleBuilder::build( llvm::LLVMContext & context, llvm::Module *
     irBuilder.CreateBr( entryBlock );
     irBuilder.SetInsertPoint( entryBlock );
 
-    llvm::Function::ArgumentListType::iterator runtimeArguments = mainFunction->getArgumentList( ).begin( );
+    llvm::Function::arg_iterator runtimeArguments = mainFunction->arg_begin( );
     llvm::Value * runtimeArguments_runner = runtimeArguments ++;
 
     {{ gen::Scope scope( context, module, bootstrapBlock );

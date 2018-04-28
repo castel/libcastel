@@ -1,7 +1,5 @@
 set(LLVM_CONFIG_NAMES
-    llvm-config-3.9 llvm-config39
-    llvm-config-3.8 llvm-config38
-    llvm-config-3.7 llvm-config37
+    llvm-config-7
 )
 
 find_program(LLVM_CONFIG_EXECUTABLE

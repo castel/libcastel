@@ -46,7 +46,7 @@ llvm::Value * FunctionBuilder::build( llvm::LLVMContext & context, llvm::Module 
     irBuilder.CreateBr( entryBlock );
     irBuilder.SetInsertPoint( entryBlock );
 
-    llvm::Function::ArgumentListType::iterator runtimeArguments = function->getArgumentList( ).begin( );
+    llvm::Function::arg_iterator runtimeArguments = function->arg_begin( );
     llvm::Value * runtimeArguments_parentEnvironmentTable = runtimeArguments ++;
     llvm::Value * runtimeArguments_argumentCount = runtimeArguments ++;
     llvm::Value * runtimeArguments_argumentArray = runtimeArguments ++;

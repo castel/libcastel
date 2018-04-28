@@ -1,6 +1,6 @@
 #include <cstdlib>
 
-#include <llvm/Support/Dwarf.h>
+#include <llvm/BinaryFormat/Dwarf.h>
 
 #include "castel/runtime/helper/LSDA.hh"
 

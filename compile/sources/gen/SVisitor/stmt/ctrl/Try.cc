@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <stdexcept>
 #include <vector>
 
@@ -54,20 +55,25 @@ void SVisitor::visit( ast::stmt::ctrl::Try const & tryControlAst )
     if ( mIRBuilder.GetInsertBlock( )->empty( ) || ! mIRBuilder.GetInsertBlock( )->back( ).isTerminator( ) )
         mIRBuilder.CreateBr( continueBranch );
 
-    for ( llvm::Function::iterator basicBlock = tryBranch; basicBlock != function->end( ); ++ basicBlock ) {
+    llvm::Function::iterator tryBranchIterator = std::find_if(function->getBasicBlockList().begin(), function->getBasicBlockList().end(), [=] (llvm::BasicBlock const & basicBlock) {
+        return &basicBlock == tryBranch;
+    });
+
+    for ( llvm::Function::iterator basicBlock = tryBranchIterator; basicBlock != function->end( ); ++ basicBlock ) {
+
         for ( llvm::BasicBlock::iterator instruction = basicBlock->begin( ); instruction != basicBlock->end( ); ++ instruction ) {
 
-            llvm::CallInst * callInstruction = dynamic_cast< llvm::CallInst * >( instruction.getNodePtrUnchecked( ) );
+            llvm::CallInst * callInstruction = llvm::dyn_cast< llvm::CallInst >( &*instruction );
 
             if ( callInstruction == nullptr )
                 continue ;
 
-            llvm::BasicBlock::iterator nextInstruction = callInstruction;
+            llvm::BasicBlock::iterator nextInstruction = instruction;
             ++ nextInstruction;
 
             tryBranch = basicBlock->splitBasicBlock( nextInstruction, "next" );
 
-            llvm::BasicBlock::iterator extraneousBranchInstruction = callInstruction;
+            llvm::BasicBlock::iterator extraneousBranchInstruction = instruction;
             ++ extraneousBranchInstruction;
             extraneousBranchInstruction->eraseFromParent( );
 
@@ -77,15 +83,14 @@ void SVisitor::visit( ast::stmt::ctrl::Try const & tryControlAst )
             llvm::InvokeInst * invokeInstruction = llvm::InvokeInst::Create( callee, tryBranch, catchBranch, arguments );
             llvm::ReplaceInstWithInst( basicBlock->getInstList( ), instruction, invokeInstruction );
 
-            instruction = invokeInstruction;
-
         }
+
     }
 
     function->getBasicBlockList( ).push_back( catchBranch );
     mIRBuilder.SetInsertPoint( catchBranch );
 
-    llvm::Type * exceptionType = llvm::StructType::get( gen::helper::type< std::int8_t >( mContext ), gen::helper::type< std::int32_t >( mContext ), nullptr );
+    llvm::Type * exceptionType = llvm::StructType::get( mContext, { gen::helper::type< std::int8_t >( mContext ), gen::helper::type< std::int32_t >( mContext ) } );
     llvm::LandingPadInst * landingPad = mIRBuilder.CreateLandingPad( exceptionType, 0, "landingPad" );
 
     landingPad->addClause( gen::helper::null( gen::helper::type< void * >( mContext ) ) );

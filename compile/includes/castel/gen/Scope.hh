@@ -19,6 +19,18 @@ namespace castel
     namespace gen
     {
 
+        struct ValueDeleter
+        {
+
+        public:
+
+            void operator()(llvm::Value * ptr) const
+            {
+                ptr->deleteValue();
+            }
+
+        };
+
         class Scope
         {
 
@@ -74,7 +86,7 @@ namespace castel
 
             bool mPreserveEnvironmentTable;
 
-            std::unique_ptr< llvm::Value > mEnvironmentTable;
+            std::unique_ptr< llvm::Value, gen::ValueDeleter > mEnvironmentTable;
 
             std::map< std::string, std::unique_ptr< gen::Scope::Variable > > mVariables;
 
@@ -108,7 +120,7 @@ namespace castel
 
         private:
 
-            std::unique_ptr< llvm::Value > mDummy;
+            std::unique_ptr< llvm::Value, gen::ValueDeleter > mDummy;
 
             gen::Scope::Variable::Status mStatus;
 
@@ -135,7 +147,7 @@ namespace castel
 
         private:
 
-            std::unique_ptr< llvm::Value > mDummy;
+            std::unique_ptr< llvm::Value, gen::ValueDeleter > mDummy;
 
             gen::Scope::Variable & mVariable;
 

@@ -63,7 +63,7 @@ llvm::Value * ClassBuilder::createInitializer( llvm::LLVMContext & context, llvm
     llvm::BasicBlock * block = llvm::BasicBlock::Create( context, "", function );
     llvm::IRBuilder< > irBuilder( block, block->begin( ) );
 
-    llvm::Function::ArgumentListType::iterator runtimeArguments = function->getArgumentList( ).begin( );
+    llvm::Function::arg_iterator runtimeArguments = function->arg_begin( );
     llvm::Value * runtimeArguments_instance = runtimeArguments ++;
     llvm::Value * runtimeArguments_parentEnvironmentTable = runtimeArguments ++;
     llvm::Value * runtimeArguments_argc = runtimeArguments ++;
