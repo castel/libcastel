@@ -38,6 +38,8 @@ namespace castel
 
             }
 
+            class Block;
+
             class Expression;
 
             class Return;
@@ -81,6 +83,8 @@ namespace castel
             virtual void visit( ast::stmt::ctrl::While const & astWhileStatement );
 
             virtual void visit( ast::stmt::decl::Variables const & astVariableDeclaration );
+
+            virtual void visit( ast::stmt::Block const & astBlockStatement );
 
             virtual void visit( ast::stmt::Expression const & astExpressionStatement );
 

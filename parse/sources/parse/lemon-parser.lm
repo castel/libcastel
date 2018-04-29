@@ -30,6 +30,7 @@
     #include "castel/ast/stmt/decl/Class.hh"
     #include "castel/ast/stmt/decl/Function.hh"
     #include "castel/ast/stmt/decl/Variables.hh"
+    #include "castel/ast/stmt/Block.hh"
     #include "castel/ast/stmt/Expression.hh"
     #include "castel/ast/stmt/Return.hh"
     #include "castel/ast/stmt/Throw.hh"
@@ -194,6 +195,8 @@ statement(A) ::= closedstatement(U).
             { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::ForIn( U->as< std::string >( ), std::move( * V ), std::move( * W ), std::move( * X ) ) ); delete U; delete V; delete W; delete X; }
 
     %type simplestatement { ast::tools::Hold< ast::Statement > * }
+    simplestatement(A) ::= blockstatement(U).
+        { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
     simplestatement(A) ::= expressionstatement(U).
         { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
     simplestatement(A) ::= returnstatement(U).
@@ -202,6 +205,10 @@ statement(A) ::= closedstatement(U).
         { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
     simplestatement(A) ::= declarationstatement(U).
         { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
+
+        %type blockstatement { ast::tools::Hold< ast::stmt::Block > * }
+        blockstatement(A) ::= statementblock(U).
+            { A = new ast::tools::Hold< ast::stmt::Block >( new ast::stmt::Block( std::move( * U ) ) ); delete U; }
 
         %type expressionstatement { ast::tools::Hold< ast::stmt::Expression > * }
         expressionstatement(A) ::= expression(U) Semicolon.
@@ -351,7 +358,7 @@ expression(A) ::= operation(U).
                     { A = new ast::tools::Hold< ast::expr::literal::List::Item >( new ast::expr::literal::List::Item( std::move( * U ) ) ); delete U; }
 
         %type dictliteral { ast::tools::Hold< ast::expr::literal::Dict > * }
-        dictliteral(A) ::= LBrace dictlist(U) RBrace.
+        dictliteral(A) ::= LBrace LBRace dictlist(U) RBrace RBrace.
             { A = new ast::tools::Hold< ast::expr::literal::Dict >( new ast::expr::literal::Dict( std::move( * U ) ) ); delete U; }
 
             %type dictlist { ast::tools::List< ast::expr::literal::Dict::Item > * }

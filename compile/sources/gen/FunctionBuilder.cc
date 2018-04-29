@@ -1,13 +1,13 @@
 #include <stdexcept>
 #include <vector>
 
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/TypeBuilder.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IR/TypeBuilder.h>
 #include <llvm/IR/Value.h>
 
 #include "castel/gen/helper/call.hh"
@@ -65,7 +65,7 @@ llvm::Value * FunctionBuilder::build( llvm::LLVMContext & context, llvm::Module 
            .statements( mStatements )
        .build( context, module, irBuilder, scope );
 
-       llvm::BasicBlock * lastBlock = & ( function->getBasicBlockList( ).back( ) );
+       llvm::BasicBlock * lastBlock = irBuilder.GetInsertBlock( );
        if ( lastBlock->empty( ) || ! lastBlock->back( ).isTerminator( ) ) {
            irBuilder.SetInsertPoint( lastBlock, lastBlock->end( ) );
            irBuilder.CreateRet( gen::helper::call( context, module, irBuilder, "Castel_Undefined_create" ) );

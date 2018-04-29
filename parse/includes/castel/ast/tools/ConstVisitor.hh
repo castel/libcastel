@@ -77,6 +77,8 @@ namespace castel
 
             }
 
+            class Block;
+
             class Expression;
 
             class Return;
@@ -147,6 +149,8 @@ namespace castel
 
                 virtual inline void visit( ast::stmt::decl::Variables const & variablesDeclarationAst );
 
+                virtual inline void visit( ast::stmt::Block const & blockStatementAst );
+
                 virtual inline void visit( ast::stmt::Expression const & expressionStatementAst );
 
                 virtual inline void visit( ast::stmt::Return const & returnStatementAst );
@@ -190,6 +194,7 @@ namespace castel
 #include "castel/ast/stmt/decl/Class.hh"
 #include "castel/ast/stmt/decl/Function.hh"
 #include "castel/ast/stmt/decl/Variables.hh"
+#include "castel/ast/stmt/Block.hh"
 #include "castel/ast/stmt/Expression.hh"
 #include "castel/ast/stmt/Return.hh"
 #include "castel/ast/stmt/Throw.hh"
@@ -321,6 +326,11 @@ namespace castel
             void ConstVisitor::visit( ast::stmt::decl::Variables const & variablesDeclarationAst )
             {
                 this->defaultAction( variablesDeclarationAst );
+            }
+
+            void ConstVisitor::visit( ast::stmt::Block const & blockStatementAst )
+            {
+                this->defaultAction( blockStatementAst );
             }
 
             void ConstVisitor::visit( ast::stmt::Expression const & expressionStatementAst )
