@@ -66,6 +66,9 @@ CASTEL_DEMANGLE_LEXEME_TYPE ( RParenthesis               )
 CASTEL_DEMANGLE_LEXEME_TYPE ( LBracket                   )
 CASTEL_DEMANGLE_LEXEME_TYPE ( RBracket                   )
 
+CASTEL_DEMANGLE_LEXEME_TYPE ( DLBrace                    )
+CASTEL_DEMANGLE_LEXEME_TYPE ( DRBrace                    )
+
 CASTEL_DEMANGLE_LEXEME_TYPE ( LBrace                     )
 CASTEL_DEMANGLE_LEXEME_TYPE ( RBrace                     )
 

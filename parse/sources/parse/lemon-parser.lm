@@ -358,7 +358,7 @@ expression(A) ::= operation(U).
                     { A = new ast::tools::Hold< ast::expr::literal::List::Item >( new ast::expr::literal::List::Item( std::move( * U ) ) ); delete U; }
 
         %type dictliteral { ast::tools::Hold< ast::expr::literal::Dict > * }
-        dictliteral(A) ::= LBrace LBRace dictlist(U) RBrace RBrace.
+        dictliteral(A) ::= DLBrace dictlist(U) DRBrace.
             { A = new ast::tools::Hold< ast::expr::literal::Dict >( new ast::expr::literal::Dict( std::move( * U ) ) ); delete U; }
 
             %type dictlist { ast::tools::List< ast::expr::literal::Dict::Item > * }
@@ -374,7 +374,7 @@ expression(A) ::= operation(U).
                     { A = new ast::tools::List< ast::expr::literal::Dict::Item >( ); }
 
                 %type dictitem { ast::tools::Hold< ast::expr::literal::Dict::Item > * }
-                dictitem(A) ::= Identifer(U) Colon expression(V).
+                dictitem(A) ::= Identifier(U) Colon expression(V).
                     { A = new ast::tools::Hold< ast::expr::literal::Dict::Item >( new ast::expr::literal::Dict::Item( U->as< std::string >( ), std::move( * V ) ) ); delete U; delete V; }
 
         %type functionliteral { ast::tools::Hold< ast::expr::literal::Function > * }

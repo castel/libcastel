@@ -87,6 +87,9 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
         LBracket                   = '[';
         RBracket                   = ']';
 
+        DLBrace                    = '{{';
+        DRBrace                    = '}}';
+
         LBrace                     = '{';
         RBrace                     = '}';
 
@@ -167,6 +170,9 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
 
             LBracket                   => { type = lex::Lexeme::Type::LBracket;                   fbreak; };
             RBracket                   => { type = lex::Lexeme::Type::RBracket;                   fbreak; };
+
+            DLBrace                    => { type = lex::Lexeme::Type::DLBrace;                    fbreak; };
+            DRBrace                    => { type = lex::Lexeme::Type::DRBrace;                    fbreak; };
 
             LBrace                     => { type = lex::Lexeme::Type::LBrace;                     fbreak; };
             RBrace                     => { type = lex::Lexeme::Type::RBrace;                     fbreak; };
