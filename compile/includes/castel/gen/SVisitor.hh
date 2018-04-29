@@ -34,6 +34,10 @@ namespace castel
             namespace decl
             {
 
+                class Class;
+
+                class Function;
+
                 class Variables;
 
             }
@@ -81,6 +85,10 @@ namespace castel
             virtual void visit( ast::stmt::ctrl::Until const & astUntilStatement );
 
             virtual void visit( ast::stmt::ctrl::While const & astWhileStatement );
+
+            virtual void visit( ast::stmt::decl::Class const & astClassDeclaration );
+
+            virtual void visit( ast::stmt::decl::Function const & astFunctionDeclaration );
 
             virtual void visit( ast::stmt::decl::Variables const & astVariableDeclaration );
 
