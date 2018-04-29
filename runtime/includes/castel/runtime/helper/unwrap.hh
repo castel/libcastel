@@ -65,7 +65,7 @@ namespace castel
                         runtime::helper::Fatal( )
                             << "Parameter type mismatch" << std::endl;
 
-                    return stringBox->value( );
+                    return reinterpret_cast< char const * >( stringBox->value( ) );
                 }
             };
 
@@ -82,7 +82,7 @@ namespace castel
                         runtime::helper::Fatal( )
                             << "Parameter type mismatch" << std::endl;
 
-                    return stringBox->value( );
+                    return stringBox->toStdString( );
                 }
             };
 

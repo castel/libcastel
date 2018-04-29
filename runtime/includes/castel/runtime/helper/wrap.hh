@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstring>
 #include <functional>
 #include <string>
@@ -70,8 +71,8 @@ namespace castel
 
             runtime::boxes::String * wrap( std::string const & value )
             {
-                char * copy = runtime::helper::malloc< char >( value.length( ) + 1 );
-                std::strcpy( copy, value.c_str( ) );
+                std::uint8_t * copy = runtime::helper::malloc< std::uint8_t >( value.length( ) );
+                std::memcpy( copy, value.c_str( ), value.length( ) );
 
                 return runtime::helper::create< runtime::boxes::String >( copy, value.length( ) );
             }

@@ -4,7 +4,7 @@
 
 using namespace castel;
 
-runtime::boxes::String * Castel_String_create( char const * value )
+runtime::boxes::String * Castel_String_create( std::uint8_t const * value, unsigned int length )
 {
-    return runtime::helper::create< runtime::boxes::String >( value );
+    return runtime::helper::create< runtime::boxes::String >( value, length );
 }

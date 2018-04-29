@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstring>
 
 #include "castel/runtime/boxes/Boolean.hh"
@@ -27,10 +28,10 @@ runtime::Box * String::operatorAddition( runtime::Box * operand )
     if ( newLength < mLength )
         runtime::helper::Fatal( ) << "New string size will underflow." << std::endl;
 
-    char * data = runtime::helper::malloc< char >( newLength + 1 );
+    std::uint8_t * data = runtime::helper::malloc< std::uint8_t >( newLength );
 
-    std::strncpy( data + 0, mValue, mLength );
-    std::strncpy( data + mLength, stringOperand->mValue, stringOperand->mLength );
+    std::memcpy( data + 0, mValue, mLength );
+    std::memcpy( data + mLength, stringOperand->mValue, stringOperand->mLength );
 
     return runtime::helper::create< runtime::boxes::String >( data, newLength );
 }
@@ -42,7 +43,7 @@ runtime::Box * String::operatorEqual( runtime::Box * operand )
     if ( stringOperand == nullptr )
         return nullptr;
 
-    bool areStringsEqual = mLength == stringOperand->mLength && std::strcmp( mValue, stringOperand->mValue ) == 0;
+    bool areStringsEqual = mLength == stringOperand->mLength && std::memcmp( mValue, stringOperand->mValue, mLength ) == 0;
     return runtime::helper::create< runtime::boxes::Boolean >( areStringsEqual );
 }
 
@@ -53,6 +54,6 @@ runtime::Box * String::operatorNotEqual( runtime::Box * operand )
     if ( stringOperand == nullptr )
         return nullptr;
 
-    bool areStringsNotEqual = mLength != stringOperand->mLength || std::strcmp( mValue, stringOperand->mValue ) != 0;
+    bool areStringsNotEqual = mLength != stringOperand->mLength || std::memcmp( mValue, stringOperand->mValue, mLength ) != 0;
     return runtime::helper::create< runtime::boxes::Boolean >( areStringsNotEqual );
 }

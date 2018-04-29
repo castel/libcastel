@@ -21,7 +21,7 @@ void Castel_addMethod( runtime::Box * instance, char const * name, runtime::boxe
 
 runtime::Attribute * Castel_getAttribute( runtime::Box * instance, runtime::Box * operand )
 {
-    std::string propertyName = dynamic_cast< runtime::boxes::String * >( operand )->value( );
+    std::string propertyName = dynamic_cast< runtime::boxes::String * >( operand )->toStdString( );
     auto key = std::make_pair( runtime::Box::PropertyNS::Standards, std::string( propertyName ) );
 
     runtime::Attribute * attribute = nullptr;

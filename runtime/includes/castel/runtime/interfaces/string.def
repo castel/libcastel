@@ -2,4 +2,4 @@
     #error "You must include castel/runtime/interfaces/string.prelude.hh prior to using this X-macro."
 #endif
 
-CASTEL_TYPE( String, ( char const * value ) )
+CASTEL_TYPE( String, ( std::uint8_t const * value, unsigned int length ) )
