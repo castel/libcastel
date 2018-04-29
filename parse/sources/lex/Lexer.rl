@@ -56,7 +56,7 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
         Try                        = 'try';
         New                        = 'new';
         For                        = 'for';
-        Var                        = 'var';
+        Let                        = 'let';
         If                         = 'if';
         In                         = 'in';
 
@@ -131,7 +131,7 @@ lex::Lexeme * Lexer::fetchNextLexeme( void )
             Try                        => { type = lex::Lexeme::Type::Try;                        fbreak; };
             Else                       => { type = lex::Lexeme::Type::Else;                       fbreak; };
 
-            Var                        => { type = lex::Lexeme::Type::Var;                        fbreak; };
+            Let                        => { type = lex::Lexeme::Type::Let;                        fbreak; };
 
             Return                     => { type = lex::Lexeme::Type::Return;                     fbreak; };
             Throw                      => { type = lex::Lexeme::Type::Throw;                      fbreak; };

@@ -161,9 +161,9 @@ statement(A) ::= closedstatement(U).
             { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::Until( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
         %type openforinstatement { ast::tools::Hold< ast::Statement > * }
-        openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis statement(W).
+        openforinstatement(A) ::= For LParenthesis Let Identifier(U) In expression(V) RParenthesis statement(W).
             { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::ForIn( U->as< std::string >( ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
-        openforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else openstatement(X).
+        openforinstatement(A) ::= For LParenthesis Let Identifier(U) In expression(V) RParenthesis closedstatement(W) Else openstatement(X).
             { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::ForIn( U->as< std::string >( ), std::move( * V ), std::move( * W ), std::move( * X ) ) ); delete U; delete V; delete W; delete X; }
 
     %type closedstatement { ast::tools::Hold< ast::Statement > * }
@@ -191,7 +191,7 @@ statement(A) ::= closedstatement(U).
             { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::Until( std::move( * U ), std::move( * V ), std::move( * W ) ) ); delete U; delete V; delete W; }
 
         %type closedforinstatement { ast::tools::Hold< ast::Statement > * }
-        closedforinstatement(A) ::= For LParenthesis Var Identifier(U) In expression(V) RParenthesis closedstatement(W) Else closedstatement(X).
+        closedforinstatement(A) ::= For LParenthesis Let Identifier(U) In expression(V) RParenthesis closedstatement(W) Else closedstatement(X).
             { A = new ast::tools::Hold< ast::Statement >( new ast::stmt::ctrl::ForIn( U->as< std::string >( ), std::move( * V ), std::move( * W ), std::move( * X ) ) ); delete U; delete V; delete W; delete X; }
 
     %type simplestatement { ast::tools::Hold< ast::Statement > * }
@@ -233,7 +233,7 @@ statement(A) ::= closedstatement(U).
             { A = new ast::tools::Hold< ast::Statement >( std::move( * U ) ); delete U; }
 
             %type variablesdeclaration { ast::tools::Hold< ast::stmt::decl::Variables > * }
-            variablesdeclaration(A) ::= Var variabledeclarationlist(U) Semicolon.
+            variablesdeclaration(A) ::= Let variabledeclarationlist(U) Semicolon.
                 { A = new ast::tools::Hold< ast::stmt::decl::Variables >( new ast::stmt::decl::Variables( std::move( * U ) ) ); delete U; }
 
                 %type variabledeclarationlist { ast::tools::List< ast::stmt::decl::Variables::Item > * }
@@ -430,9 +430,9 @@ expression(A) ::= operation(U).
                             { A = new ast::tools::Hold< ast::expr::literal::Class::Member >( std::move( * U ) ); delete U; }
 
                             %type attribute { ast::tools::Hold< ast::expr::literal::Class::Attribute > * }
-                            attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Assignment expression(X) Semicolon.
+                            attribute(A) ::= visibility(U) storage(V) Let Identifier(W) Assignment expression(X) Semicolon.
                                 { A = new ast::tools::Hold< ast::expr::literal::Class::Attribute >( new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ), std::move( * X ) ) ); delete W; delete X; }
-                            attribute(A) ::= visibility(U) storage(V) Var Identifier(W) Semicolon.
+                            attribute(A) ::= visibility(U) storage(V) Let Identifier(W) Semicolon.
                                 { A = new ast::tools::Hold< ast::expr::literal::Class::Attribute >( new ast::expr::literal::Class::Attribute( U, V, W->as< std::string >( ) ) ); delete W; }
 
                             %type method { ast::tools::Hold< ast::expr::literal::Class::Method > * }

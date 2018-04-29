@@ -16,7 +16,7 @@ CASTEL_DEMANGLE_LEXEME_TYPE ( Operator                   )
 
 CASTEL_DEMANGLE_LEXEME_TYPE ( Require                    )
 
-CASTEL_DEMANGLE_LEXEME_TYPE ( Var                        )
+CASTEL_DEMANGLE_LEXEME_TYPE ( Let                        )
 
 CASTEL_DEMANGLE_LEXEME_TYPE ( Return                     )
 CASTEL_DEMANGLE_LEXEME_TYPE ( Throw                      )
